@@ -1,4 +1,4 @@
-*unicode.txt*  A completion plugin for Unicode glyphs  - Vers 0.1  Oct 22, 2009
+*unicode.txt*  A completion plugin for Unicode glyphs  - Vers 0.2  Oct 22, 2009
 
 Author:  Christian Brabandt <cb@256bit.org>
 Copyright: (c) 2009 by Christian Brabandt 		    *unicode-copyright*
@@ -103,6 +103,7 @@ your report.
 
 ==============================================================================
 2. unicode History					*unicode-plugin-history*
+    0.2: Oct 22, 2009	   Enabled GetLatestScripts
     0.1: Oct 22, 2009	   First working version
 
 ==============================================================================

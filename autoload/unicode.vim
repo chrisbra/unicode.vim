@@ -1,4 +1,15 @@
-" Unicode Completion Script for Vim
+" unicodePlugin : A completion plugin for Unicode glyphs
+" Author: C.Brabandt <cb@256bit.org>
+" Copyright: (c) 2009 by Christian Brabandt
+"            The VIM LICENSE applies to unicode.vim, and unicode.txt
+"            (see |copyright|) except use "unicode" instead of "Vim".
+"            No warranty, express or implied.
+"  *** ***   Use At-Your-Own-Risk!   *** ***
+"
+" GetLatestVimScripts: 2822 2 :AutoInstall: unicode.vim
+
+" ---------------------------------------------------------------------
+
 
 if exists("g:unicode_URL")
     let s:unicode_URL=g:unicode_URL
