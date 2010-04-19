@@ -1,7 +1,8 @@
-*unicode.txt* A completion plugin for Unicode glyphs - Vers 0.4  Feb 01, 2010
+*unicode.txt* A completion plugin for Unicode glyphs
 
 Author:  Christian Brabandt <cb@256bit.org>
-Copyright: (c) 2009 by Christian Brabandt 		    *unicode-copyright*
+Version: 0.5 Mon, 19 Apr 2010 23:00:18 +0200
+Copyright: (c) 2009, 2010 by Christian Brabandt 	    *unicode-copyright*
            The VIM LICENSE applies to unicode.vim and unicode.txt
            (see |copyright|) except use unicode instead of "Vim".
 	   NO WARRANTY, EXPRESS OR IMPLIED.  USE AT-YOUR-OWN-RISK.
@@ -116,6 +117,8 @@ CTRL-X CTRL-C		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
+    0.5: Apr 19, 2010:  Created a public repository for this plugin at
+			    http://github.com/chrisbra/unicode.vim
     0.4: Feb 01, 2010:  Use UnicodeData.txt to generate Data
                         (Index.txt does not contain all glyphs).
 			Check for empty file UnicodeData.txt
