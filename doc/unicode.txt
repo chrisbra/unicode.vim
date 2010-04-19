@@ -1,4 +1,4 @@
-*unicode.txt*  A completion plugin for Unicode glyphs  - Vers 0.2  Oct 27, 2009
+*unicode.txt* A completion plugin for Unicode glyphs - Vers 0.4  Feb 01, 2010
 
 Author:  Christian Brabandt <cb@256bit.org>
 Copyright: (c) 2009 by Christian Brabandt 		    *unicode-copyright*
@@ -18,18 +18,19 @@ characters using a completion function.
 
 By default, the plugin creates a directory unicode below the path autoload
 where this plugin is located. Within this directory it will store  the file
-Index.txt from http://www.unicode.org/Public/UNIDATA/Index.txt which it will
-try to download using *netrw* . If this is unsuccessfull, or you do not have
-|netrw| enabled, dowload the file manually and save it in the unicode
-directory below the autoload directory in which unicode.vim is located.
+UnicodeData.txt from http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
+which it will try to download using |netrw| . If this is unsuccessfull, or
+you do not have |netrw| enabled, dowload the file manually and save it in the
+unicode directory below the autoload directory in which unicode.vim is
+located.
 
 
 						 *:EnableUnicodeCompletion*
 By default the plugin is not enabled. To enable it enter
 :EnableUnicodeCompletion
 When you run this command, *unicode.vim* checks for the availability of
-Index.txt from the Unicode Consortium, and if it is not available, it will try
-to download it. 
+UnicodeData.txt from the Unicode Consortium, and if it is not available,
+it will try to download it. 
 
 This will also set up the completion function |completefunc| to use for your
 buffer. You can use |i_CTRL-X_CTRL-U| then to start the completion. 
@@ -68,28 +69,26 @@ and screen-rendering errors in the menu. Enter
 :let g:showDigraphCode=0
 to disable the Digraph feature afterwards.
 
-If you would like to specify a different URL from which to download Index.txt,
-enter the URL as:
+If you would like to specify a different URL from which to download
+UnicodeData.txt, enter the URL as:
 :let g:unicode_URL='http:....'
 To force downloading the file from that new url, enter
 :call unicode#CheckUniFile(1)
 
 						     *unicode-plugin-error*
-If the plugin gives an error, first check, that Index.txt from the Unicode
-Consortium has been successfully downloaded. It should look something like
-this:
-A WITH ACUTE, LATIN CAPITAL LETTER	00C1
-A WITH ACUTE, LATIN SMALL LETTER	00E1
-A WITH BREVE, LATIN SMALL LETTER	0103
-A WITH CARON, LATIN SMALL LETTER	01CE
-A WITH CIRCUMFLEX, LATIN CAPITAL LETTER	00C2
-A WITH CIRCUMFLEX, LATIN SMALL LETTER	00E2
-A WITH DIAERESIS, LATIN CAPITAL LETTER	00C4
-A WITH DIAERESIS, LATIN SMALL LETTER	00E4
-A WITH DOT ABOVE, LATIN SMALL LETTER	0227
-A WITH DOT BELOW, LATIN SMALL LETTER	1EA1
-A WITH DOUBLE GRAVE, LATIN SMALL LETTER	0201
-A WITH GRAVE, LATIN CAPITAL LETTER	00C0
+If the plugin gives an error, first check, that UnicodeData.txt from the
+Unicode Consortium has been successfully downloaded. It should look something
+like this:
+0020;SPACE;Zs;0;WS;;;;;N;;;;;
+0021;EXCLAMATION MARK;Po;0;ON;;;;;N;;;;;
+0022;QUOTATION MARK;Po;0;ON;;;;;N;;;;;
+0023;NUMBER SIGN;Po;0;ET;;;;;N;;;;;
+0024;DOLLAR SIGN;Sc;0;ET;;;;;N;;;;;
+0025;PERCENT SIGN;Po;0;ET;;;;;N;;;;;
+0026;AMPERSAND;Po;0;ON;;;;;N;;;;;
+0027;APOSTROPHE;Po;0;ON;;;;;N;APOSTROPHE-QUOTE;;;;
+0028;LEFT PARENTHESIS;Ps;0;ON;;;;;Y;OPENING PARENTHESIS;;;;
+0029;RIGHT PARENTHESIS;Pe;0;ON;;;;;Y;CLOSING PARENTHESIS;;;;
 [...]
 (several thounsand lines following)
 
@@ -117,6 +116,9 @@ CTRL-X CTRL-C		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
+    0.4: Feb 01, 2010:  Use UnicodeData.txt to generate Data
+                        (Index.txt does not contain all glyphs).
+			Check for empty file UnicodeData.txt
     0.3: Oct 27, 2009:	Digraph Completion
     0.2: Oct 22, 2009:	Enabled GetLatestScripts (|GLVS|)
     0.1: Oct 22, 2009:	First working version

@@ -1,12 +1,13 @@
 " unicodePlugin : A completion plugin for Unicode glyphs
 " Author: C.Brabandt <cb@256bit.org>
+" Version: 0.4
 " Copyright: (c) 2009 by Christian Brabandt
 "            The VIM LICENSE applies to unicode.vim, and unicode.txt
 "            (see |copyright|) except use "unicode" instead of "Vim".
 "            No warranty, express or implied.
 "  *** ***   Use At-Your-Own-Risk!   *** ***
 "
-" GetLatestVimScripts: 2822 3 :AutoInstall: unicode.vim
+" GetLatestVimScripts: 2822 4 :AutoInstall: unicode.vim
 
 " ---------------------------------------------------------------------
 
@@ -14,19 +15,26 @@
 if exists("g:unicode_URL")
     let s:unicode_URL=g:unicode_URL
 else
-    let s:unicode_URL='http://www.unicode.org/Public/UNIDATA/Index.txt'
+    "let s:unicode_URL='http://www.unicode.org/Public/UNIDATA/Index.txt'
+    let s:unicode_URL='http://www.unicode.org/Public/UNIDATA/UnicodeData.txt'
 endif
 
 
 let s:file=matchstr(s:unicode_URL, '[^/]*$')
 
 let s:directory  = expand("<sfile>:p:h")."/unicode"
-let s:UniFile    = s:directory . '/Index.txt'
+let s:UniFile    = s:directory . '/UnicodeData.txt'
 
 let s:debug = 0
 
-fu! unicode#CheckUniFile(force)
-    if !filereadable(s:UniFile) || a:force
+fu! unicode#CheckUniFile(force)"{{{
+    if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
+	echohl WarningMsg
+	echomsg "File " . s:UniFile . " does not exist or is zero."
+	echomsg "Let's see, if we can download it."
+	echomsg "If this doesn't work, you should download "
+	echomsg s:unicode_URL . " and save it as " . s:UniFile
+	echohl Normal
 	if exists(":Nread")
 	    try
 		sp +enew
@@ -35,6 +43,9 @@ fu! unicode#CheckUniFile(force)
 		exe ":lcd " . s:directory
 		let g:netrw_http_cmd="wget"
 		exe "0Nread " . s:unicode_URL
+		if getfsize(s:UniFile)==0
+		    throw "Error downloading ".s:UniFile
+		endif
 	    catch
 		echoerr "Error fetching Unicode File from " . s:unicode_URL
 		return 0
@@ -50,9 +61,9 @@ fu! unicode#CheckUniFile(force)
 	endif
     endif
     return 1
-endfu
+endfu"}}}
 
-fu! unicode#CheckDir()
+fu! unicode#CheckDir()"{{{
     if (!isdirectory(s:directory))
 	try
 	    call mkdir(s:directory)
@@ -62,18 +73,21 @@ fu! unicode#CheckDir()
 	endtry
     endif
     return unicode#CheckUniFile(0)
-endfu
+endfu"}}}
 
-fu! unicode#UnicodeDict()
+fu! unicode#UnicodeDict()"{{{
     let dict={}
     let list=readfile(s:UniFile)
     for glyph in list
-	let val=split(glyph, "\t")
-        let dict[substitute(glyph, "\t", ' ', '')] = str2nr(val[1],16)
+	let val          = split(glyph, ";")
+	let U1Name       = val[10]
+	let U1Name       = (!empty(U1Name)?' ('.U1Name.')':'')
+	let Name         = val[1]
+        let dict[Name]   = str2nr(val[0],16)
     endfor
 "    let dict=filter(dict, 'v:key !~ "Control Code"')
     return dict
-endfu
+endfu"}}}
 
 fu! unicode#CompleteUnicode(findstart,base)
   if !exists("s:numeric")
@@ -99,21 +113,21 @@ fu! unicode#CompleteUnicode(findstart,base)
     endif
     "let glyphs=unicode#UnicodeDict()
     if s:numeric
-	let complete_list = filter(copy(s:UniDict), 'printf("%06X", v:val) =~? "^0*".a:base[2:]')
+	let complete_list = filter(copy(s:UniDict), 'printf("%04X", v:val) =~? "^0*".a:base[2:]')
     else
-	let complete_list = filter(copy(s:UniDict), 'v:key =~? "^".a:base')
+	let complete_list = filter(copy(s:UniDict), 'v:key =~? a:base')
     endif
     for [key, value] in sort(items(complete_list), "unicode#CompareList")
-    	let key=matchstr(key, "^[^0-9 ]*")
+    	"let key=matchstr(key, "^[^0-9 ]*")
         if s:showDigraphCode
 	    let dg_char=unicode#GetDigraphChars(value)
 	    if !empty(dg_char)
-		let fstring=printf("U+%06X %s (%s):%s", value, key, dg_char, nr2char(value))
+		let fstring=printf("U+%04X %s (%s):%s", value, key, dg_char, nr2char(value))
 	    else
-		let fstring=printf("U+%06X %s:%s", value, key, nr2char(value))
+		let fstring=printf("U+%04X %s:%s", value, key, nr2char(value))
 	    endif
 	else
-	    let fstring=printf("U+%06X %s:%s", value, key, nr2char(value))
+	    let fstring=printf("U+%04X %s:%s", value, key, nr2char(value))
 	endif
 	    
     	call complete_add({'word':nr2char(value), 'abbr':fstring})
@@ -173,7 +187,6 @@ fu! unicode#CompleteDigraph()
    return ''
 endfu
 
-inoremap <C-X><C-C> <C-R>=unicode#CompleteDigraph()<CR>
 
 "com! Digraph for i in unicode#GetDigraph() | echo i | endfor
 
@@ -191,9 +204,9 @@ fu! unicode#Init(enable)
 	    let s:UniDict = unicode#UnicodeDict()
 	    setl completefunc=unicode#CompleteUnicode
 	    set completeopt+=menuone
+	    inoremap <C-X><C-C> <C-R>=unicode#CompleteDigraph()<CR>
 	    echo "Unicode Completion " . (a:enable?'ON':'OFF')
 	endif
-
     else
 	if !empty(b:oldfunc)
 	    let &l:cfu=b:oldfunc
@@ -202,5 +215,3 @@ fu! unicode#Init(enable)
 	echo "Unicode Completion " . (a:enable?'ON':'OFF')
     endif
 endfu
-
-    
