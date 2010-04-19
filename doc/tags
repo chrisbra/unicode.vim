@@ -1,0 +1,11 @@
+:DisableUnicodeCompletion	unicode.txt	/*:DisableUnicodeCompletion*
+:EnableUnicodeCompletion	unicode.txt	/*:EnableUnicodeCompletion*
+netrw	unicode.txt	/*netrw*
+unicode-copyright	unicode.txt	/*unicode-copyright*
+unicode-plugin	unicode.txt	/*unicode-plugin*
+unicode-plugin-config	unicode.txt	/*unicode-plugin-config*
+unicode-plugin-error	unicode.txt	/*unicode-plugin-error*
+unicode-plugin-history	unicode.txt	/*unicode-plugin-history*
+unicode-plugin-usage	unicode.txt	/*unicode-plugin-usage*
+unicode.txt	unicode.txt	/*unicode.txt*
+unicode.vim	unicode.txt	/*unicode.vim*
