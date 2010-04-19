@@ -1,5 +1,7 @@
 :DisableUnicodeCompletion	unicode.txt	/*:DisableUnicodeCompletion*
 :EnableUnicodeCompletion	unicode.txt	/*:EnableUnicodeCompletion*
+digraph-completion	unicode.txt	/*digraph-completion*
+i_CTRL-X_CTRL-C	unicode.txt	/*i_CTRL-X_CTRL-C*
 netrw	unicode.txt	/*netrw*
 unicode-copyright	unicode.txt	/*unicode-copyright*
 unicode-plugin	unicode.txt	/*unicode-plugin*

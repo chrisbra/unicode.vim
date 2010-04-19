@@ -6,7 +6,7 @@
 "            No warranty, express or implied.
 "  *** ***   Use At-Your-Own-Risk!   *** ***
 "
-" GetLatestVimScripts: 2822 2 :AutoInstall: unicode.vim
+" GetLatestVimScripts: 2822 3 :AutoInstall: unicode.vim
 
 " ---------------------------------------------------------------------
 
@@ -75,7 +75,7 @@ fu! unicode#UnicodeDict()
     return dict
 endfu
 
-fu! unicode#CompleteDigraph(findstart,base)
+fu! unicode#CompleteUnicode(findstart,base)
   if !exists("s:numeric")
       let s:numeric=0
   endif
@@ -104,7 +104,7 @@ fu! unicode#CompleteDigraph(findstart,base)
 	let complete_list = filter(copy(s:UniDict), 'v:key =~? "^".a:base')
     endif
     for [key, value] in sort(items(complete_list), "unicode#CompareList")
-    	let key=matchstr(key, "^[^0-9]*")
+    	let key=matchstr(key, "^[^0-9 ]*")
         if s:showDigraphCode
 	    let dg_char=unicode#GetDigraphChars(value)
 	    if !empty(dg_char)
@@ -126,20 +126,56 @@ fu! unicode#CompleteDigraph(findstart,base)
   endif
 endfu
 
-fu! unicode#GetDigraphChars(code)
+fu! unicode#GetDigraph()
     redir => digraphs
-    silent digraphs
+	silent digraphs
     redir END
-    let dlist = split(substitute(digraphs, "\n", '', 'g'), '..\s.\{1,2\}\s\+\d\+\zs')
+    let dlist=[]
+    let dlist=map(split(substitute(digraphs, "\n", ' ', 'g'), '..\s<\?.\{1,2\}>\?\s\+\d\{1,5\}\zs'), 'substitute(v:val, "^\\s\\+", "", "")')
+    " special case: digraph 57344: starts with 2 spaces
+    "return filter(dlist, 'v:val =~ "57344$"')
+    let idx=match(dlist, '57344$')
+    let dlist[idx]='   '.dlist[idx]
+
+    return dlist
+endfu
+
+fu! unicode#GetDigraphChars(code)
+    let dlist = unicode#GetDigraph()
     let ddict = {}
     for digraph in dlist
 	let key=matchstr(digraph, '\d\+$')+0
 	let val=split(digraph)
-	"let key=val[2]+0
 	let ddict[key] = val[0]
     endfor
     return get(ddict, a:code, '')
 endfu
+
+fu! unicode#CompleteDigraph()
+   let prevchar=getline('.')[col('.')-2]
+   let dlist=unicode#GetDigraph()
+   if prevchar !~ '\s' && !empty(prevchar)
+       let dlist=filter(dlist, 'v:val =~ "^".prevchar')
+       let col=col('.')-1
+   else
+       let col=col('.')
+   endif
+   let tlist=[]
+   for args in dlist
+       let t=matchlist(args, '^\(..\)\s<\?\(..\?\)>\?\s\+\(\d\+\)$')
+       echo args
+       "if !empty(t)
+	   let format=printf("%s %s U+%05d",t[1], t[2], t[3])
+	   call add(tlist, {'word':nr2char(t[3]), 'abbr':format})
+       "endif
+   endfor
+   call complete(col, tlist)
+   return ''
+endfu
+
+inoremap <C-X><C-C> <C-R>=unicode#CompleteDigraph()<CR>
+
+"com! Digraph for i in unicode#GetDigraph() | echo i | endfor
 
 
 
@@ -153,7 +189,7 @@ fu! unicode#Init(enable)
 	let b:oldfunc=&l:cfu
 	if (unicode#CheckDir())
 	    let s:UniDict = unicode#UnicodeDict()
-	    setl completefunc=unicode#CompleteDigraph
+	    setl completefunc=unicode#CompleteUnicode
 	    set completeopt+=menuone
 	    echo "Unicode Completion " . (a:enable?'ON':'OFF')
 	endif

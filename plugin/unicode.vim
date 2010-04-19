@@ -6,7 +6,8 @@
 "            No warranty, express or implied.
 "  *** ***   Use At-Your-Own-Risk!   *** ***
 "
-" GetLatestVimScripts: 2822 2 :AutoInstall: unicode.vim
+" TODO: enable GLVS:
+" GetLatestVimScripts: 2822 3 :AutoInstall: unicode.vim
 
 " ---------------------------------------------------------------------
 "  Load Once: {{{1

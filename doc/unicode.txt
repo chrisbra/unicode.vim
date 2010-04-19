@@ -1,4 +1,4 @@
-*unicode.txt*  A completion plugin for Unicode glyphs  - Vers 0.2  Oct 22, 2009
+*unicode.txt*  A completion plugin for Unicode glyphs  - Vers 0.2  Oct 27, 2009
 
 Author:  Christian Brabandt <cb@256bit.org>
 Copyright: (c) 2009 by Christian Brabandt 		    *unicode-copyright*
@@ -38,14 +38,17 @@ buffer. You can use |i_CTRL-X_CTRL-U| then to start the completion.
 If you want to disable the plugin, enter
 :DisableUnicodeCompletion
 
+==============================================================================
 						    *unicode-plugin-usage*
+2. Completing Unicode chars
+
 If you have enabled the plugin using |:EnableUnicodeCompletion| then there are
 2 possibilities to use the plugin. You can either enter the Unicode Character
 name, or enter the Unicode-Codeposition.
 
-For example, you would like to enter Æ, so you enter AE and press <C-X><C-U>
+For example, you would like to enter Æ, so you enter AE and press |<C-X><C-U>|
 while in insert mode. Alternatively you can enter the Unicode-Codepoint: U+C6
-and press <C-X><C-U> and the popup menu will show you all characters, that
+and press |<C-X><C-U>| and the popup menu will show you all characters, that
 have a codepoint like C6 with leading zeros, eg. U+00C6 and U+0C66
 
 A popup menu will appear, showing you the Unicode-Codeposition value, the
@@ -98,13 +101,25 @@ contact the maintainer. You'll find his email-adress in the first line of this
 document. Please be patient, it might take a while, until I can take care of
 your report.
 
+==============================================================================
+					*i_CTRL-X_CTRL-C* *digraph-completion*
+3. Completing digraphs
 
+CTRL-X CTRL-C		Search for the character in front of the cursor and
+			try to complete this letter using a digraph. If there
+			is no letter in front of the cursor, a list with all
+			available digraphs is shown in a popup menu.
+       CTRL-N           Use next match. This match replaces the previous
+			match.
+       CTRL-P           Use previous match. This match replaces the previous
+			one.
 
 
 ==============================================================================
-2. unicode History					*unicode-plugin-history*
-    0.2: Oct 22, 2009	   Enabled GetLatestScripts
-    0.1: Oct 22, 2009	   First working version
+4. unicode History			              *unicode-plugin-history*
+    0.3: Oct 27, 2009:	Digraph Completion
+    0.2: Oct 22, 2009:	Enabled GetLatestScripts (|GLVS|)
+    0.1: Oct 22, 2009:	First working version
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help
