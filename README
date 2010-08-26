@@ -1,31 +1,15 @@
-unicode.vim - A Completion function for Unicode glyphs
+*unicode.txt* A completion plugin for Unicode glyphs
 
-I) Directory layout 
-=====================
-This repository contains the Join.vim plugin, the unit tests and the 
-documentation. The current directory structure looks like this:
+Author:  Christian Brabandt <cb@256bit.org>
+Version: 0.6 Thu, 26 Aug 2010 13:59:16 +0200
+Copyright: (c) 2009, 2010 by Christian Brabandt 	    *unicode-copyright*
+           The VIM LICENSE applies to unicode.vim and unicode.txt
+           (see |copyright|) except use unicode instead of "Vim".
+	   NO WARRANTY, EXPRESS OR IMPLIED.  USE AT-YOUR-OWN-RISK.
 
-doc/
-plugin/
-autoload/
-Makefile
-README
 
-The subdirectory doc/ contains the documentation for the plugin.
-The subdirectory plugin/ contains the Vim plugin and the autoloaded
-file is located below autoload/
-
-II) Installation
-===============
-This plugin comes as vimball, which makes it really easy to install it
-into the right place. 
-1) Edit unicode.vba with your vim (:e unicode.vba) 
-2) From within vim, simply source the file (using :so %)
-3) Restart vim to autoload the plugin and the documentation (:q)
-4) Read the help at :h unicode.txt 
-
-III) Documentation
-==================
+==============================================================================
+                                                              *unicode-plugin*
 1. Functionality
 
 This plugin was written to enable an easier use of any Unicode glyph
@@ -35,18 +19,19 @@ characters using a completion function.
 
 By default, the plugin creates a directory unicode below the path autoload
 where this plugin is located. Within this directory it will store  the file
-Index.txt from http://www.unicode.org/Public/UNIDATA/Index.txt which it will
-try to download using *netrw* . If this is unsuccessfull, or you do not have
-|netrw| enabled, dowload the file manually and save it in the unicode
-directory below the autoload directory in which unicode.vim is located.
+UnicodeData.txt from http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
+which it will try to download using |netrw| . If this is unsuccessfull, or
+you do not have |netrw| enabled, dowload the file manually and save it in the
+unicode directory below the autoload directory in which unicode.vim is
+located.
 
 
 						 *:EnableUnicodeCompletion*
 By default the plugin is not enabled. To enable it enter
 :EnableUnicodeCompletion
 When you run this command, *unicode.vim* checks for the availability of
-Index.txt from the Unicode Consortium, and if it is not available, it will try
-to download it. 
+UnicodeData.txt from the Unicode Consortium, and if it is not available,
+it will try to download it. 
 
 This will also set up the completion function |completefunc| to use for your
 buffer. You can use |i_CTRL-X_CTRL-U| then to start the completion. 
@@ -85,33 +70,32 @@ and screen-rendering errors in the menu. Enter
 :let g:showDigraphCode=0
 to disable the Digraph feature afterwards.
 
-If you would like to specify a different URL from which to download Index.txt,
-enter the URL as:
+If you would like to specify a different URL from which to download
+UnicodeData.txt, enter the URL as:
 :let g:unicode_URL='http:....'
 To force downloading the file from that new url, enter
 :call unicode#CheckUniFile(1)
 
 						     *unicode-plugin-error*
-If the plugin gives an error, first check, that Index.txt from the Unicode
-Consortium has been successfully downloaded. It should look something like
-this:
-A WITH ACUTE, LATIN CAPITAL LETTER	00C1
-A WITH ACUTE, LATIN SMALL LETTER	00E1
-A WITH BREVE, LATIN SMALL LETTER	0103
-A WITH CARON, LATIN SMALL LETTER	01CE
-A WITH CIRCUMFLEX, LATIN CAPITAL LETTER	00C2
-A WITH CIRCUMFLEX, LATIN SMALL LETTER	00E2
-A WITH DIAERESIS, LATIN CAPITAL LETTER	00C4
-A WITH DIAERESIS, LATIN SMALL LETTER	00E4
-A WITH DOT ABOVE, LATIN SMALL LETTER	0227
-A WITH DOT BELOW, LATIN SMALL LETTER	1EA1
-A WITH DOUBLE GRAVE, LATIN SMALL LETTER	0201
-A WITH GRAVE, LATIN CAPITAL LETTER	00C0
+If the plugin gives an error or does not complete anything, first check, that
+UnicodeData.txt from the Unicode Consortium has been successfully downloaded.
+It should be located below the autoload/unicode.vim script in a directory
+called unicode. So if you have installed unicode.vim into
+/home/user/.vim, UnicodeData.txt should be located at:
+/home/user/.vim/autoload/unicode/UnicodeData.txt and should look like this:
+
+0020;SPACE;Zs;0;WS;;;;;N;;;;;
+0021;EXCLAMATION MARK;Po;0;ON;;;;;N;;;;;
+0022;QUOTATION MARK;Po;0;ON;;;;;N;;;;;
+0023;NUMBER SIGN;Po;0;ET;;;;;N;;;;;
+0024;DOLLAR SIGN;Sc;0;ET;;;;;N;;;;;
+0025;PERCENT SIGN;Po;0;ET;;;;;N;;;;;
+0026;AMPERSAND;Po;0;ON;;;;;N;;;;;
+0027;APOSTROPHE;Po;0;ON;;;;;N;APOSTROPHE-QUOTE;;;;
+0028;LEFT PARENTHESIS;Ps;0;ON;;;;;Y;OPENING PARENTHESIS;;;;
+0029;RIGHT PARENTHESIS;Pe;0;ON;;;;;Y;CLOSING PARENTHESIS;;;;
 [...]
 (several thounsand lines following)
-
-elinks is known to mangle that file and make it unusable, so please check
-first if the format is right.
 
 If the file looks correct, and the plugin is still not working correctly
 contact the maintainer. You'll find his email-adress in the first line of this
@@ -134,13 +118,20 @@ CTRL-X CTRL-C		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
+    0.6: Aug 26, 2010:  - many small bugfixes with regard to error-handling
+                          and error displaying
+                        - use default netrw_http_cmd (instead of hardwiring
+			  wget)
+			- small documentation update (Inlude a snippet of
+			  UnicodeData.txt and get rid of Index.txt data)
+    0.5: Apr 19, 2010:  Created a public repository for this plugin at
+			    http://github.com/chrisbra/unicode.vim
+    0.4: Feb 01, 2010:  Use UnicodeData.txt to generate Data
+                        (Index.txt does not contain all glyphs).
+			Check for empty file UnicodeData.txt
     0.3: Oct 27, 2009:	Digraph Completion
     0.2: Oct 22, 2009:	Enabled GetLatestScripts (|GLVS|)
     0.1: Oct 22, 2009:	First working version
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help
-
- 
-# Vim-Modeline:
-# vim: tw=72 spell spelllang=en

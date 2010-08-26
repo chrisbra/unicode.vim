@@ -1,7 +1,7 @@
 *unicode.txt* A completion plugin for Unicode glyphs
 
 Author:  Christian Brabandt <cb@256bit.org>
-Version: 0.5 Mon, 19 Apr 2010 23:00:18 +0200
+Version: 0.6 Thu, 26 Aug 2010 13:59:16 +0200
 Copyright: (c) 2009, 2010 by Christian Brabandt 	    *unicode-copyright*
            The VIM LICENSE applies to unicode.vim and unicode.txt
            (see |copyright|) except use unicode instead of "Vim".
@@ -77,9 +77,13 @@ To force downloading the file from that new url, enter
 :call unicode#CheckUniFile(1)
 
 						     *unicode-plugin-error*
-If the plugin gives an error, first check, that UnicodeData.txt from the
-Unicode Consortium has been successfully downloaded. It should look something
-like this:
+If the plugin gives an error or does not complete anything, first check, that
+UnicodeData.txt from the Unicode Consortium has been successfully downloaded.
+It should be located below the autoload/unicode.vim script in a directory
+called unicode. So if you have installed unicode.vim into
+/home/user/.vim, UnicodeData.txt should be located at:
+/home/user/.vim/autoload/unicode/UnicodeData.txt and should look like this:
+
 0020;SPACE;Zs;0;WS;;;;;N;;;;;
 0021;EXCLAMATION MARK;Po;0;ON;;;;;N;;;;;
 0022;QUOTATION MARK;Po;0;ON;;;;;N;;;;;
@@ -92,9 +96,6 @@ like this:
 0029;RIGHT PARENTHESIS;Pe;0;ON;;;;;Y;CLOSING PARENTHESIS;;;;
 [...]
 (several thounsand lines following)
-
-elinks is known to mangle that file and make it unusable, so please check
-first if the format is right.
 
 If the file looks correct, and the plugin is still not working correctly
 contact the maintainer. You'll find his email-adress in the first line of this
@@ -117,6 +118,12 @@ CTRL-X CTRL-C		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
+    0.6: Aug 26, 2010:  - many small bugfixes with regard to error-handling
+                          and error displaying
+                        - use default netrw_http_cmd (instead of hardwiring
+			  wget)
+			- small documentation update (Inlude a snippet of
+			  UnicodeData.txt and get rid of Index.txt data)
     0.5: Apr 19, 2010:  Created a public repository for this plugin at
 			    http://github.com/chrisbra/unicode.vim
     0.4: Feb 01, 2010:  Use UnicodeData.txt to generate Data

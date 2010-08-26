@@ -1,13 +1,13 @@
 " unicodePlugin : A completion plugin for Unicode glyphs
 " Author: C.Brabandt <cb@256bit.org>
-" Version: 0.5
+" Version: 0.6
 " Copyright: (c) 2009 by Christian Brabandt
 "            The VIM LICENSE applies to unicode.vim, and unicode.txt
 "            (see |copyright|) except use "unicode" instead of "Vim".
 "            No warranty, express or implied.
 "  *** ***   Use At-Your-Own-Risk!   *** ***
 "
-" GetLatestVimScripts: 2822 5 :AutoInstall: unicode.vim
+" GetLatestVimScripts: 2822 6 :AutoInstall: unicode.vim
 
 " ---------------------------------------------------------------------
 
@@ -25,57 +25,60 @@ let s:file=matchstr(s:unicode_URL, '[^/]*$')
 let s:directory  = expand("<sfile>:p:h")."/unicode"
 let s:UniFile    = s:directory . '/UnicodeData.txt'
 
-let s:debug = 0
+fun! <sid>WarningMsg(msg)"{{{1
+        echohl WarningMsg
+        let msg = "UnicodePlugin: " . a:msg
+        if exists(":unsilent") == 2
+                unsilent echomsg msg
+        else
+                echomsg msg
+        endif
+        echohl Normal
+endfun
 
-fu! unicode#CheckUniFile(force)"{{{
+fu! unicode#CheckUniFile(force) "{{{1
     if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
-	echohl WarningMsg
-	echomsg "File " . s:UniFile . " does not exist or is zero."
-	echomsg "Let's see, if we can download it."
-	echomsg "If this doesn't work, you should download "
-	echomsg s:unicode_URL . " and save it as " . s:UniFile
-	echohl Normal
-	if exists(":Nread")
-	    try
-		sp +enew
-		"It seems like when netrw uses elinks, the file is downloaded 
-		"corrupted. Therefore download Index.txt using wget
-		exe ":lcd " . s:directory
-		let g:netrw_http_cmd="wget"
-		exe "0Nread " . s:unicode_URL
-		if getfsize(s:UniFile)==0
-		    throw "Error downloading ".s:UniFile
+		call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
+		call s:WarningMsg("Let's see, if we can download it.")
+		call s:WarningMsg("If this doesn't work, you should download ")
+		call s:WarningMsg(s:unicode_URL . " and save it as " . s:UniFile)
+		sleep 10
+		if exists(":Nread")
+			sp +enew
+			" Use the default download method. You can specify a different one,
+			" using :let g:netrw_http_cmd="wget"
+			exe ":lcd " . s:directory
+			exe "0Nread " . s:unicode_URL
+			$d _
+			exe ":w!" . s:UniFile
+			if getfsize(s:UniFile)==0
+				call s:WarningMsg("Error fetching Unicode File from " . s:unicode_URL)
+				return 0
+			endif
+			bw
+		else
+			call s:WarningMsg("Please download " . s:unicode_URL)
+			call s:WarningMsg("and save it as " . s:UniFile)
+			call s:WarningMsg("Quitting")
+			return 0
 		endif
-	    catch
-		echoerr "Error fetching Unicode File from " . s:unicode_URL
-		return 0
-	    endtry
-	    $d
-	    exe ":w!" . s:UniFile
-	    bw
-	else
-	    echoerr "Please download " . s:unicode_URL
-	    echoerr "and save it as " . s:UniFile
-	    echoerr "Quitting"
-	    return 0
-	endif
     endif
     return 1
-endfu"}}}
+endfu
 
-fu! unicode#CheckDir()"{{{
-    if (!isdirectory(s:directory))
-	try
-	    call mkdir(s:directory)
-	catch
-	    echoer "Error creating Directory: " . s:directory
-	    return 0
-	endtry
-    endif
+fu! unicode#CheckDir() "{{{1
+    try
+		if (!isdirectory(s:directory))
+			call mkdir(s:directory)
+		endif
+    catch
+		call s:WarningMsg("Error creating Directory: " . s:directory)
+		return 0
+    endtry
     return unicode#CheckUniFile(0)
-endfu"}}}
+endfu
 
-fu! unicode#UnicodeDict()"{{{
+fu! unicode#UnicodeDict() "{{{1
     let dict={}
     let list=readfile(s:UniFile)
     for glyph in list
@@ -87,9 +90,9 @@ fu! unicode#UnicodeDict()"{{{
     endfor
 "    let dict=filter(dict, 'v:key !~ "Control Code"')
     return dict
-endfu"}}}
+endfu
 
-fu! unicode#CompleteUnicode(findstart,base)
+fu! unicode#CompleteUnicode(findstart,base) "{{{1
   if !exists("s:numeric")
       let s:numeric=0
   endif
@@ -140,7 +143,7 @@ fu! unicode#CompleteUnicode(findstart,base)
   endif
 endfu
 
-fu! unicode#GetDigraph()
+fu! unicode#GetDigraph() "{{{1
     redir => digraphs
 	silent digraphs
     redir END
@@ -154,7 +157,7 @@ fu! unicode#GetDigraph()
     return dlist
 endfu
 
-fu! unicode#GetDigraphChars(code)
+fu! unicode#GetDigraphChars(code) "{{{1
     let dlist = unicode#GetDigraph()
     let ddict = {}
     for digraph in dlist
@@ -165,7 +168,7 @@ fu! unicode#GetDigraphChars(code)
     return get(ddict, a:code, '')
 endfu
 
-fu! unicode#CompleteDigraph()
+fu! unicode#CompleteDigraph() "{{{1
    let prevchar=getline('.')[col('.')-2]
    let dlist=unicode#GetDigraph()
    if prevchar !~ '\s' && !empty(prevchar)
@@ -187,17 +190,11 @@ fu! unicode#CompleteDigraph()
    return ''
 endfu
 
-
-"com! Digraph for i in unicode#GetDigraph() | echo i | endfor
-
-
-
-fu! unicode#CompareList(l1, l2)
+fu! unicode#CompareList(l1, l2) "{{{1
     return a:l1[1] == a:l2[1] ? 0 : a:l1[1] > a:l2[1] ? 1 : -1
 endfu
 
-
-fu! unicode#Init(enable)
+fu! unicode#Init(enable) "{{{1
     if a:enable
 	let b:oldfunc=&l:cfu
 	if (unicode#CheckDir())
@@ -215,3 +212,6 @@ fu! unicode#Init(enable)
 	echo "Unicode Completion " . (a:enable?'ON':'OFF')
     endif
 endfu
+
+" Modeline "{{{1
+" vim: ts=4 sts=4 fdm=marker com+=l\:\" fdl=0
