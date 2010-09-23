@@ -1,7 +1,7 @@
 *unicode.txt* A completion plugin for Unicode glyphs
 
 Author:  Christian Brabandt <cb@256bit.org>
-Version: 0.6 Thu, 26 Aug 2010 13:59:16 +0200
+Version: 0.7 Thu, 23 Sep 2010 23:01:51 +0200
 Copyright: (c) 2009, 2010 by Christian Brabandt 	    *unicode-copyright*
            The VIM LICENSE applies to unicode.vim and unicode.txt
            (see |copyright|) except use unicode instead of "Vim".
@@ -27,9 +27,11 @@ located.
 
 
 						 *:EnableUnicodeCompletion*
-By default the plugin is not enabled. To enable it enter
-:EnableUnicodeCompletion
-When you run this command, *unicode.vim* checks for the availability of
+By default the plugin is not enabled. To enable it enter: >
+
+    :EnableUnicodeCompletion
+
+When you run this command, unicode.vim checks for the availability of
 UnicodeData.txt from the Unicode Consortium, and if it is not available,
 it will try to download it. 
 
@@ -37,8 +39,18 @@ This will also set up the completion function |completefunc| to use for your
 buffer. You can use |i_CTRL-X_CTRL-U| then to start the completion. 
 
 						 *:DisableUnicodeCompletion*
-If you want to disable the plugin, enter
-:DisableUnicodeCompletion
+If you want to disable the plugin, enter >
+
+    :DisableUnicodeCompletion
+<
+	 						 *:UnicodeName*
+Suppose, you want to know, what the Unicode Name for the Character under the
+cursor is. You simply enter the ex command: >
+
+    :UnicodeName
+
+The plugin will then output the character, the character's decimal value and
+the official Unicode name.
 
 ==============================================================================
 						    *unicode-plugin-usage*
@@ -63,18 +75,33 @@ pressing <C-N> and up by pressing <C-P>.
 The plugin can be customized to include the 2 digraph characters you have to
 type, to get that character. This works only, if there is a digraph defined
 for that Unicode char. If you would like this you need to set
-g:showDigraphCode, e.g.
-:let g:showDigraphCode=1
+g:showDigraphCode, e.g. >
+
+    :let g:showDigraphCode=1
+
 This functionality is by default disabled, cause it seems to cause some delay
-and screen-rendering errors in the menu. Enter
-:let g:showDigraphCode=0
+and screen-rendering errors in the menu. Enter >
+
+    :let g:showDigraphCode=0
+
 to disable the Digraph feature afterwards.
 
 If you would like to specify a different URL from which to download
-UnicodeData.txt, enter the URL as:
-:let g:unicode_URL='http:....'
-To force downloading the file from that new url, enter
-:call unicode#CheckUniFile(1)
+UnicodeData.txt, enter the URL as: >
+
+    :let g:unicode_URL='http:....'
+
+To force downloading the file from that new url, enter >
+
+    :call unicode#CheckUniFile(1)
+
+If you'd like Unicode completion to be always enabled, you can set the
+variable g:enableUnicodeCompletion to 1 in your |.vimrc| like this: >
+
+     let g:enableUnicodeCompletion = 1
+<
+Thus, you won't need to use EnableUnicodeCompletion, it will be already
+available.
 
 						     *unicode-plugin-error*
 If the plugin gives an error or does not complete anything, first check, that
@@ -118,6 +145,9 @@ CTRL-X CTRL-C		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
+    0.7: Sep 23, 2010:  - |:UnicodeName|
+                        - specify g:enableUnicodeCompletion to have unicode
+			  completion always enabled.
     0.6: Aug 26, 2010:  - many small bugfixes with regard to error-handling
                           and error displaying
                         - use default netrw_http_cmd (instead of hardwiring
