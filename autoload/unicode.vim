@@ -82,10 +82,10 @@ fu! unicode#UnicodeDict() "{{{1
     let dict={}
     let list=readfile(s:UniFile)
     for glyph in list
-	let val          = split(glyph, ";")
-	let U1Name       = val[10]
-	let U1Name       = (!empty(U1Name)?' ('.U1Name.')':'')
-	let Name         = val[1]
+		let val          = split(glyph, ";")
+		let U1Name       = val[10]
+		let U1Name       = (!empty(U1Name)?' ('.U1Name.')':'')
+		let Name         = val[1]
         let dict[Name]   = str2nr(val[0],16)
     endfor
 "    let dict=filter(dict, 'v:key !~ "Control Code"')
@@ -145,7 +145,7 @@ endfu
 
 fu! unicode#GetDigraph() "{{{1
     redir => digraphs
-	silent digraphs
+		silent digraphs
     redir END
     let dlist=[]
     let dlist=map(split(substitute(digraphs, "\n", ' ', 'g'), '..\s<\?.\{1,2\}>\?\s\+\d\{1,5\}\zs'), 'substitute(v:val, "^\\s\\+", "", "")')
@@ -161,9 +161,9 @@ fu! unicode#GetDigraphChars(code) "{{{1
     let dlist = unicode#GetDigraph()
     let ddict = {}
     for digraph in dlist
-	let key=matchstr(digraph, '\d\+$')+0
-	let val=split(digraph)
-	let ddict[key] = val[0]
+		let key=matchstr(digraph, '\d\+$')+0
+		let val=split(digraph)
+		let ddict[key] = val[0]
     endfor
     return get(ddict, a:code, '')
 endfu
@@ -196,22 +196,58 @@ endfu
 
 fu! unicode#Init(enable) "{{{1
     if a:enable
-	let b:oldfunc=&l:cfu
-	if (unicode#CheckDir())
-	    let s:UniDict = unicode#UnicodeDict()
-	    setl completefunc=unicode#CompleteUnicode
-	    set completeopt+=menuone
-	    inoremap <C-X><C-C> <C-R>=unicode#CompleteDigraph()<CR>
-	    echo "Unicode Completion " . (a:enable?'ON':'OFF')
-	endif
+		let b:oldfunc=&l:cfu
+		if (unicode#CheckDir())
+			let s:UniDict = unicode#UnicodeDict()
+			setl completefunc=unicode#CompleteUnicode
+			set completeopt+=menuone
+			inoremap <C-X><C-C> <C-R>=unicode#CompleteDigraph()<CR>
+		endif
     else
-	if !empty(b:oldfunc)
-	    let &l:cfu=b:oldfunc
-	endif
-	unlet s:UniDict
-	echo "Unicode Completion " . (a:enable?'ON':'OFF')
+		if !empty(b:oldfunc)
+			let &l:cfu=b:oldfunc
+		endif
+		unlet s:UniDict
     endif
+	echo "Unicode Completion " . (a:enable?'ON':'OFF')
 endfu
+
+fu! unicode#GetUniChar() "{{{1
+	if !exists("s:UniDict")
+		let s:UniDict=unicode#UnicodeDict()
+	endif
+	" Save unnamed register
+	let reg=getreg('"',1)
+	let regtype = getregtype('"')
+    
+	" Get glyph at Cursor
+	norm! yl
+	let glyph=@"
+
+	" CJK Unigraphs start at U+4E00 and go until U+9FF
+	let cjk_start = 0x4E00
+	let cjk_end   = 0x9FFF
+
+	if char2nr(glyph) >= cjk_start &&
+	\  char2nr(glyph) <= cjk_end
+		echohl Title
+		echo printf("%s Decimal: %d CJK Ideograph", glyph, char2nr(glyph))
+		echohl Normal
+	else
+
+		for [key, value] in items(s:UniDict)
+			if value == char2nr(glyph)
+				echohl Title
+				echo printf("%s Decimal: %d Name: %s", glyph, value, key)
+				echohl Normal
+				break
+			endif
+		endfor
+	endif
+
+	" Restore old register contents
+	call setreg('"',reg, regtype)
+endfun
 
 " Modeline "{{{1
 " vim: ts=4 sts=4 fdm=marker com+=l\:\" fdl=0
