@@ -1,13 +1,13 @@
 " unicodePlugin : A completion plugin for Unicode glyphs
 " Author: C.Brabandt <cb@256bit.org>
-" Version: 0.7
+" Version: 0.8
 " Copyright: (c) 2009 by Christian Brabandt
 "            The VIM LICENSE applies to unicode.vim, and unicode.txt
 "            (see |copyright|) except use "unicode" instead of "Vim".
 "            No warranty, express or implied.
 "  *** ***   Use At-Your-Own-Risk!   *** ***
 "
-" GetLatestVimScripts: 2822 7 :AutoInstall: unicode.vim
+" GetLatestVimScripts: 2822 8 :AutoInstall: unicode.vim
 
 " ---------------------------------------------------------------------
 
@@ -103,40 +103,41 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
       let start -= 1
     endwhile
     if line[start] =~# 'U' && line[start+1] == '+' && col('.')-1 >=start+2
-	let s:numeric=1
+		let s:numeric=1
     else
-	let s:numeric=0
+		let s:numeric=0
     endif
     return start
   else
     if exists("g:showDigraphCode")
-	let s:showDigraphCode=g:showDigraphCode
+		let s:showDigraphCode=g:showDigraphCode
     else
-	let s:showDigraphCode = 0
+		let s:showDigraphCode = 0
     endif
     "let glyphs=unicode#UnicodeDict()
     if s:numeric
-	let complete_list = filter(copy(s:UniDict), 'printf("%04X", v:val) =~? "^0*".a:base[2:]')
+		let complete_list = filter(copy(s:UniDict), 'printf("%04X", v:val) =~? "^0*".a:base[2:]')
     else
-	let complete_list = filter(copy(s:UniDict), 'v:key =~? a:base')
+		let complete_list = filter(copy(s:UniDict), 'v:key =~? a:base')
     endif
     for [key, value] in sort(items(complete_list), "unicode#CompareList")
     	"let key=matchstr(key, "^[^0-9 ]*")
+		let dg_char=unicode#GetDigraphChars(value)
         if s:showDigraphCode
-	    let dg_char=unicode#GetDigraphChars(value)
-	    if !empty(dg_char)
-		let fstring=printf("U+%04X %s (%s):%s", value, key, dg_char, nr2char(value))
-	    else
-		let fstring=printf("U+%04X %s:%s", value, key, nr2char(value))
-	    endif
-	else
-	    let fstring=printf("U+%04X %s:%s", value, key, nr2char(value))
-	endif
+			if !empty(dg_char)
+				let fstring=printf("U+%04X %s (%s):'%s'", value, key, dg_char, nr2char(value))
+			else
+			let fstring=printf("U+%04X %s:%s", value, key, nr2char(value))
+			endif
+		else
+			let fstring=printf("U+%04X %s:'%s'", value, key, nr2char(value))
+		endif
+		let istring=printf("U+%04X %s%s:'%s'", value, key, empty(dg_char) ? '' : '('.dg_char.')', nr2char(value))
 	    
-    	call complete_add({'word':nr2char(value), 'abbr':fstring})
-	if complete_check()
-	  break
-	endif
+    	call complete_add({'word':nr2char(value), 'abbr':fstring, 'info': istring})
+		if complete_check()
+			break
+		endif
     endfor
     	
     return {}
@@ -180,10 +181,11 @@ fu! unicode#CompleteDigraph() "{{{1
    let tlist=[]
    for args in dlist
        let t=matchlist(args, '^\(..\)\s<\?\(..\?\)>\?\s\+\(\d\+\)$')
-       echo args
+       "echo args
        "if !empty(t)
-	   let format=printf("%s %s U+%05d",t[1], t[2], t[3])
-	   call add(tlist, {'word':nr2char(t[3]), 'abbr':format})
+	   let format=printf("'%s' %s U+%04X",t[1], t[2], t[3])
+	   call add(tlist, {'word':nr2char(t[3]), 'abbr':format,
+				   \'info': printf("Abbrev\tGlyph\tCodepoint\n%s\t%s\tU+%04X",t[1],t[2],t[3])})
        "endif
    endfor
    call complete(col, tlist)
@@ -201,7 +203,7 @@ fu! unicode#Init(enable) "{{{1
 			let s:UniDict = unicode#UnicodeDict()
 			setl completefunc=unicode#CompleteUnicode
 			set completeopt+=menuone
-			inoremap <C-X><C-C> <C-R>=unicode#CompleteDigraph()<CR>
+			inoremap <C-X><C-G> <C-R>=unicode#CompleteDigraph()<CR>
 		endif
     else
 		if !empty(b:oldfunc)
@@ -224,21 +226,18 @@ fu! unicode#GetUniChar() "{{{1
 	norm! yl
 	let glyph=@"
 
-	" CJK Unigraphs start at U+4E00 and go until U+9FF
-	let cjk_start = 0x4E00
-	let cjk_end   = 0x9FFF
-
-	if char2nr(glyph) >= cjk_start &&
-	\  char2nr(glyph) <= cjk_end
+	" CJK Unigraphs start at U+4E00 and go until U+9FFF
+	if char2nr(glyph) >= 0x4E00 &&
+	\  char2nr(glyph) <= 0x9FFF
 		echohl Title
-		echo printf("%s Decimal: %d CJK Ideograph", glyph, char2nr(glyph))
+		echo printf("'%s' U+%04X CJK Ideograph", glyph, char2nr(glyph))
 		echohl Normal
 	else
 
 		for [key, value] in items(s:UniDict)
 			if value == char2nr(glyph)
 				echohl Title
-				echo printf("%s Decimal: %d Name: %s", glyph, value, key)
+				echo printf("'%s' U+%04X %s", glyph, value, key)
 				echohl Normal
 				break
 			endif

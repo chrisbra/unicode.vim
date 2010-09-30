@@ -1,7 +1,7 @@
 *unicode.txt* A completion plugin for Unicode glyphs
 
 Author:  Christian Brabandt <cb@256bit.org>
-Version: 0.7 Thu, 23 Sep 2010 23:01:51 +0200
+Version: 0.8 Thu, 30 Sep 2010 20:55:43 +0200
 Copyright: (c) 2009, 2010 by Christian Brabandt 	    *unicode-copyright*
            The VIM LICENSE applies to unicode.vim and unicode.txt
            (see |copyright|) except use unicode instead of "Vim".
@@ -49,8 +49,8 @@ cursor is. You simply enter the ex command: >
 
     :UnicodeName
 
-The plugin will then output the character, the character's decimal value and
-the official Unicode name.
+The plugin will then output the character, the character's hexadecimal value
+and the official Unicode name.
 
 ==============================================================================
 						    *unicode-plugin-usage*
@@ -71,6 +71,12 @@ it can also show you the digraph characters needed to create this character in
 paranthesis, see |unicode-plugin-config| ). You can scroll down in the menu by
 pressing <C-N> and up by pressing <C-P>.
 
+Regardless, of you configured the plugin to display the digraph shortcut in
+the menu, a |preview-window| will be opened, if your Vim was compiled with the
+quickfix-feature and the preview window displays the hexadecimal Unicode
+Codepoint, the name, the digraph characters in parenthesis (if they exist)
+followed by the glyph itself.
+
 						    *unicode-plugin-config*
 The plugin can be customized to include the 2 digraph characters you have to
 type, to get that character. This works only, if there is a digraph defined
@@ -80,7 +86,9 @@ g:showDigraphCode, e.g. >
     :let g:showDigraphCode=1
 
 This functionality is by default disabled, cause it seems to cause some delay
-and screen-rendering errors in the menu. Enter >
+and screen-rendering errors in the menu. However, the preview window will
+always show the digraph character in parenthesis. 
+Enter >
 
     :let g:showDigraphCode=0
 
@@ -130,13 +138,14 @@ document. Please be patient, it might take a while, until I can take care of
 your report.
 
 ==============================================================================
-					*i_CTRL-X_CTRL-C* *digraph-completion*
+					*i_CTRL-X_CTRL-G* *digraph-completion*
 3. Completing digraphs
 
-CTRL-X CTRL-C		Search for the character in front of the cursor and
+CTRL-X CTRL-G		Search for the character in front of the cursor and
 			try to complete this letter using a digraph. If there
 			is no letter in front of the cursor, a list with all
 			available digraphs is shown in a popup menu.
+			(Think of Glyph)
        CTRL-N           Use next match. This match replaces the previous
 			match.
        CTRL-P           Use previous match. This match replaces the previous
@@ -145,6 +154,17 @@ CTRL-X CTRL-C		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
+    0.8: Sep 30, 2010:  - Fix an issue with configuring the plugin (Thanks jgm)
+			- Code cleanup
+			- Make use of the preview window, when completing
+			  Digraph or Unicode Glyphs
+			- By default, the Digraph Glyphs will now be enabled
+			  using |i_Ctrl-X_CTRL-G| instead of using
+			  Ctrl-X_Ctrl-C which wouldn't work in a terminal
+			- |:UnicodeName| now displays the hexadecimal Unicode
+			  Codepoint instead of the decimal one (as this seems
+			  to be the official way to display unicode
+			  codepoints).
     0.7: Sep 23, 2010:  - |:UnicodeName|
                         - specify g:enableUnicodeCompletion to have unicode
 			  completion always enabled.
