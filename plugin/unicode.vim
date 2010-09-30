@@ -19,7 +19,7 @@ let g:loaded_unicodePlugin = 1
 let s:keepcpo              = &cpo
 set cpo&vim
 
-let s:enableUnicodeCompletion = (exists("g:enableUnicodeCompletion") ? g:EnableUnicodeCompletion : 0)
+let s:enableUnicodeCompletion = (exists("g:enableUnicodeCompletion") ? g:enableUnicodeCompletion : 0)
 " ------------------------------------------------------------------------------
 " Public Interface: {{{1
 com! EnableUnicodeCompletion call unicode#Init(1)
