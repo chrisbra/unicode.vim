@@ -1,13 +1,13 @@
 " unicodePlugin : A completion plugin for Unicode glyphs
 " Author: C.Brabandt <cb@256bit.org>
-" Version: 0.8
+" Version: 0.9
 " Copyright: (c) 2009 by Christian Brabandt
 "            The VIM LICENSE applies to unicode.vim, and unicode.txt
 "            (see |copyright|) except use "unicode" instead of "Vim".
 "            No warranty, express or implied.
 "  *** ***   Use At-Your-Own-Risk!   *** ***
 "
-" GetLatestVimScripts: 2822 8 :AutoInstall: unicode.vim
+" GetLatestVimScripts: 2822 9 :AutoInstall: unicode.vim
 
 " ---------------------------------------------------------------------
 
@@ -214,38 +214,52 @@ fu! unicode#Init(enable) "{{{1
 	echo "Unicode Completion " . (a:enable?'ON':'OFF')
 endfu
 
+fu <sid>OutputMessage(msg) " {{{1
+	echohl Title
+	echo a:msg
+	echohl Normal
+endfu
+
 fu! unicode#GetUniChar() "{{{1
-	if !exists("s:UniDict")
-		let s:UniDict=unicode#UnicodeDict()
-	endif
-	" Save unnamed register
-	let reg=getreg('"',1)
-	let regtype = getregtype('"')
-    
-	" Get glyph at Cursor
-	norm! yl
-	let glyph=@"
+	if (unicode#CheckDir())
+		if !exists("s:UniDict")
+			let s:UniDict=unicode#UnicodeDict()
+		endif
 
-	" CJK Unigraphs start at U+4E00 and go until U+9FFF
-	if char2nr(glyph) >= 0x4E00 &&
-	\  char2nr(glyph) <= 0x9FFF
-		echohl Title
-		echo printf("'%s' U+%04X CJK Ideograph", glyph, char2nr(glyph))
-		echohl Normal
-	else
+		" Get glyph at Cursor
+		" need to use redir, cause we also want to capture combining chars
+		redir => a | exe "silent norm! ga" | redir end 
+		let a = substitute(a, '\n', '', 'g')
+		" Special case: no character under cursor
+        if a == 'NUL'
+			call <sid>OutputMessage("No character under cursor!")
+			return
+		endif
+		" Split string, in case cursor was on a combining char
+		for item in split(a, 'Octal \d\+\zs \?')
 
-		for [key, value] in items(s:UniDict)
-			if value == char2nr(glyph)
-				echohl Title
-				echo printf("'%s' U+%04X %s", glyph, value, key)
-				echohl Normal
-				break
+			let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
+			let dec   = substitute(item, '^[^>]*>\?> \+\(\d\+\),.*', '\1', '')
+			" Check for control char (has no name)
+			if dec <= 0x1F || ( dec >= 0x7F && dec <= 0x9F)
+				call <sid>OutputMessage(printf("'%s' U+%04X <Control Char>", glyph, dec))
+			" CJK Unigraphs start at U+4E00 and go until U+9FFF
+			elseif dec >= 0x4E00 && dec <= 0x9FFF
+				call <sid>OutputMessage(
+					\printf("'%s' U+%04X CJK Ideograph", glyph, dec))
+			else
+				for [key, value] in items(s:UniDict)
+					if value == dec
+						call <sid>OutputMessage(
+							\printf("'%s' U+%04X %s", glyph, value, key))
+						break
+					endif
+				endfor
 			endif
 		endfor
+	else
+		call <sid>WarningMsg("Can't determine char under cursor!")
 	endif
-
-	" Restore old register contents
-	call setreg('"',reg, regtype)
 endfun
 
 " Modeline "{{{1
