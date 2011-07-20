@@ -3,5 +3,8 @@ vim_passfile
 .*.un~
 # ignore swap files
 .*.sw*
+.sw*
 # ignore vimball files
 *.vba
+# ignore .orig files
+*.orig
