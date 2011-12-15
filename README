@@ -1,7 +1,7 @@
 *unicode.txt* A completion plugin for Unicode glyphs
 
 Author:  Christian Brabandt <cb@256bit.org>
-Version: 0.9 Wed, 20 Jul 2011 22:17:26 +0200
+Version: 0.10 Thu, 15 Dec 2011 15:39:39 +0100
 Copyright: (c) 2009, 2010 by Christian Brabandt 	    *unicode-copyright*
            The VIM LICENSE applies to unicode.vim and unicode.txt
            (see |copyright|) except use unicode instead of "Vim".
@@ -111,6 +111,14 @@ variable g:enableUnicodeCompletion to 1 in your |.vimrc| like this: >
 Thus, you won't need to use EnableUnicodeCompletion, it will be already
 available.
 
+If you only want to complete the Unicode Names instead of the glyphs,
+you can either set the global variable >
+
+    let g:unicode_complete_name = 1
+<
+or you can use the mapping <leader>un which swaps the completion function
+between completing the unicode name and completing the unicode glyph.
+
 						     *unicode-plugin-error*
 If the plugin gives an error or does not complete anything, first check, that
 UnicodeData.txt from the Unicode Consortium has been successfully downloaded.
@@ -154,6 +162,9 @@ CTRL-X CTRL-G		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
+    0.10: Dec 15, 2011  - enable completing of only the names
+			- Really disable the 'completefunc' when disabling
+			  the function
     0.9: Jul 20, 2011:  - |:UnicodeName| checks for existence of
 			  UnicodeData.txt
 			- |:UnicodeName| now also detects combined chars
