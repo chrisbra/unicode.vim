@@ -20,13 +20,23 @@ sub GetPassword() {
 my $sid=2822;
 my $file;
 my @files=glob('*.vba');
-my $scriptversion=shift @ARGV;
+#my $scriptversion=shift @ARGV;
+my $scriptversion = 0;
 my $versioncomment=shift @ARGV;
+unless ($versioncomment){
+	print "Please enter comment!\n";
+	exit;
+}
+$versioncomment.="\n(automatically uploaded)";
 
 
 my @userpasswordpair = GetPassword();
 for (@files) {
-	$file = $_ if [ -f $_ ] && $_ =~ /\w+.vba/;
+	my $f = $_ if [ -f $_ ] && $_ =~ /\w+-[^.]+\.(\d+)\.vba/;
+	if ($1 > $scriptversion) {
+		$scriptversion=$1;
+		$file = $f;
+	}
 }
 
 my $mech=WWW::Mechanize->new(autocheck => 1);
