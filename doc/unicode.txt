@@ -111,6 +111,14 @@ variable g:enableUnicodeCompletion to 1 in your |.vimrc| like this: >
 Thus, you won't need to use EnableUnicodeCompletion, it will be already
 available.
 
+If you only want to complete the Unicode Names instead of the glyphs,
+you can either set the global variable >
+
+    let g:unicode_complete_name = 1
+<
+or you can use the mapping <leader>un which swaps the completion function
+between completing the unicode name and completing the unicode glyph.
+
 						     *unicode-plugin-error*
 If the plugin gives an error or does not complete anything, first check, that
 UnicodeData.txt from the Unicode Consortium has been successfully downloaded.
@@ -154,6 +162,9 @@ CTRL-X CTRL-G		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
+    (unreleased)        - enable completing of only the names
+			- Really disable the 'completefunc' when disabling
+			  the function
     0.9: Jul 20, 2011:  - |:UnicodeName| checks for existence of
 			  UnicodeData.txt
 			- |:UnicodeName| now also detects combined chars
