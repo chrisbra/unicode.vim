@@ -162,6 +162,7 @@ CTRL-X CTRL-G		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
+    0.11: (unreleased)  - prevent loading of autoload file too early
     0.10: Dec 15, 2011  - enable completing of only the names
 			- Really disable the 'completefunc' when disabling
 			  the function

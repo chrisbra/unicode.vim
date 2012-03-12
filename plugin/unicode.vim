@@ -27,7 +27,7 @@ com! DisableUnicodeCompletion call unicode#Init(0)
 com! UnicodeName call unicode#GetUniChar()
 
 if s:enableUnicodeCompletion
-    call unicode#Init(s:enableUnicodeCompletion)
+    exe "call unicode#Init(s:enableUnicodeCompletion)"
     "let s:enableUnicodeCompletion = !s:enableUnicodeCompletion
 endif
 
