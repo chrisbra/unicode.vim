@@ -1,7 +1,7 @@
 *unicode.txt* A completion plugin for Unicode glyphs
 
 Author:  Christian Brabandt <cb@256bit.org>
-Version: 0.10 Thu, 15 Dec 2011 15:39:39 +0100
+Version: 0.11 Wed, 11 Apr 2012 22:04:32 +0200
 Copyright: (c) 2009, 2010 by Christian Brabandt 	    *unicode-copyright*
            The VIM LICENSE applies to unicode.vim and unicode.txt
            (see |copyright|) except use unicode instead of "Vim".
@@ -162,6 +162,9 @@ CTRL-X CTRL-G		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
+    0.11: Apr 11, 2012  - prevent loading of autoload file too early
+			- Make matching digraph more error-prone
+			- show all matching digraphs for a char
     0.10: Dec 15, 2011  - enable completing of only the names
 			- Really disable the 'completefunc' when disabling
 			  the function
