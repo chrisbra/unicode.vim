@@ -177,7 +177,8 @@ fu! unicode#CompleteDigraph() "{{{1
    let prevchar=getline('.')[col('.')-2]
    let dlist=unicode#GetDigraph()
    if prevchar !~ '\s' && !empty(prevchar)
-       let dlist=filter(dlist, 'v:val =~ "^".prevchar')
+       let dlist=filter(dlist,
+			\ 'v:val[0] == prevchar || v:val[1] == prevchar')
        let col=col('.')-1
    else
        let col=col('.')
@@ -186,11 +187,12 @@ fu! unicode#CompleteDigraph() "{{{1
    for args in dlist
        let t=matchlist(args, '^\(..\)\s<\?\(..\?\)>\?\s\+\(\d\+\)$')
        "echo args
-       "if !empty(t)
-	   let format=printf("'%s' %s U+%04X",t[1], t[2], t[3])
-	   call add(tlist, {'word':nr2char(t[3]), 'abbr':format,
-				   \'info': printf("Abbrev\tGlyph\tCodepoint\n%s\t%s\tU+%04X",t[1],t[2],t[3])})
-       "endif
+       if !empty(t)
+		let format=printf("'%s' %s U+%04X",t[1], t[2], t[3])
+		call add(tlist, {'word':nr2char(t[3]), 'abbr':format,
+			\ 'info': printf("Abbrev\tGlyph\tCodepoint\n%s\t%s\tU+%04X",
+			\ t[1],t[2],t[3])})
+       endif
    endfor
    call complete(col, tlist)
    return ''
