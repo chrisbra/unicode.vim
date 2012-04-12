@@ -1,7 +1,7 @@
 *unicode.txt* A completion plugin for Unicode glyphs
 
 Author:  Christian Brabandt <cb@256bit.org>
-Version: 0.11 Wed, 11 Apr 2012 22:04:32 +0200
+Version: 0.12 Thu, 12 Apr 2012 20:57:43 +0200
 Copyright: (c) 2009, 2010 by Christian Brabandt 	    *unicode-copyright*
            The VIM LICENSE applies to unicode.vim and unicode.txt
            (see |copyright|) except use unicode instead of "Vim".
@@ -167,7 +167,7 @@ CTRL-X CTRL-G		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
-    0.12: (unreleased)  - |UnicodeName| shows digraph, if it exists
+    0.12: Apr 12, 2012  - |UnicodeName| shows digraph, if it exists
 			- better completion of digraphs
     0.11: Apr 11, 2012  - prevent loading of autoload file too early
 			- Make matching digraph more error-prone
