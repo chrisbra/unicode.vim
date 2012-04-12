@@ -175,11 +175,21 @@ endfu
 
 fu! unicode#CompleteDigraph() "{{{1
    let prevchar=getline('.')[col('.')-2]
+   let prevchar1=getline('.')[col('.')-3]
    let dlist=unicode#GetDigraph()
    if prevchar !~ '\s' && !empty(prevchar)
-       let dlist=filter(dlist,
-			\ 'v:val[0] == prevchar || v:val[1] == prevchar')
-       let col=col('.')-1
+	   let filter1 =  '( v:val[0] == prevchar1 && v:val[1] == prevchar)'
+	   let filter2 = 'v:val[0] == prevchar || v:val[1] == prevchar'
+
+	   let dlist1 = filter(copy(dlist), filter1)
+	   if empty(dlist1)
+		   let dlist = filter(dlist, filter2)
+		   let col=col('.')-1
+	   else
+		   let dlist = dlist1
+		   let col=col('.')-2
+	   endif
+	   unlet dlist1
    else
        let col=col('.')
    endif
@@ -242,6 +252,7 @@ fu! unicode#Init(enable) "{{{1
 endfu
 
 fu <sid>OutputMessage(msg) " {{{1
+	redraw
 	echohl Title
 	echo a:msg
 	echohl Normal
@@ -262,6 +273,7 @@ fu! unicode#GetUniChar() "{{{1
 			call <sid>OutputMessage("No character under cursor!")
 			return
 		endif
+		let dlist = unicode#GetDigraph()
 		" Split string, in case cursor was on a combining char
 		for item in split(a, 'Octal \d\+\zs \?')
 
@@ -277,8 +289,15 @@ fu! unicode#GetUniChar() "{{{1
 			else
 				for [key, value] in items(s:UniDict)
 					if value == dec
+						let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
+						if !empty(dig)
+							let dchar = printf("(%s)", dig[0][0:1])
+						else
+							let dchar = ''
+						endif
 						call <sid>OutputMessage(
-							\printf("'%s' U+%04X %s", glyph, value, key))
+							\ printf("'%s' U+%04X %s %s", glyph, value, key,
+							\ dchar))
 						break
 					endif
 				endfor
