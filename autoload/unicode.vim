@@ -278,7 +278,7 @@ fu! unicode#GetUniChar() "{{{1
 		for item in split(a, 'Octal \d\+\zs \?')
 
 			let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
-			let dec   = substitute(item, '^[^>]*>\?> \+\(\d\+\),.*', '\1', '')
+			let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
 			" Check for control char (has no name)
 			if dec <= 0x1F || ( dec >= 0x7F && dec <= 0x9F)
 				call <sid>OutputMessage(printf("'%s' U+%04X <Control Char>", glyph, dec))
