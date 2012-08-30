@@ -251,11 +251,10 @@ fu! unicode#Init(enable) "{{{1
 	echo "Unicode Completion " . (a:enable?'ON':'OFF')
 endfu
 
-fu <sid>OutputMessage(msg) " {{{1
+fu! <sid>OutputMessage(msg) " {{{1
 	redraw
-	echohl Title
-	echo a:msg
-	echohl Normal
+	" Save message in message history
+	echom a:msg
 endfu
 
 fu! unicode#GetUniChar() "{{{1
