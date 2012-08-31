@@ -132,79 +132,89 @@ fu! unicode#SwapCompletion() "{{{1
 endfu
 
 fu! unicode#Init(enable) "{{{1
-	if !exists("s:unicode_complete_name")
-		let s:unicode_complete_name = 0
-	endif
-    if a:enable
-		let b:oldfunc=&l:cfu
-		if (<sid>CheckDir())
-			let s:UniDict = <sid>UnicodeDict()
-			setl completefunc=unicode#CompleteUnicode
-			set completeopt+=menuone
-			inoremap <C-X><C-G> <C-R>=unicode#CompleteDigraph()<CR>
-			nnoremap <leader>un :call unicode#SwapCompletion()<CR>
-		endif
-    else
-		if !empty(b:oldfunc)
-			let &l:cfu=b:oldfunc
-		else
-			setl completefunc=
-		endif
-		unlet s:UniDict
-		nunmap <leader>un
-		iunmap <C-X><C-G>
+    if !exists("s:unicode_complete_name")
+	let s:unicode_complete_name = 0
     endif
-	echo "Unicode Completion " . (a:enable?'ON':'OFF')
+    if a:enable
+	let b:oldfunc=&l:cfu
+	if (<sid>CheckDir())
+	    let s:UniDict = <sid>UnicodeDict()
+	    setl completefunc=unicode#CompleteUnicode
+	    set completeopt+=menuone
+	    inoremap <C-X><C-G> <C-R>=unicode#CompleteDigraph()<CR>
+	    nnoremap <leader>un :call unicode#SwapCompletion()<CR>
+	endif
+    else
+	if exists("b:oldfunc") && !empty(b:oldfunc)
+	    let &l:cfu=b:oldfunc
+	else
+	    setl completefunc=
+	endif
+	unlet! s:UniDict
+	if maparg("<leader>un", 'n')
+	    nunmap <leader>un
+	endif
+	if maparg("<C-X><C-G>")
+	    iunmap <C-X><C-G>
+	endif
+    endif
+    echo "Unicode Completion " . (a:enable? 'ON' : 'OFF')
 endfu
 
 fu! unicode#GetUniChar() "{{{1
-	if (<sid>CheckDir())
-		if !exists("s:UniDict")
-			let s:UniDict=<sid>UnicodeDict()
-		endif
-
-		" Get glyph at Cursor
-		" need to use redir, cause we also want to capture combining chars
-		redir => a | exe "silent norm! ga" | redir end 
-		let a = substitute(a, '\n', '', 'g')
-		" Special case: no character under cursor
-        if a == 'NUL'
-			call <sid>OutputMessage("No character under cursor!")
-			return
-		endif
-		let msg = []
-		let dlist = <sid>GetDigraph()
-		" Split string, in case cursor was on a combining char
-		for item in split(a, 'Octal \d\+\zs \?')
-
-			let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
-			let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
-			" Check for control char (has no name)
-			if dec <= 0x1F || ( dec >= 0x7F && dec <= 0x9F)
-				call add(msg, printf("'%s' U+%04X <Control Char>", glyph, dec))
-			" CJK Unigraphs start at U+4E00 and go until U+9FFF
-			elseif dec >= 0x4E00 && dec <= 0x9FFF
-				call add(msg, printf("'%s' U+%04X CJK Ideograph", glyph, dec))
-			else
-				let dict = filter(copy(s:UniDict), 'v:val == dec')
-				if empty(dict)
-					" not found
-					continue
-				endif
-				let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
-				if !empty(dig)
-					let dchar = printf("(%s)", dig[0][0:1])
-				else
-					let dchar = ''
-				endif
-				call add(msg, printf("'%s' U+%04X %s %s", glyph, values(dict)[0],
-						\ keys(dict)[0], dchar))
-			endif
-		endfor
-		call <sid>OutputMessage(msg)
-	else
-		call <sid>WarningMsg("Can't determine char under cursor!")
+    if (<sid>CheckDir())
+	if !exists("s:UniDict")
+	    let s:UniDict=<sid>UnicodeDict()
 	endif
+	let msg = []
+
+	" Get glyph at Cursor
+	" need to use redir, cause we also want to capture combining chars
+	redir => a | exe "silent norm! ga" | redir end 
+	let a = substitute(a, '\n', '', 'g')
+	" Special case: no character under cursor
+        if a == 'NUL'
+	    call add(msg, "No character under cursor!")
+	    return
+	endif
+	let dlist = <sid>GetDigraph()
+	" Split string, in case cursor was on a combining char
+	for item in split(a, 'Octal \d\+\zs \?')
+
+	    let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
+	    let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
+	    " Check for control char (has no name)
+	    if dec <= 0x1F || ( dec >= 0x7F && dec <= 0x9F)
+		call add(msg, printf("'%s' U+%04X <Control Char>", glyph, dec))
+		" CJK Unigraphs start at U+4E00 and go until U+9FFF
+	    elseif dec >= 0x4E00 && dec <= 0x9FFF
+		call add(msg, printf("'%s' U+%04X CJK Ideograph", glyph, dec))
+	    elseif dec >= 0xF0000 && dec <= 0xFFFFD
+		call add(msg, printf("'%s' U+%04X character from Plane 15 for private use",
+			\ glyph, dec))
+	    elseif dec >= 0x100000 && dec <= 0x10FFFD
+		call add(msg, printf("'%s' U+%04X character from Plane 16 for private use",
+			\ glyph, dec))
+	    else
+		let dict = filter(copy(s:UniDict), 'v:val == dec')
+		if empty(dict)
+		" not found
+		    call add(msg, "Character '%s' U+%04X not found", glyph, dec)
+		endif
+		let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
+		if !empty(dig)
+		    let dchar = printf("(%s)", dig[0][0:1])
+		else
+		    let dchar = ''
+		endif
+		call add(msg, printf("'%s' U+%04X %s %s", glyph, values(dict)[0],
+		    \ keys(dict)[0], dchar))
+	    endif
+	endfor
+	call <sid>OutputMessage(msg)
+    else
+	call <sid>WarningMsg(printf("Can't determine char under cursor, %s not found", s:UniFile))
+    endif
 endfun
 
 fu! <sid>GetDigraphChars(code) "{{{1
@@ -223,8 +233,6 @@ fu! <sid>UnicodeDict() "{{{1
     let list=readfile(s:UniFile)
     for glyph in list
 		let val          = split(glyph, ";")
-		let U1Name       = val[10]
-		let U1Name       = (!empty(U1Name)?' ('.U1Name.')':'')
 		let Name         = val[1]
         let dict[Name]   = str2nr(val[0],16)
     endfor
@@ -291,6 +299,7 @@ endfu
 fu! <sid>CompareList(l1, l2) "{{{1
     return a:l1[1] == a:l2[1] ? 0 : a:l1[1] > a:l2[1] ? 1 : -1
 endfu
+
 fu! <sid>OutputMessage(msg) " {{{1
 	redraw
 	echohl Title
@@ -305,7 +314,7 @@ fu! <sid>OutputMessage(msg) " {{{1
 	echohl Normal
 endfu
 
-fu! <sid>WarningMsg(msg)"{{{1
+fu! <sid>WarningMsg(msg) "{{{1
         echohl WarningMsg
         let msg = "UnicodePlugin: " . a:msg
         if exists(":unsilent") == 2
