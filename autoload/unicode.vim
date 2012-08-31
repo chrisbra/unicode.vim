@@ -25,17 +25,6 @@ let s:file=matchstr(s:unicode_URL, '[^/]*$')
 let s:directory  = expand("<sfile>:p:h")."/unicode"
 let s:UniFile    = s:directory . '/UnicodeData.txt'
 
-fun! <sid>WarningMsg(msg)"{{{1
-        echohl WarningMsg
-        let msg = "UnicodePlugin: " . a:msg
-        if exists(":unsilent") == 2
-                unsilent echomsg msg
-        else
-                echomsg msg
-        endif
-        echohl Normal
-endfun
-
 fu! unicode#CheckUniFile(force) "{{{1
     if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
 		call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
@@ -116,7 +105,8 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
     endif
     "let glyphs=unicode#UnicodeDict()
     if s:numeric
-		let complete_list = filter(copy(s:UniDict), 'printf("%04X", v:val) =~? "^0*".a:base[2:]')
+		let complete_list = filter(copy(s:UniDict),
+			\ 'printf("%04X", v:val) =~? "^0*".a:base[2:]')
     else
 		let complete_list = filter(copy(s:UniDict), 'v:key =~? a:base')
     endif
@@ -251,12 +241,6 @@ fu! unicode#Init(enable) "{{{1
 	echo "Unicode Completion " . (a:enable?'ON':'OFF')
 endfu
 
-fu! <sid>OutputMessage(msg) " {{{1
-	redraw
-	" Save message in message history
-	echom a:msg
-endfu
-
 fu! unicode#GetUniChar() "{{{1
 	if (unicode#CheckDir())
 		if !exists("s:UniDict")
@@ -272,6 +256,7 @@ fu! unicode#GetUniChar() "{{{1
 			call <sid>OutputMessage("No character under cursor!")
 			return
 		endif
+		let msg = []
 		let dlist = unicode#GetDigraph()
 		" Split string, in case cursor was on a combining char
 		for item in split(a, 'Octal \d\+\zs \?')
@@ -280,31 +265,55 @@ fu! unicode#GetUniChar() "{{{1
 			let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
 			" Check for control char (has no name)
 			if dec <= 0x1F || ( dec >= 0x7F && dec <= 0x9F)
-				call <sid>OutputMessage(printf("'%s' U+%04X <Control Char>", glyph, dec))
+				call add(msg, printf("'%s' U+%04X <Control Char>", glyph, dec))
 			" CJK Unigraphs start at U+4E00 and go until U+9FFF
 			elseif dec >= 0x4E00 && dec <= 0x9FFF
-				call <sid>OutputMessage(
-					\printf("'%s' U+%04X CJK Ideograph", glyph, dec))
+				call add(msg, printf("'%s' U+%04X CJK Ideograph", glyph, dec))
 			else
-				for [key, value] in items(s:UniDict)
-					if value == dec
-						let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
-						if !empty(dig)
-							let dchar = printf("(%s)", dig[0][0:1])
-						else
-							let dchar = ''
-						endif
-						call <sid>OutputMessage(
-							\ printf("'%s' U+%04X %s %s", glyph, value, key,
-							\ dchar))
-						break
-					endif
-				endfor
+				let dict = filter(copy(s:UniDict), 'v:val == dec')
+				if empty(dict)
+					" not found
+					continue
+				endif
+				let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
+				if !empty(dig)
+					let dchar = printf("(%s)", dig[0][0:1])
+				else
+					let dchar = ''
+				endif
+				call add(msg, printf("'%s' U+%04X %s %s", glyph, values(dict)[0],
+						\ keys(dict)[0], dchar))
 			endif
 		endfor
+		call <sid>OutputMessage(msg)
 	else
 		call <sid>WarningMsg("Can't determine char under cursor!")
 	endif
+endfun
+
+fu! <sid>OutputMessage(msg) " {{{1
+	redraw
+	echohl Title
+	if type(a:msg) == type([])
+		for item in a:msg
+			echom item
+		endfor
+	elseif type(a:msg) == type("")
+		" string
+		echom a:msg
+	endif
+	echohl Normal
+endfu
+
+fu! <sid>WarningMsg(msg)"{{{1
+        echohl WarningMsg
+        let msg = "UnicodePlugin: " . a:msg
+        if exists(":unsilent") == 2
+                unsilent echomsg msg
+        else
+                echomsg msg
+        endif
+        echohl Normal
 endfun
 
 " Modeline "{{{1
