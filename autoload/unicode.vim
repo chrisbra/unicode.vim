@@ -36,47 +36,47 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
       let start -= 1
     endwhile
     if line[start] =~# 'U' && line[start+1] == '+' && col('.')-1 >=start+2
-		let s:numeric=1
+	let s:numeric=1
     else
-		let s:numeric=0
+	let s:numeric=0
     endif
     return start
   else
     if exists("g:showDigraphCode")
-		let s:showDigraphCode=g:showDigraphCode
+	let s:showDigraphCode=g:showDigraphCode
     else
-		let s:showDigraphCode = 0
+	let s:showDigraphCode = 0
     endif
     if s:numeric
-		let complete_list = filter(copy(s:UniDict),
-			\ 'printf("%04X", v:val) =~? "^0*".a:base[2:]')
+	let complete_list = filter(copy(s:UniDict),
+		\ 'printf("%04X", v:val) =~? "^0*".a:base[2:]')
     else
-		let complete_list = filter(copy(s:UniDict), 'v:key =~? a:base')
+	let complete_list = filter(copy(s:UniDict), 'v:key =~? a:base')
     endif
     for [key, value] in sort(items(complete_list), "<sid>CompareList")
     	"let key=matchstr(key, "^[^0-9 ]*")
-		let dg_char=<sid>GetDigraphChars(value)
+	let dg_char=<sid>GetDigraphChars(value)
         if s:showDigraphCode
-			if !empty(dg_char)
-				let fstring = printf("U+%04X %s (%s):'%s'", value, key, dg_char,
-							\ nr2char(value))
-			else
-			let fstring=printf("U+%04X %s:%s", value, key, nr2char(value))
-			endif
-		else
-			let fstring=printf("U+%04X %s:'%s'", value, key, nr2char(value))
-		endif
-		let istring = printf("U+%04X %s%s:'%s'", value, key,
-					\ empty(dg_char) ? '' : '('.dg_char.')', nr2char(value))
-	    
-		if s:unicode_complete_name
-			call complete_add({'word':key, 'abbr':fstring, 'info': istring})
-		else
-			call complete_add({'word':nr2char(value), 'abbr':fstring, 'info': istring})
-		endif
-		if complete_check()
-			break
-		endif
+	    if !empty(dg_char)
+		let fstring = printf("U+%04X %s (%s):'%s'", value, key, dg_char,
+			    \ nr2char(value))
+	    else
+		let fstring=printf("U+%04X %s:%s", value, key, nr2char(value))
+	    endif
+	else
+	    let fstring=printf("U+%04X %s:'%s'", value, key, nr2char(value))
+	endif
+	let istring = printf("U+%04X %s%s:'%s'", value, key,
+			\ empty(dg_char) ? '' : '('.dg_char.')', nr2char(value))
+    
+	if s:unicode_complete_name
+	    call complete_add({'word':key, 'abbr':fstring, 'info': istring})
+	else
+	    call complete_add({'word':nr2char(value), 'abbr':fstring, 'info': istring})
+	endif
+	if complete_check()
+		break
+	endif
     endfor
     	
     return {}
@@ -84,51 +84,51 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
 endfu
 
 fu! unicode#CompleteDigraph() "{{{1
-   let prevchar=getline('.')[col('.')-2]
-   let prevchar1=getline('.')[col('.')-3]
-   let dlist=<sid>GetDigraph()
-   if prevchar !~ '\s' && !empty(prevchar)
-	   let filter1 =  '( v:val[0] == prevchar1 && v:val[1] == prevchar)'
-	   let filter2 = 'v:val[0] == prevchar || v:val[1] == prevchar'
+    let prevchar=getline('.')[col('.')-2]
+    let prevchar1=getline('.')[col('.')-3]
+    let dlist=<sid>GetDigraph()
+    if prevchar !~ '\s' && !empty(prevchar)
+	let filter1 =  '( v:val[0] == prevchar1 && v:val[1] == prevchar)'
+	let filter2 = 'v:val[0] == prevchar || v:val[1] == prevchar'
 
-	   let dlist1 = filter(copy(dlist), filter1)
-	   if empty(dlist1)
-		   let dlist = filter(dlist, filter2)
-		   let col=col('.')-1
-	   else
-		   let dlist = dlist1
-		   let col=col('.')-2
-	   endif
-	   unlet dlist1
-   else
+	let dlist1 = filter(copy(dlist), filter1)
+	if empty(dlist1)
+	    let dlist = filter(dlist, filter2)
+	    let col=col('.')-1
+	else
+	    let dlist = dlist1
+	    let col=col('.')-2
+	endif
+	unlet dlist1
+    else
        let col=col('.')
-   endif
-   let tlist=[]
-   for args in dlist
-       let t=matchlist(args, '^\(..\)\s<\?\(..\?\)>\?\s\+\(\d\+\)$')
-       "echo args
-       if !empty(t)
-		let format=printf("'%s' %s U+%04X",t[1], t[2], t[3])
-		call add(tlist, {'word':nr2char(t[3]), 'abbr':format,
-			\ 'info': printf("Abbrev\tGlyph\tCodepoint\n%s\t%s\tU+%04X",
-			\ t[1],t[2],t[3])})
+    endif
+    let tlist=[]
+    for args in dlist
+	let t=matchlist(args, '^\(..\)\s<\?\(..\?\)>\?\s\+\(\d\+\)$')
+	"echo args
+	if !empty(t)
+	    let format=printf("'%s' %s U+%04X",t[1], t[2], t[3])
+	    call add(tlist, {'word':nr2char(t[3]), 'abbr':format,
+		    \ 'info': printf("Abbrev\tGlyph\tCodepoint\n%s\t%s\tU+%04X",
+		    \ t[1],t[2],t[3])})
        endif
-   endfor
-   call complete(col, tlist)
-   return ''
+    endfor
+    call complete(col, tlist)
+    return ''
 endfu
 
 fu! unicode#SwapCompletion() "{{{1
-	if !exists('s:unicode_complete_name')
-		let s:unicode_complete_name = 1
-	endif
-	if exists('g:unicode_complete_name')
-		let s:unicode_complete_name = g:unicode_complete_name
-	else
-		let s:unicode_complete_name = !s:unicode_complete_name
-	endif
-	echo "Unicode Completion Names " .
-		\ (s:unicode_complete_name ? 'ON':'OFF')
+    if !exists('s:unicode_complete_name')
+	let s:unicode_complete_name = 1
+    endif
+    if exists('g:unicode_complete_name')
+	let s:unicode_complete_name = g:unicode_complete_name
+    else
+	let s:unicode_complete_name = !s:unicode_complete_name
+    endif
+    echo "Unicode Completion Names " .
+	\ (s:unicode_complete_name ? 'ON':'OFF')
 endfu
 
 fu! unicode#Init(enable) "{{{1
@@ -221,9 +221,9 @@ fu! <sid>GetDigraphChars(code) "{{{1
     let dlist = <sid>GetDigraph()
     let ddict = {}
     for digraph in dlist
-		let key=matchstr(digraph, '\d\+$')+0
-		let val=split(digraph)
-		let ddict[key] = val[0]
+	let key=matchstr(digraph, '\d\+$')+0
+	let val=split(digraph)
+	let ddict[key] = val[0]
     endfor
     return get(ddict, a:code, '')
 endfu
@@ -232,59 +232,58 @@ fu! <sid>UnicodeDict() "{{{1
     let dict={}
     let list=readfile(s:UniFile)
     for glyph in list
-		let val          = split(glyph, ";")
-		let Name         = val[1]
+	let val          = split(glyph, ";")
+	let Name         = val[1]
         let dict[Name]   = str2nr(val[0],16)
     endfor
-"    let dict=filter(dict, 'v:key !~ "Control Code"')
     return dict
 endfu
 
 fu! <sid>CheckUniFile(force) "{{{1
     if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
-		call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
-		call s:WarningMsg("Let's see, if we can download it.")
-		call s:WarningMsg("If this doesn't work, you should download ")
-		call s:WarningMsg(s:unicode_URL . " and save it as " . s:UniFile)
-		sleep 10
-		if exists(":Nread")
-			sp +enew
-			" Use the default download method. You can specify a different one,
-			" using :let g:netrw_http_cmd="wget"
-			exe ":lcd " . s:directory
-			exe "0Nread " . s:unicode_URL
-			$d _
-			exe ":w!" . s:UniFile
-			if getfsize(s:UniFile)==0
-				call s:WarningMsg("Error fetching Unicode File from " . s:unicode_URL)
-				return 0
-			endif
-			bw
-		else
-			call s:WarningMsg("Please download " . s:unicode_URL)
-			call s:WarningMsg("and save it as " . s:UniFile)
-			call s:WarningMsg("Quitting")
-			return 0
-		endif
+	call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
+	call s:WarningMsg("Let's see, if we can download it.")
+	call s:WarningMsg("If this doesn't work, you should download ")
+	call s:WarningMsg(s:unicode_URL . " and save it as " . s:UniFile)
+	sleep 10
+	if exists(":Nread")
+	    sp +enew
+	    " Use the default download method. You can specify a different one,
+	    " using :let g:netrw_http_cmd="wget"
+	    exe ":lcd " . s:directory
+	    exe "0Nread " . s:unicode_URL
+	    $d _
+	    exe ":w!" . s:UniFile
+	    if getfsize(s:UniFile)==0
+		call s:WarningMsg("Error fetching Unicode File from " . s:unicode_URL)
+		return 0
+	    endif
+	    bw
+	else
+	    call s:WarningMsg("Please download " . s:unicode_URL)
+	    call s:WarningMsg("and save it as " . s:UniFile)
+	    call s:WarningMsg("Quitting")
+	    return 0
+	endif
     endif
     return 1
 endfu
 
 fu! <sid>CheckDir() "{{{1
     try
-		if (!isdirectory(s:directory))
-			call mkdir(s:directory)
-		endif
+	if (!isdirectory(s:directory))
+	    call mkdir(s:directory)
+	endif
     catch
-		call s:WarningMsg("Error creating Directory: " . s:directory)
-		return 0
+	call s:WarningMsg("Error creating Directory: " . s:directory)
+	return 0
     endtry
     return <sid>CheckUniFile(0)
 endfu
 
 fu! <sid>GetDigraph() "{{{1
     redir => digraphs
-		silent digraphs
+	silent digraphs
     redir END
     let dlist=[]
     let dlist=map(split(substitute(digraphs, "\n", ' ', 'g'), '..\s<\?.\{1,2\}>\?\s\+\d\{1,5\}\zs'), 'substitute(v:val, "^\\s\\+", "", "")')
@@ -301,28 +300,28 @@ fu! <sid>CompareList(l1, l2) "{{{1
 endfu
 
 fu! <sid>OutputMessage(msg) " {{{1
-	redraw
-	echohl Title
-	if type(a:msg) == type([])
-		for item in a:msg
-			echom item
-		endfor
-	elseif type(a:msg) == type("")
-		" string
-		echom a:msg
-	endif
-	echohl Normal
+    redraw
+    echohl Title
+    if type(a:msg) == type([])
+	for item in a:msg
+	    echom item
+	endfor
+    elseif type(a:msg) == type("")
+	" string
+	echom a:msg
+    endif
+    echohl Normal
 endfu
 
 fu! <sid>WarningMsg(msg) "{{{1
-        echohl WarningMsg
-        let msg = "UnicodePlugin: " . a:msg
-        if exists(":unsilent") == 2
-                unsilent echomsg msg
-        else
-                echomsg msg
-        endif
-        echohl Normal
+    echohl WarningMsg
+    let msg = "UnicodePlugin: " . a:msg
+    if exists(":unsilent") == 2
+	unsilent echomsg msg
+    else
+	echomsg msg
+    endif
+    echohl Normal
 endfun
 
 " Modeline "{{{1
