@@ -31,8 +31,6 @@ if s:enableUnicodeCompletion
     "let s:enableUnicodeCompletion = !s:enableUnicodeCompletion
 endif
 
-
-
 " =====================================================================
 " Restoration And Modelines: {{{1
 " vim: fdm=marker

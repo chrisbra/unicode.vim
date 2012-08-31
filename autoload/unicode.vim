@@ -25,62 +25,6 @@ let s:file=matchstr(s:unicode_URL, '[^/]*$')
 let s:directory  = expand("<sfile>:p:h")."/unicode"
 let s:UniFile    = s:directory . '/UnicodeData.txt'
 
-fu! unicode#CheckUniFile(force) "{{{1
-    if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
-		call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
-		call s:WarningMsg("Let's see, if we can download it.")
-		call s:WarningMsg("If this doesn't work, you should download ")
-		call s:WarningMsg(s:unicode_URL . " and save it as " . s:UniFile)
-		sleep 10
-		if exists(":Nread")
-			sp +enew
-			" Use the default download method. You can specify a different one,
-			" using :let g:netrw_http_cmd="wget"
-			exe ":lcd " . s:directory
-			exe "0Nread " . s:unicode_URL
-			$d _
-			exe ":w!" . s:UniFile
-			if getfsize(s:UniFile)==0
-				call s:WarningMsg("Error fetching Unicode File from " . s:unicode_URL)
-				return 0
-			endif
-			bw
-		else
-			call s:WarningMsg("Please download " . s:unicode_URL)
-			call s:WarningMsg("and save it as " . s:UniFile)
-			call s:WarningMsg("Quitting")
-			return 0
-		endif
-    endif
-    return 1
-endfu
-
-fu! unicode#CheckDir() "{{{1
-    try
-		if (!isdirectory(s:directory))
-			call mkdir(s:directory)
-		endif
-    catch
-		call s:WarningMsg("Error creating Directory: " . s:directory)
-		return 0
-    endtry
-    return unicode#CheckUniFile(0)
-endfu
-
-fu! unicode#UnicodeDict() "{{{1
-    let dict={}
-    let list=readfile(s:UniFile)
-    for glyph in list
-		let val          = split(glyph, ";")
-		let U1Name       = val[10]
-		let U1Name       = (!empty(U1Name)?' ('.U1Name.')':'')
-		let Name         = val[1]
-        let dict[Name]   = str2nr(val[0],16)
-    endfor
-"    let dict=filter(dict, 'v:key !~ "Control Code"')
-    return dict
-endfu
-
 fu! unicode#CompleteUnicode(findstart,base) "{{{1
   if !exists("s:numeric")
       let s:numeric=0
@@ -103,26 +47,27 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
     else
 		let s:showDigraphCode = 0
     endif
-    "let glyphs=unicode#UnicodeDict()
     if s:numeric
 		let complete_list = filter(copy(s:UniDict),
 			\ 'printf("%04X", v:val) =~? "^0*".a:base[2:]')
     else
 		let complete_list = filter(copy(s:UniDict), 'v:key =~? a:base')
     endif
-    for [key, value] in sort(items(complete_list), "unicode#CompareList")
+    for [key, value] in sort(items(complete_list), "<sid>CompareList")
     	"let key=matchstr(key, "^[^0-9 ]*")
-		let dg_char=unicode#GetDigraphChars(value)
+		let dg_char=<sid>GetDigraphChars(value)
         if s:showDigraphCode
 			if !empty(dg_char)
-				let fstring=printf("U+%04X %s (%s):'%s'", value, key, dg_char, nr2char(value))
+				let fstring = printf("U+%04X %s (%s):'%s'", value, key, dg_char,
+							\ nr2char(value))
 			else
 			let fstring=printf("U+%04X %s:%s", value, key, nr2char(value))
 			endif
 		else
 			let fstring=printf("U+%04X %s:'%s'", value, key, nr2char(value))
 		endif
-		let istring=printf("U+%04X %s%s:'%s'", value, key, empty(dg_char) ? '' : '('.dg_char.')', nr2char(value))
+		let istring = printf("U+%04X %s%s:'%s'", value, key,
+					\ empty(dg_char) ? '' : '('.dg_char.')', nr2char(value))
 	    
 		if s:unicode_complete_name
 			call complete_add({'word':key, 'abbr':fstring, 'info': istring})
@@ -138,35 +83,10 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
   endif
 endfu
 
-fu! unicode#GetDigraph() "{{{1
-    redir => digraphs
-		silent digraphs
-    redir END
-    let dlist=[]
-    let dlist=map(split(substitute(digraphs, "\n", ' ', 'g'), '..\s<\?.\{1,2\}>\?\s\+\d\{1,5\}\zs'), 'substitute(v:val, "^\\s\\+", "", "")')
-    " special case: digraph 57344: starts with 2 spaces
-    "return filter(dlist, 'v:val =~ "57344$"')
-    let idx=match(dlist, '57344$')
-    let dlist[idx]='   '.dlist[idx]
-
-    return dlist
-endfu
-
-fu! unicode#GetDigraphChars(code) "{{{1
-    let dlist = unicode#GetDigraph()
-    let ddict = {}
-    for digraph in dlist
-		let key=matchstr(digraph, '\d\+$')+0
-		let val=split(digraph)
-		let ddict[key] = val[0]
-    endfor
-    return get(ddict, a:code, '')
-endfu
-
 fu! unicode#CompleteDigraph() "{{{1
    let prevchar=getline('.')[col('.')-2]
    let prevchar1=getline('.')[col('.')-3]
-   let dlist=unicode#GetDigraph()
+   let dlist=<sid>GetDigraph()
    if prevchar !~ '\s' && !empty(prevchar)
 	   let filter1 =  '( v:val[0] == prevchar1 && v:val[1] == prevchar)'
 	   let filter2 = 'v:val[0] == prevchar || v:val[1] == prevchar'
@@ -198,10 +118,6 @@ fu! unicode#CompleteDigraph() "{{{1
    return ''
 endfu
 
-fu! unicode#CompareList(l1, l2) "{{{1
-    return a:l1[1] == a:l2[1] ? 0 : a:l1[1] > a:l2[1] ? 1 : -1
-endfu
-
 fu! unicode#SwapCompletion() "{{{1
 	if !exists('s:unicode_complete_name')
 		let s:unicode_complete_name = 1
@@ -221,8 +137,8 @@ fu! unicode#Init(enable) "{{{1
 	endif
     if a:enable
 		let b:oldfunc=&l:cfu
-		if (unicode#CheckDir())
-			let s:UniDict = unicode#UnicodeDict()
+		if (<sid>CheckDir())
+			let s:UniDict = <sid>UnicodeDict()
 			setl completefunc=unicode#CompleteUnicode
 			set completeopt+=menuone
 			inoremap <C-X><C-G> <C-R>=unicode#CompleteDigraph()<CR>
@@ -242,9 +158,9 @@ fu! unicode#Init(enable) "{{{1
 endfu
 
 fu! unicode#GetUniChar() "{{{1
-	if (unicode#CheckDir())
+	if (<sid>CheckDir())
 		if !exists("s:UniDict")
-			let s:UniDict=unicode#UnicodeDict()
+			let s:UniDict=<sid>UnicodeDict()
 		endif
 
 		" Get glyph at Cursor
@@ -257,7 +173,7 @@ fu! unicode#GetUniChar() "{{{1
 			return
 		endif
 		let msg = []
-		let dlist = unicode#GetDigraph()
+		let dlist = <sid>GetDigraph()
 		" Split string, in case cursor was on a combining char
 		for item in split(a, 'Octal \d\+\zs \?')
 
@@ -291,6 +207,90 @@ fu! unicode#GetUniChar() "{{{1
 	endif
 endfun
 
+fu! <sid>GetDigraphChars(code) "{{{1
+    let dlist = <sid>GetDigraph()
+    let ddict = {}
+    for digraph in dlist
+		let key=matchstr(digraph, '\d\+$')+0
+		let val=split(digraph)
+		let ddict[key] = val[0]
+    endfor
+    return get(ddict, a:code, '')
+endfu
+
+fu! <sid>UnicodeDict() "{{{1
+    let dict={}
+    let list=readfile(s:UniFile)
+    for glyph in list
+		let val          = split(glyph, ";")
+		let U1Name       = val[10]
+		let U1Name       = (!empty(U1Name)?' ('.U1Name.')':'')
+		let Name         = val[1]
+        let dict[Name]   = str2nr(val[0],16)
+    endfor
+"    let dict=filter(dict, 'v:key !~ "Control Code"')
+    return dict
+endfu
+
+fu! <sid>CheckUniFile(force) "{{{1
+    if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
+		call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
+		call s:WarningMsg("Let's see, if we can download it.")
+		call s:WarningMsg("If this doesn't work, you should download ")
+		call s:WarningMsg(s:unicode_URL . " and save it as " . s:UniFile)
+		sleep 10
+		if exists(":Nread")
+			sp +enew
+			" Use the default download method. You can specify a different one,
+			" using :let g:netrw_http_cmd="wget"
+			exe ":lcd " . s:directory
+			exe "0Nread " . s:unicode_URL
+			$d _
+			exe ":w!" . s:UniFile
+			if getfsize(s:UniFile)==0
+				call s:WarningMsg("Error fetching Unicode File from " . s:unicode_URL)
+				return 0
+			endif
+			bw
+		else
+			call s:WarningMsg("Please download " . s:unicode_URL)
+			call s:WarningMsg("and save it as " . s:UniFile)
+			call s:WarningMsg("Quitting")
+			return 0
+		endif
+    endif
+    return 1
+endfu
+
+fu! <sid>CheckDir() "{{{1
+    try
+		if (!isdirectory(s:directory))
+			call mkdir(s:directory)
+		endif
+    catch
+		call s:WarningMsg("Error creating Directory: " . s:directory)
+		return 0
+    endtry
+    return <sid>CheckUniFile(0)
+endfu
+
+fu! <sid>GetDigraph() "{{{1
+    redir => digraphs
+		silent digraphs
+    redir END
+    let dlist=[]
+    let dlist=map(split(substitute(digraphs, "\n", ' ', 'g'), '..\s<\?.\{1,2\}>\?\s\+\d\{1,5\}\zs'), 'substitute(v:val, "^\\s\\+", "", "")')
+    " special case: digraph 57344: starts with 2 spaces
+    "return filter(dlist, 'v:val =~ "57344$"')
+    let idx=match(dlist, '57344$')
+    let dlist[idx]='   '.dlist[idx]
+
+    return dlist
+endfu
+
+fu! <sid>CompareList(l1, l2) "{{{1
+    return a:l1[1] == a:l2[1] ? 0 : a:l1[1] > a:l2[1] ? 1 : -1
+endfu
 fu! <sid>OutputMessage(msg) " {{{1
 	redraw
 	echohl Title
