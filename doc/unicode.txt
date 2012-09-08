@@ -167,7 +167,7 @@ CTRL-X CTRL-G		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
-    0.13: (unreleased)  - better output for |UnicodeName| (did previously hide
+    0.13: Sep 08, 2012  - better output for |UnicodeName| (did previously hide
 			  messages)
     0.12: Apr 12, 2012  - |UnicodeName| shows digraph, if it exists
 			- better completion of digraphs
