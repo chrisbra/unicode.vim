@@ -54,6 +54,24 @@ and the official Unicode name.
 
 Additionally, if there exists a digraph for that character, it will also be
 shown in paranthesis.
+								    *:Digraphs*
+>
+    :Digraphs
+
+Outputs the digraph list in an easier way to read with coloring of the digraphs.
+
+If you want to display a list with a line break after each digraph, use the
+bang attribute >
+    
+    :Digraphs! 
+
+And if you want to display all digraphs matching a certain value, you can add
+an argument to the command: >
+
+    :Digraphs! A
+
+displays all digraphs, that match 'A' (e.g. all that can be created with the
+letter A or whose digraph matches the letter 'A'.
 
 ==============================================================================
 						    *unicode-plugin-usage*
