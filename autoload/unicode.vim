@@ -133,7 +133,7 @@ endfu
 
 fu! unicode#Init(enable) "{{{1
     if !exists("s:unicode_complete_name")
-	let s:unicode_complete_name = 0
+		let s:unicode_complete_name = 0
     endif
     if a:enable
 	let b:oldfunc=&l:cfu
@@ -217,13 +217,23 @@ fu! unicode#GetUniChar() "{{{1
     endif
 endfun
 
+fu! unicode#OutputDigraphs() "{{{1
+	for dig in sort(<sid>GetDigraph(), '<sid>CompareDigraphs')
+		let item = matchlist(dig, '\(..\)\s\(\%(\s\s\)\|.\{,4\}\)\s\+\(\d\+\)$')
+		echohl Title
+		echon item[2]
+		echohl Normal
+		echon " ". item[1]. " ". item[3]. "\n"
+	endfor
+endfu
+
 fu! <sid>GetDigraphChars(code) "{{{1
     let dlist = <sid>GetDigraph()
     let ddict = {}
     for digraph in dlist
-	let key=matchstr(digraph, '\d\+$')+0
-	let val=split(digraph)
-	let ddict[key] = val[0]
+		let key=matchstr(digraph, '\d\+$')+0
+		let val=split(digraph)
+		let ddict[key] = val[0]
     endfor
     return get(ddict, a:code, '')
 endfu
@@ -282,21 +292,37 @@ fu! <sid>CheckDir() "{{{1
 endfu
 
 fu! <sid>GetDigraph() "{{{1
-    redir => digraphs
-	silent digraphs
-    redir END
-    let dlist=[]
-    let dlist=map(split(substitute(digraphs, "\n", ' ', 'g'), '..\s<\?.\{1,2\}>\?\s\+\d\{1,5\}\zs'), 'substitute(v:val, "^\\s\\+", "", "")')
-    " special case: digraph 57344: starts with 2 spaces
-    "return filter(dlist, 'v:val =~ "57344$"')
-    let idx=match(dlist, '57344$')
-    let dlist[idx]='   '.dlist[idx]
+	if exists("s:dlist")
+		return s:dlist
+	else
+		redir => digraphs
+			silent digraphs
+		redir END
+		let s:dlist=[]
+		let s:dlist=map(split(substitute(digraphs, "\n", ' ', 'g'), '..\s<\?.\{1,2\}>\?\s\+\d\{1,5\}\zs'), 'substitute(v:val, "^\\s\\+", "", "")')
+		" special case: digraph 57344: starts with 2 spaces
+		"return filter(dlist, 'v:val =~ "57344$"')
+		let idx=match(s:dlist, '57344$')
+		let s:dlist[idx]='   '.s:dlist[idx]
 
-    return dlist
+		return s:dlist
+	endif
 endfu
 
 fu! <sid>CompareList(l1, l2) "{{{1
     return a:l1[1] == a:l2[1] ? 0 : a:l1[1] > a:l2[1] ? 1 : -1
+endfu
+
+fu! <sid>CompareDigraphs(d1, d2) "{{{1
+	let d1=matchstr(a:d1, '\d\+$')+0
+	let d2=matchstr(a:d2, '\d\+$')+0
+	if d1 == d2
+		return 0
+	elseif d1 > d2
+		return 1
+	else
+		return -1
+	endif
 endfu
 
 fu! <sid>OutputMessage(msg) " {{{1

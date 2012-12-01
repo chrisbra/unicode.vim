@@ -25,6 +25,7 @@ let s:enableUnicodeCompletion = (exists("g:enableUnicodeCompletion") ? g:enableU
 com! EnableUnicodeCompletion call unicode#Init(1)
 com! DisableUnicodeCompletion call unicode#Init(0)
 com! UnicodeName call unicode#GetUniChar()
+com! Digraph call unicode#OutputDigraphs()
 
 if s:enableUnicodeCompletion
     exe "call unicode#Init(s:enableUnicodeCompletion)"

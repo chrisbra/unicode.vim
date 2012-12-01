@@ -54,6 +54,9 @@ and the official Unicode name.
 
 Additionally, if there exists a digraph for that character, it will also be
 shown in paranthesis.
+	 						 *:Diraphs*
+>
+    :Digraphs	Outputs the digraph list in an easier way to read
 
 ==============================================================================
 						    *unicode-plugin-usage*
