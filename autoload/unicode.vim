@@ -217,13 +217,34 @@ fu! unicode#GetUniChar() "{{{1
     endif
 endfun
 
-fu! unicode#OutputDigraphs() "{{{1
+fu! unicode#OutputDigraphs(match, bang) "{{{1
+	let screenwidth = 0
+	let digit = a:match + 0
 	for dig in sort(<sid>GetDigraph(), '<sid>CompareDigraphs')
+		" display digraphs that match value
+		if dig !~# a:match && digit == 0
+			continue
+		endif
 		let item = matchlist(dig, '\(..\)\s\(\%(\s\s\)\|.\{,4\}\)\s\+\(\d\+\)$')
+
+		" if digit matches, we only want to display digraphs matching the
+		" decimal values
+		if digit > 0 && digit !~ item[3]
+			continue
+		endif
+
+		let screenwidth += strdisplaywidth(dig) + 2
+
+		" if the output is too wide, echo an output
+		if screenwidth > &columns || !empty(a:bang)
+			let screenwidth = 0
+			echon "\n"
+		endif
+
 		echohl Title
 		echon item[2]
 		echohl Normal
-		echon " ". item[1]. " ". item[3]. "\n"
+		echon " ". item[1]. " ". item[3] . " "
 	endfor
 endfu
 
