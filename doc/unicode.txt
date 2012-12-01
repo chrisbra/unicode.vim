@@ -43,7 +43,7 @@ If you want to disable the plugin, enter >
 
     :DisableUnicodeCompletion
 <
-	 						 *:UnicodeName*
+							    *:UnicodeName*
 Suppose, you want to know, what the Unicode Name for the Character under the
 cursor is. You simply enter the ex command: >
 
@@ -185,6 +185,7 @@ CTRL-X CTRL-G		Search for the character in front of the cursor and
 
 ==============================================================================
 4. unicode History			              *unicode-plugin-history*
+    0.14: Dec 01, 2012  - |:Digraphs| for better display of digraphs
     0.13: Sep 08, 2012  - better output for |UnicodeName| (did previously hide
 			  messages)
     0.12: Apr 12, 2012  - |UnicodeName| shows digraph, if it exists
