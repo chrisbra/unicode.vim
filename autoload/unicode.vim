@@ -313,7 +313,7 @@ fu! <sid>CheckDir() "{{{1
 endfu
 
 fu! <sid>GetDigraph() "{{{1
-	if exists("s:dlist")
+	if exists("s:dlist") && !empty(s:dlist)
 		return s:dlist
 	else
 		redir => digraphs
