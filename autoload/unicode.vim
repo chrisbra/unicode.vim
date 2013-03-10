@@ -18,6 +18,9 @@ else
     "let s:unicode_URL='http://www.unicode.org/Public/UNIDATA/Index.txt'
     let s:unicode_URL='http://www.unicode.org/Public/UNIDATA/UnicodeData.txt'
 endif
+if !exists("g:UnicodeShowPreviewWindow")
+    let g:UnicodeShowPreviewWindow = 0
+endif
 
 " HTML entitities
 let s:html = {}
@@ -331,9 +334,17 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
 			\ empty(dg_char) ? '' : '('.dg_char.')', nr2char(value))
     
 	if s:unicode_complete_name
-	    call complete_add({'word':key, 'abbr':fstring, 'info': istring})
+	    let dict = {'word':key, 'abbr':fstring}
+	    if g:UnicodeShowPreviewWindow
+		call extend(dict, {'info': istring})
+	    endif
+	    call complete_add(dict)
 	else
-	    call complete_add({'word':nr2char(value), 'abbr':fstring, 'info': istring})
+	    let dict = {'word':nr2char(value), 'abbr':fstring}
+	    if g:UnicodeShowPreviewWindow
+		call extend(dict, {'info': istring})
+	    endif
+	    call complete_add(dict)
 	endif
 	if complete_check()
 		break
