@@ -445,7 +445,9 @@ fu! unicode#GetUniChar() "{{{1
 		let a = substitute(a, '\n', '', 'g')
 		" Special case: no character under cursor
 		if a == 'NUL'
-			call add(msg, "No character under cursor!")
+			call add(msg, "'NUL' U+0000 NULL")
+			"call add(msg, "No character under cursor!")
+			call <sid>OutputMessage(msg)
 			return
 		endif
 		let dlist = <sid>GetDigraph()
@@ -456,7 +458,12 @@ fu! unicode#GetUniChar() "{{{1
 			let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
 			" Check for control char (has no name)
 			if dec <= 0x1F || ( dec >= 0x7F && dec <= 0x9F)
-				call add(msg, printf("'%s' U+%04X <Control Char>", glyph, dec))
+				if dec == 0
+					let dec = 10
+				endif
+				let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
+				call add(msg, printf("'%s' U+%04X <Control Char> %s", glyph, dec,
+						\ empty(dig) ? '' : '('.dig[0][0:1].')'))
 			" CJK Unigraphs start at U+4E00 and go until U+9FFF
 			elseif dec >= 0x4E00 && dec <= 0x9FFF
 				call add(msg, printf("'%s' U+%04X CJK Ideograph", glyph, dec))
