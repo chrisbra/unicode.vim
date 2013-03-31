@@ -433,67 +433,71 @@ fu! unicode#Init(enable) "{{{1
 endfu
 
 fu! unicode#GetUniChar() "{{{1
-	if (<sid>CheckDir())
-		if !exists("s:UniDict")
-			let s:UniDict=<sid>UnicodeDict()
-		endif
-		let msg = []
-
-	" Get glyph at Cursor
-	" need to use redir, cause we also want to capture combining chars
-		redir => a | exe "silent norm! ga" | redir end 
-		let a = substitute(a, '\n', '', 'g')
-		" Special case: no character under cursor
-		if a == 'NUL'
-			call add(msg, "'NUL' U+0000 NULL")
-			"call add(msg, "No character under cursor!")
-			call <sid>OutputMessage(msg)
-			return
-		endif
-		let dlist = <sid>GetDigraph()
-		" Split string, in case cursor was on a combining char
-		for item in split(a, 'Octal \d\+\zs \?')
-
-			let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
-			let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
-			" Check for control char (has no name)
-			if dec <= 0x1F || ( dec >= 0x7F && dec <= 0x9F)
-				if dec == 0
-					let dec = 10
-				endif
-				let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
-				call add(msg, printf("'%s' U+%04X <Control Char> %s", glyph, dec,
-						\ empty(dig) ? '' : '('.dig[0][0:1].')'))
-			" CJK Unigraphs start at U+4E00 and go until U+9FFF
-			elseif dec >= 0x4E00 && dec <= 0x9FFF
-				call add(msg, printf("'%s' U+%04X CJK Ideograph", glyph, dec))
-			elseif dec >= 0xF0000 && dec <= 0xFFFFD
-				call add(msg, printf("'%s' U+%04X character from Plane 15 for private use",
-				\ glyph, dec))
-			elseif dec >= 0x100000 && dec <= 0x10FFFD
-				call add(msg, printf("'%s' U+%04X character from Plane 16 for private use",
-			\ glyph, dec))
-			else
-				let dict = filter(copy(s:UniDict), 'v:val == dec')
-				if empty(dict)
-				" not found
-					call add(msg, "Character '%s' U+%04X not found", glyph, dec)
-				endif
-				let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
-				if !empty(dig)
-					let dchar = printf("(%s)", dig[0][0:1])
-				else
-					let dchar = ''
-				endif
-				let html = <sid>GetHtmlEntity(dec)
-				call add(msg, printf("'%s' U+%04X %s %s %s", glyph, values(dict)[0],
-				\ keys(dict)[0], dchar, html))
+	try
+		if (<sid>CheckDir())
+			if !exists("s:UniDict")
+				let s:UniDict=<sid>UnicodeDict()
 			endif
-		endfor
+			let msg = []
+
+		" Get glyph at Cursor
+		" need to use redir, cause we also want to capture combining chars
+			redir => a | exe "silent norm! ga" | redir end 
+			let a = substitute(a, '\n', '', 'g')
+			" Special case: no character under cursor
+			if a == 'NUL'
+				call add(msg, "'NUL' U+0000 NULL")
+				"call add(msg, "No character under cursor!")
+				return
+			endif
+			let dlist = <sid>GetDigraph()
+			" Split string, in case cursor was on a combining char
+			for item in split(a, 'Octal \d\+\zs \?')
+
+				let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
+				let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
+				" Check for control char (has no name)
+				if dec <= 0x1F || ( dec >= 0x7F && dec <= 0x9F)
+					if dec == 0
+						let dec = 10
+					endif
+					let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
+					call add(msg, printf("'%s' U+%04X <Control Char> %s", glyph, dec,
+							\ empty(dig) ? '' : '('.dig[0][0:1].')'))
+				" CJK Unigraphs start at U+4E00 and go until U+9FFF
+				elseif dec >= 0x4E00 && dec <= 0x9FFF
+					call add(msg, printf("'%s' U+%04X CJK Ideograph", glyph, dec))
+				elseif dec >= 0xF0000 && dec <= 0xFFFFD
+					call add(msg, printf("'%s' U+%04X character from Plane 15 for private use",
+					\ glyph, dec))
+				elseif dec >= 0x100000 && dec <= 0x10FFFD
+					call add(msg, printf("'%s' U+%04X character from Plane 16 for private use",
+				\ glyph, dec))
+				else
+					let dict = filter(copy(s:UniDict), 'v:val == dec')
+					if empty(dict)
+					" not found
+						call add(msg, printf("Character '%s' U+%04X not found", glyph, dec))
+						return
+					endif
+					let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
+					if !empty(dig)
+						let dchar = printf("(%s)", dig[0][0:1])
+					else
+						let dchar = ''
+					endif
+					let html = <sid>GetHtmlEntity(dec)
+					call add(msg, printf("'%s' U+%04X %s %s %s", glyph, values(dict)[0],
+					\ keys(dict)[0], dchar, html))
+				endif
+			endfor
+			"call <sid>OutputMessage(msg)
+		else
+			call add(msg, printf("Can't determine char under cursor, %s not found", s:UniFile))
+		endif
+	finally
 		call <sid>OutputMessage(msg)
-	else
-		call <sid>WarningMsg(printf("Can't determine char under cursor, %s not found", s:UniFile))
-	endif
+	endtry
 endfun
 
 fu! unicode#OutputDigraphs(match, bang) "{{{1
