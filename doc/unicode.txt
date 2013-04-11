@@ -48,13 +48,17 @@ If you want to disable the plugin, enter >
 Suppose, you want to know, what the Unicode Name for the Character under the
 cursor is. You simply enter the ex command: >
 
-    :UnicodeName
+    :UnicodeName [reg]
 
 The plugin will then output the character, the character's hexadecimal value
 and the official Unicode name.
 
 Additionally, if there exists a digraph for that character, it will also be
 shown in paranthesis.
+
+If you specify a register name, the message will also be saved into that
+register.
+
 								    *:Digraphs*
 >
     :Digraphs

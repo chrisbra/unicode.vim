@@ -24,7 +24,7 @@ let s:enableUnicodeCompletion = (exists("g:enableUnicodeCompletion") ? g:enableU
 " Public Interface: {{{1
 com! EnableUnicodeCompletion call unicode#Init(1)
 com! DisableUnicodeCompletion call unicode#Init(0)
-com! UnicodeName call unicode#GetUniChar()
+com! -nargs=? UnicodeName call unicode#GetUniChar(<q-args>)
 com! -nargs=? -bang Digraphs call unicode#OutputDigraphs(<q-args>, <q-bang>)
 
 if s:enableUnicodeCompletion

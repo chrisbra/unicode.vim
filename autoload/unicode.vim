@@ -432,7 +432,7 @@ fu! unicode#Init(enable) "{{{1
 	echo "Unicode Completion " . (a:enable? 'ON' : 'OFF')
 endfu
 
-fu! unicode#GetUniChar() "{{{1
+fu! unicode#GetUniChar(...) "{{{1
 	try
 		if (<sid>CheckDir())
 			if !exists("s:UniDict")
@@ -491,6 +491,10 @@ fu! unicode#GetUniChar() "{{{1
 					\ keys(dict)[0], dchar, html))
 				endif
 			endfor
+			if exists("a:1") && !empty(a:1)
+				exe "let @".a:1. "=join(msg)"
+			endif
+
 			"call <sid>OutputMessage(msg)
 		else
 			call add(msg, printf("Can't determine char under cursor, %s not found", s:UniFile))
