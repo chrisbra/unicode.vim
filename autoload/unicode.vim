@@ -527,7 +527,7 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
 		echohl Title
 		echon item[2]
 		echohl Normal
-		echon " ". item[1]. " ". item[3] . " "
+		echon item[1]. " ". item[3] . " "
 	endfor
 endfu
 
