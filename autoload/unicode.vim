@@ -539,9 +539,13 @@ fu! unicode#GetDigraph(type, ...) "{{{1
     let sel_save = &selection
     let &selection = "inclusive"
     let _a = [getreg("a"), getregtype("a")]
+    let start = ''
 
     if a:0  " Invoked from Visual mode, use '< and '> marks.
         silent exe "norm! `<" . a:type . '`>"ay'
+        if col('$') == col("'>")
+            let start.="\n"
+        endif
     elseif a:type == 'line'
         silent exe "norm! '[V']\"ay"
     elseif a:type == 'block'
@@ -574,8 +578,11 @@ fu! unicode#GetDigraph(type, ...) "{{{1
     endw
 
     if s != @a
-        let @a = s
+        let @a = start.s
         exe "norm! gv\"ap"
+        if start == "\n"
+            exe "norm! j$"
+        endif
     endif
 
     let &selection = sel_save
