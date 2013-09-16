@@ -535,6 +535,53 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
 	endfor
 endfu
 
+fu! unicode#GetDigraph(type, ...) "{{{1
+	let sel_save = &selection
+	let &selection = "inclusive"
+	let _a = [getreg("a"), getregtype("a")]
+
+	if a:0	" Invoked from Visual mode, use '< and '> marks.
+		silent exe "norm! `<" . a:type . '`>"ay'
+	elseif a:type == 'line'
+		silent exe "norm! '[V']\"ay"
+	elseif a:type == 'block'
+		silent exe "norm! `[\<C-V>`]\"ay"
+	else
+		silent exe "normal! `[v`]\"ay"
+	endif
+
+	let s = ''
+	while !empty(@a)
+		" need to check the next 2 characters
+		for i in range(2)
+			let char{i} = matchstr(@a, '^.')
+			if char2nr(char{i}) > 126 || char2nr(char{i}) < 20
+				let s.=char0. (exists("char1") ? "char1" : "")
+				let @a=substitute(@a, '^.', '', '')
+				break
+			endif
+			let @a=substitute(@a, '^.', '', '')
+			if empty(@a)
+				break
+			endif
+		endfor
+		if exists("char0") && exists("char1")
+			" How about a digraph() function?
+			" e.g. :let s.=digraph(char[0], char[1])
+			exe "sil! norm! :let s.='\<c-k>".char0.char1."'\<cr>"
+		endif
+		unlet! char0 char1
+	endw
+
+	if s != @a
+		let @a = s
+		exe "norm! gv\"ap"
+	endif
+
+	let &selection = sel_save
+	call call("setreg", ["a"]+_a)
+endfu
+
 fu! <sid>GetDigraphChars(code) "{{{1
 	let dlist = <sid>GetDigraph()
 	let ddict = {}
@@ -613,8 +660,9 @@ fu! <sid>GetDigraph() "{{{1
 		" special case: digraph 57344: starts with 2 spaces
 		"return filter(dlist, 'v:val =~ "57344$"')
 		let idx=match(s:dlist, '57344$')
-		let s:dlist[idx]='	 '.s:dlist[idx]
-
+		if idx > -1
+			let s:dlist[idx]='	 '.s:dlist[idx]
+		endif
 		return s:dlist
 	endif
 endfu
@@ -665,4 +713,4 @@ fu! <sid>GetHtmlEntity(hex) "{{{1
 	return get(s:html, a:hex, '')
 endfu
 " Modeline "{{{1
-" vim: ts=4 sts=4 fdm=marker com+=l\:\" fdl=0
+" vim: ts=4 sts=4 fdm=marker com+=l\:\" fdl=0 et

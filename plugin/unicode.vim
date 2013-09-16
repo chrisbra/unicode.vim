@@ -18,8 +18,6 @@ endif
 let g:loaded_unicodePlugin = 1
 let s:keepcpo              = &cpo
 set cpo&vim
-
-let s:enableUnicodeCompletion = (exists("g:enableUnicodeCompletion") ? g:enableUnicodeCompletion : 0)
 " ------------------------------------------------------------------------------
 " Public Interface: {{{1
 com! EnableUnicodeCompletion call unicode#Init(1)
@@ -27,9 +25,21 @@ com! DisableUnicodeCompletion call unicode#Init(0)
 com! -nargs=? UnicodeName call unicode#GetUniChar(<q-args>)
 com! -nargs=? -bang Digraphs call unicode#OutputDigraphs(<q-args>, <q-bang>)
 
-if s:enableUnicodeCompletion
+if get(g:, 'enableUnicodeCompletion', 0)
+    " prevent sourcing autoload file
     exe "call unicode#Init(s:enableUnicodeCompletion)"
-    "let s:enableUnicodeCompletion = !s:enableUnicodeCompletion
+endif
+
+" Setup Mappings
+nnoremap <silent> <Plug>(MakeDigraph) :set opfunc=unicode#GetDigraph<CR>g@
+vnoremap <silent> <Plug>(MakeDigraph) :<C-U>call unicode#GetDigraph(visualmode(), 1)<CR>
+
+if !hasmapto('<Plug>(MakeDigraph)', 'n')
+    nmap <F4> <Plug>(MakeDigraph)
+endif
+
+if !hasmapto('<Plug>(MakeDigraph)', 'v')
+    vmap <F4> <Plug>(MakeDigraph)
 endif
 
 " =====================================================================
