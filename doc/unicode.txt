@@ -9,6 +9,14 @@ Copyright: (c) 2009 - 2013 by Christian Brabandt
            NO WARRANTY, EXPRESS OR IMPLIED.  USE AT-YOUR-OWN-RISK.
 
 ==============================================================================
+0. Contents                                                  *unicode-toc*
+
+        1.  Functionality...........................: |unicode-plugin|
+        2.  Completing Unicode chars................: |unicode-plugin-usage|
+        3.  Completing digraphs.....................: |digraph-completion|
+        4.  Changelog...............................: |unicode-plugin-history|
+
+==============================================================================
                                                               *unicode-plugin*
 1. Functionality
 
@@ -24,7 +32,6 @@ which it will try to download using |netrw| . If this is unsuccessfull, or
 you do not have |netrw| enabled, dowload the file manually and save it in the
 unicode directory below the autoload directory in which unicode.vim is
 located.
-
 
                                                  *:EnableUnicodeCompletion*
 By default the plugin is not enabled. To enable it enter: >
@@ -57,7 +64,6 @@ shown in paranthesis.
 
 If you specify a register name, the message will also be saved into that
 register.
-
                                                                     *:Digraphs*
 >
     :Digraphs
@@ -193,9 +199,33 @@ CTRL-X CTRL-G           Search for the character in front of the cursor and
        CTRL-P           Use previous match. This match replaces the previous
                         one.
 
+                                                        *<Plug>(MakeDigraph)*
+Alternatively, the plugin sets up a map to <f4>, for easier generation of
+digraphs. This allows you to enter the digraph base characters and let the
+plugin convert a certain range to its corresponding digraphs. Consider this
+line: >
 
+    a:e:o:u:1Sß/\
+<
+Now put the cursor on the first char, press <f4> and hit '$'. The result will
+look like this: >
+
+    äëöü¹ß×
+
+Note, that all pairs of base characters have been converted to their
+corresponding digraph, leaving chars, that don't form a digraph alone (the
+'ß')
+
+If you like to change the default map, put a line like this into your |.vimrc|
+>
+    nmap <f2> <Plug>(MakeDigraph)
+<
+Now, the <f2> can be used to generate digraphs from their pairs. This is  done
+using an 'opfunc'-mapping (see |:map-operator|).
 ==============================================================================
 4. unicode History                                    *unicode-plugin-history*
+    0.18: (unreleased)  - include mapping for easier digraph generation
+                        - fix wrong display of :Digraphs 57344
     0.17: Aug 15, 2013  - disable preview window (for completing unicode chars)
                           by default, can be enabled by setting the variable
                           g:UnicodeShowPreviewWindow (patch by Marcin
