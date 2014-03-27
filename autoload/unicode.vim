@@ -507,33 +507,76 @@ endfun
 fu! unicode#OutputDigraphs(match, bang) "{{{1
     let screenwidth = 0
     let digit = a:match + 0
+    let name = ''
+    let line = 0
+    let unidict = {}
+    let tchar = {}
+    if len(a:match) > 1
+        " try to match digest name from unicode name
+        if !exists("s:UniDict")
+            let s:UniDict = <sid>UnicodeDict()
+        endif
+        let name = a:match
+        let unidict = filter(copy(s:UniDict), 'v:key =~? name')
+    endif
+
     for dig in sort(<sid>GetDigraph(), '<sid>CompareDigraphs')
         " display digraphs that match value
-        if dig !~# a:match && digit == 0
+        if dig !~# a:match && digit == 0 && empty(unidict)
             continue
         endif
+        " digraph: xy Z \d\+
+        " (x and y are the letters to create the digraph)
+        "
         let item = matchlist(dig, '\(..\)\s\(\%(\s\s\)\|.\{,4\}\)\s\+\(\d\+\)$')
 
         " if digit matches, we only want to display digraphs matching the
         " decimal values
-        if digit > 0 && digit !~ item[3]
+        if (digit > 0 && digit !~ item[3]) ||
+            \ (!empty(name) &&  match(values(unidict), '^'.item[3].'$') == -1)
             continue
         endif
 
-        let screenwidth += strdisplaywidth(dig) + 2
-
-        " if the output is too wide, echo an output
-        if screenwidth > &columns || !empty(a:bang)
-            let screenwidth = 0
-            echon "\n"
+        if !empty(name)
+            let tchar = filter(copy(unidict), 'v:val == item[3]')
         endif
+
+        " add trailing  space for item[2] if there isn't one (e.g. needed for digraph 132)
+        if item[2] !~? '\s$'
+            let item[2] = printf("%s ", item[2])
+        endif
+
+        let output = printf("%s%s %s ", item[2], item[1], item[3])
+        if !empty(name)
+            let output .= printf("(%s) ", keys(tchar)[0])
+        endif
+
+        if screenwidth + <sid>Screenwidth(output) >= &columns
+            \ || !empty(a:bang)
+            let screenwidth = 0
+            if line > 0
+                echon "\n"
+            endif
+            let line += 1
+        endif
+        " if the output is too wide, echo an linebreak
+        let screenwidth += <sid>Screenwidth(output)
 
         echohl Title
         echon item[2]
         echohl Normal
-        echon item[1]. " ". item[3] . " "
+        echon printf("%s %s ", item[1], item[3])
+        if !empty(tchar)
+            echon printf("(%s) ", keys(tchar)[0])
+        endif
     endfor
 endfu
+
+fu! <sid>Screenwidth(item) "{{{1
+    " Takes string arguments and calculates the width
+    return strdisplaywidth(a:item)
+endfu
+
 
 fu! unicode#GetDigraph(type, ...) "{{{1
     let sel_save = &selection
@@ -604,9 +647,9 @@ fu! <sid>UnicodeDict() "{{{1
     let dict={}
     let list=readfile(s:UniFile)
     for glyph in list
-    let val          = split(glyph, ";")
-    let Name         = val[1]
-    let dict[Name]   = str2nr(val[0],16)
+        let val          = split(glyph, ";")
+        let Name         = val[1]
+        let dict[Name]   = str2nr(val[0],16)
     endfor
     return dict
 endfu

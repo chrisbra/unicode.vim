@@ -81,7 +81,15 @@ an argument to the command: >
     :Digraphs! A
 
 displays all digraphs, that match 'A' (e.g. all that can be created with the
-letter A or whose digraph matches the letter 'A'.
+letter A or whose digraph matches the letter 'A'.)
+
+If you know the name, you can also search for the unicode name:
+
+    :Digraphs copy
+
+will display all Digraphs, where their unicode name contains the word "copy"
+(e.g. copyright symbol). Case is ignored. Note, you need at least to enter 2
+characters.
 
 ==============================================================================
                                                     *unicode-plugin-usage*
@@ -226,6 +234,7 @@ using an 'opfunc'-mapping (see |:map-operator|).
 4. unicode History                                    *unicode-plugin-history*
     0.18: (unreleased)  - include mapping for easier digraph generation
                         - fix wrong display of :Digraphs 57344
+			- |:Digraphs| can also search for unicode name
     0.17: Aug 15, 2013  - disable preview window (for completing unicode chars)
                           by default, can be enabled by setting the variable
                           g:UnicodeShowPreviewWindow (patch by Marcin
