@@ -10,6 +10,7 @@
 " GetLatestVimScripts: 2822 18 :AutoInstall: unicode.vim
 " ---------------------------------------------------------------------
 
+" initialize Variables {{{1
 if exists("g:unicode_URL")
     let s:unicode_URL=g:unicode_URL
 else
@@ -508,7 +509,8 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
     let line = 0
     let unidict = {}
     let tchar = {}
-    if len(a:match) > 1
+    let start = 1
+    if len(a:match) > 1 && digit == 0
         " try to match digest name from unicode name
         if !exists("s:UniDict")
             let s:UniDict = <sid>UnicodeDict()
@@ -529,7 +531,7 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
 
         " if digit matches, we only want to display digraphs matching the
         " decimal values
-        if (digit > 0 && digit !~ item[3]) ||
+        if (digit > 0 && item[3] !~ '^'.digit.'$') ||
             \ (!empty(name) &&  match(values(unidict), '^'.item[3].'$') == -1)
             continue
         endif
@@ -548,24 +550,22 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
             let output .= printf("(%s) ", keys(tchar)[0])
         endif
 
+        " if the output is too wide, echo an linebreak
         if screenwidth + <sid>Screenwidth(output) >= &columns
-            \ || !empty(a:bang)
+            \ || (!empty(a:bang) && start == 0)
             let screenwidth = 0
-            if line > 0
-                echon "\n"
-            endif
             let line += 1
         endif
-        " if the output is too wide, echo an linebreak
-        let screenwidth += <sid>Screenwidth(output)
 
-        echohl Title
-        echon item[2]
-        echohl Normal
-        echon printf("%s %s ", item[1], item[3])
-        if !empty(tchar)
-            echon printf("(%s) ", keys(tchar)[0])
+        if start
+            redraw! "fix annoying redraw bug
+            let start = 0
         endif
+        let screenwidth += <sid>ScreenOutput(
+                \ (line > 0 && screenwidth == 0 ? 1 : 0),
+                \ ['%s', item[2]], 
+                \ ['%s %s ', item[1], item[3]],
+                \ empty(tchar) ? [] : ['(%s) ', keys(tchar)[0]])
     endfor
 endfu
 
@@ -623,6 +623,19 @@ fu! unicode#GetDigraph(type, ...) "{{{1
     call call("setreg", ["a"]+_a)
 endfu
 
+fu! <sid>ScreenOutput(...) "{{{1
+    if a:1 "first argument indicates whether we need a linebreak
+        echon "\n"
+    endif
+    let list=filter(a:000[1:], '!empty(v:val)')
+    let i=0
+    for values in list
+        exe "echohl ". (i ? "Normal" : "Title")
+        exe "echon " string(call("printf", values))
+        let i+=<sid>Screenwidth(call('printf', values))
+    endfor
+    return i
+endfu
 fu! <sid>Screenwidth(item) "{{{1
     " Takes string arguments and calculates the width
     return strdisplaywidth(a:item)
