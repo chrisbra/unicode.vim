@@ -437,15 +437,15 @@ fu! unicode#GetUniChar(...) "{{{1
                 let s:UniDict=<sid>UnicodeDict()
             endif
             let msg = []
+            let dchar = '' " digraph char
 
-        " Get glyph at Cursor
-        " need to use redir, cause we also want to capture combining chars
+            " Get glyph at Cursor
+            " need to use redir, cause we also want to capture combining chars
             redir => a | exe "silent norm! ga" | redir end 
             let a = substitute(a, '\n', '', 'g')
             " Special case: no character under cursor
             if a == 'NUL'
                 call add(msg, "'NUL' U+0000 NULL")
-                "call add(msg, "No character under cursor!")
                 return
             endif
             let dlist = <sid>GetDigraph()
@@ -474,26 +474,26 @@ fu! unicode#GetUniChar(...) "{{{1
                 else
                     let dict = filter(copy(s:UniDict), 'v:val == dec')
                     if empty(dict)
-                    " not found
+                        " not found
                         call add(msg, printf("Character '%s' U+%04X not found", glyph, dec))
                         return
                     endif
-                    let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
+                    let dig   = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
                     if !empty(dig)
-                        let dchar = printf("(%s)", dig[0][0:1])
-                    else
-                        let dchar = ''
+                        " get digraph for character
+                        for val in dig
+                            let dchar .= printf("%s,", val[0:1])
+                        endfor
+                        let dchar = printf('(%s)', dchar[0:-2]) " strip trailing komma
                     endif
-                    let html = <sid>GetHtmlEntity(dec)
-                    call add(msg, printf("'%s' U+%04X %s %s %s", glyph, values(dict)[0],
-                    \ keys(dict)[0], dchar, html))
+                    let html  = <sid>GetHtmlEntity(dec)
+                    call add(msg, printf("'%s' U+%04X, Dec:%d, %s %s %s",
+                        \ glyph, dec, values(dict)[0],  keys(dict)[0], dchar, html))
                 endif
             endfor
             if exists("a:1") && !empty(a:1)
                 exe "let @".a:1. "=join(msg)"
             endif
-
-            "call <sid>OutputMessage(msg)
         else
             call add(msg, printf("Can't determine char under cursor, %s not found", s:UniFile))
         endif

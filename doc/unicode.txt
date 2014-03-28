@@ -60,7 +60,8 @@ The plugin will then output the character, the character's hexadecimal value
 and the official Unicode name.
 
 Additionally, if there exists a digraph for that character, it will also be
-shown in paranthesis.
+shown in paranthesis (in case of several digraphs for that character, all will
+be shown, separated by comma).
 
 If you specify a register name, the message will also be saved into that
 register.
