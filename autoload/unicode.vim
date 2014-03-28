@@ -8,9 +8,7 @@
 "  *** ***   Use At-Your-Own-Risk!   *** ***
 "
 " GetLatestVimScripts: 2822 18 :AutoInstall: unicode.vim
-
 " ---------------------------------------------------------------------
-
 
 if exists("g:unicode_URL")
     let s:unicode_URL=g:unicode_URL
@@ -22,7 +20,12 @@ if !exists("g:UnicodeShowPreviewWindow")
     let g:UnicodeShowPreviewWindow = 0
 endif
 
-" HTML entitities
+let s:file=matchstr(s:unicode_URL, '[^/]*$')
+
+let s:directory  = expand("<sfile>:p:h")."/unicode"
+let s:UniFile    = s:directory . '/UnicodeData.txt'
+
+" HTML entitities {{{2
 let s:html = {}
 let s:html[0x0022] = "&quot;"
 let s:html[0x0026] = "&amp;"
@@ -281,13 +284,7 @@ let s:html[0x25CA] = "&loz;"
 let s:html[0x2660] = "&spades;"
 let s:html[0x2663] = "&clubs;"
 let s:html[0x2665] = "&hearts;"
-let s:html[0x2666] = "&diams;"
-
-
-let s:file=matchstr(s:unicode_URL, '[^/]*$')
-
-let s:directory  = expand("<sfile>:p:h")."/unicode"
-let s:UniFile    = s:directory . '/UnicodeData.txt'
+let s:html[0x2666] = "&diams;" "}}}2
 
 fu! unicode#CompleteUnicode(findstart,base) "{{{1
   if !exists("s:numeric")
