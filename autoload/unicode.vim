@@ -506,7 +506,6 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
     let screenwidth = 0
     let digit = a:match + 0
     let name = ''
-    let line = 0
     let unidict = {}
     let tchar = {}
     let start = 1
@@ -555,18 +554,17 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
         if screenwidth + <sid>Screenwidth(output) >= &columns
             \ || (!empty(a:bang) && start == 0)
             let screenwidth = 0
-            let line += 1
         endif
 
         if start
             redraw! "fix annoying redraw bug
-            let start = 0
         endif
         let screenwidth += <sid>ScreenOutput(
-                \ (line > 0 && screenwidth == 0 ? 1 : 0),
+                \ (start == 0 && screenwidth == 0 ? 1 : 0),
                 \ [format[0], item[2]], 
                 \ [format[1], item[1], item[3]],
                 \ empty(tchar) ? [] : [format[2], keys(tchar)[0]])
+        let start = 0
     endfor
 endfu
 
