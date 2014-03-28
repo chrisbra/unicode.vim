@@ -286,4 +286,4 @@ using an 'opfunc'-mapping (see |:map-operator|).
     0.1: Oct 22, 2009:  First working version
 
 ==============================================================================
-vim:tw=78:ts=8:ft=help
+vim:tw=78:ts=8:ft=help:fenc=utf-8
