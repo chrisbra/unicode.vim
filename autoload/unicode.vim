@@ -510,7 +510,7 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
     let tchar = {}
     let start = 1
     let format = ['%s','%s %s ', '(%s) ']
-    if len(a:match) > 1 && type(a:match) == type('') && digit == 0
+    if len(a:match) > 1 && digit == 0
         " try to match digest name from unicode name
         if !exists("s:UniDict")
             let s:UniDict = <sid>UnicodeDict()
@@ -561,10 +561,57 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
         endif
         let screenwidth += <sid>ScreenOutput(
                 \ (start == 0 && screenwidth == 0 ? 1 : 0),
-                \ [format[0], item[2]], 
-                \ [format[1], item[1], item[3]],
-                \ empty(tchar) ? [] : [format[2], keys(tchar)[0]])
+                \ printf(format[0], item[2]), 
+                \ printf(format[1], item[1], item[3]),
+                \ empty(tchar) ? '' : printf(format[2], keys(tchar)[0]))
         let start = 0
+    endfor
+endfu
+
+fu! unicode#FindUnicodeByName(match) "{{{1
+    let digit = a:match + 0
+    let unidict = {}
+    let name = ''
+    let output = []
+    if !exists("s:UniDict")
+        let s:UniDict = <sid>UnicodeDict()
+    endif
+    if len(a:match) > 1 && digit == 0
+        " try to match digest name from unicode name
+        let name = a:match
+    endif
+    if !empty(name)
+        let unidict = filter(copy(s:UniDict), 'v:key =~? name')
+    else
+        " filter for decimal value
+        let unidict = filter(copy(s:UniDict), 'v:val == digit')
+    endif
+
+    for [name, decimal] in items(unidict)
+        let format = ["% 6S\t", "Dec:%06d, Hex:%06X\t", '%s', '%s', '%s']
+        " Try to get digraph char
+        let dchar=''
+        let dig = filter(copy(<sid>GetDigraph()), 'v:val =~ ''\D''.decimal.''$''')
+        if !empty(dig)
+            " get digraph for character
+            for val in dig
+                let dchar .= printf("%s,", val[0:1])
+            endfor
+            let format[3] = ' (%s) '
+            let dchar = printf('%s', dchar[0:-2]) " strip trailing komma
+        endif
+        " Get html entity
+        let html  = <sid>GetHtmlEntity(decimal)
+        call add(output, printf(format[0], nr2char(decimal)).
+                    \ printf(join(format[1:]), decimal, decimal, name, dchar, html))
+    endfor
+    let i=1
+    for item in sort(output, '<sid>CompareListsByHex')
+        if i == 1
+            redraw!
+        endif
+        echo printf("%*d %s", strdisplaywidth(len(output)), i, item)
+        let i+=1
     endfor
 endfu
 
@@ -628,10 +675,10 @@ fu! <sid>ScreenOutput(...) "{{{1
     endif
     let list=filter(a:000[1:], '!empty(v:val)')
     let i=0
-    for values in list
+    for value in list
         exe "echohl ". (i ? "Normal" : "Title")
-        exe "echon " string(call("printf", values))
-        let i+=<sid>Screenwidth(call('printf', values))
+        echon value
+        let i+=<sid>Screenwidth(value)
     endfor
     return i
 endfu
@@ -733,6 +780,18 @@ endfu
 fu! <sid>CompareDigraphs(d1, d2) "{{{1
     let d1=matchstr(a:d1, '\d\+$')+0
     let d2=matchstr(a:d2, '\d\+$')+0
+    if d1 == d2
+        return 0
+    elseif d1 > d2
+        return 1
+    else
+        return -1
+    endif
+endfu
+
+fu! <sid>CompareListsByHex(l1, l2) "{{{1
+    let d1=matchstr(a:l1, 'Hex:\zs\x\+\ze\s')+0
+    let d2=matchstr(a:l2, 'Hex:\zs\x\+\ze\s')+0
     if d1 == d2
         return 0
     elseif d1 > d2
