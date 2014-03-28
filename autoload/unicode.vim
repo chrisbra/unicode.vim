@@ -572,12 +572,6 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
     endfor
 endfu
 
-fu! <sid>Screenwidth(item) "{{{1
-    " Takes string arguments and calculates the width
-    return strdisplaywidth(a:item)
-endfu
-
-
 fu! unicode#GetDigraph(type, ...) "{{{1
     let sel_save = &selection
     let &selection = "inclusive"
@@ -631,6 +625,12 @@ fu! unicode#GetDigraph(type, ...) "{{{1
     let &selection = sel_save
     call call("setreg", ["a"]+_a)
 endfu
+
+fu! <sid>Screenwidth(item) "{{{1
+    " Takes string arguments and calculates the width
+    return strdisplaywidth(a:item)
+endfu
+
 
 fu! <sid>GetDigraphChars(code) "{{{1
     let dlist = <sid>GetDigraph()
