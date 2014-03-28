@@ -510,7 +510,8 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
     let unidict = {}
     let tchar = {}
     let start = 1
-    if len(a:match) > 1 && digit == 0
+    let format = ['%s','%s %s ', '(%s) ']
+    if len(a:match) > 1 && type(a:match) == type('') && digit == 0
         " try to match digest name from unicode name
         if !exists("s:UniDict")
             let s:UniDict = <sid>UnicodeDict()
@@ -542,12 +543,12 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
 
         " add trailing  space for item[2] if there isn't one (e.g. needed for digraph 132)
         if item[2] !~? '\s$'
-            let item[2] = printf("%s ", item[2])
+            let item[2].= ' '
         endif
 
-        let output = printf("%s%s %s ", item[2], item[1], item[3])
+        let output = printf(format[0].format[1], item[2], item[1], item[3])
         if !empty(name)
-            let output .= printf("(%s) ", keys(tchar)[0])
+            let output .= printf(format[2], keys(tchar)[0])
         endif
 
         " if the output is too wide, echo an linebreak
@@ -563,9 +564,9 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
         endif
         let screenwidth += <sid>ScreenOutput(
                 \ (line > 0 && screenwidth == 0 ? 1 : 0),
-                \ ['%s', item[2]], 
-                \ ['%s %s ', item[1], item[3]],
-                \ empty(tchar) ? [] : ['(%s) ', keys(tchar)[0]])
+                \ [format[0], item[2]], 
+                \ [format[1], item[1], item[3]],
+                \ empty(tchar) ? [] : [format[2], keys(tchar)[0]])
     endfor
 endfu
 
