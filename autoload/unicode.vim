@@ -613,7 +613,13 @@ fu! unicode#FindUnicodeByName(match) "{{{1
         if i == 1
             redraw!
         endif
-        echo printf("%*d %s", strdisplaywidth(len(output)), i, item)
+        let list = matchlist(item, '\(.*\)\(Dec.*\)')
+        echohl Normal
+        echon printf("%*d ", strdisplaywidth(len(output)),i)
+        echohl Title
+        echon printf("%s", list[1])
+        echohl Normal
+        echon printf("%s", list[2]). (i < len(output) ?  "\n" : '')
         let i+=1
     endfor
 endfu
