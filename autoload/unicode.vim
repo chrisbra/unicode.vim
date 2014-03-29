@@ -583,6 +583,9 @@ fu! unicode#FindUnicodeByName(match) "{{{1
         " try to match digest name from unicode name
         let name = a:match
     endif
+    if (digit == 0 && emty(name))
+        echoerr "No argument was specified!"
+    endif
     if !empty(name)
         let unidict = filter(copy(s:UniDict), 'v:key =~? name')
     else
