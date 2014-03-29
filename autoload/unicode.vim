@@ -502,7 +502,14 @@ fu! unicode#GetUniChar(...) "{{{1
     endtry
 endfun
 
-fu! unicode#OutputDigraphs(match, bang) "{{{1
+fu! unicode#Digraphs(match, bang, ...) "{{{1
+    " if a:1 is given and is 1, return list of
+    " dicts with all matching unicode characters
+    let print_out = 1
+    if a:0 == 1 && a:1 == 1
+        let print_out = 0
+        let outlist = []
+    endif
     let screenwidth = 0
     let digit = a:match + 0
     let name = ''
@@ -510,13 +517,18 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
     let tchar = {}
     let start = 1
     let format = ['%s','%s %s ', '(%s) ']
-    if len(a:match) > 1 && digit == 0
+    if (len(a:match) > 1 && digit == 0)
         " try to match digest name from unicode name
         if !exists("s:UniDict")
             let s:UniDict = <sid>UnicodeDict()
         endif
         let name = a:match
         let unidict = filter(copy(s:UniDict), 'v:key =~? name')
+    elseif print_out == 0
+        if !exists("s:UniDict")
+            let s:UniDict = <sid>UnicodeDict()
+        endif
+        let unidict = copy(s:UniDict)
     endif
 
     for dig in sort(<sid>GetDigraph(), '<sid>CompareDigraphs')
@@ -556,16 +568,29 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
             let screenwidth = 0
         endif
 
-        if start
-            redraw! "fix annoying redraw bug
+        if print_out
+            if start
+                redraw! "fix annoying redraw bug
+            endif
+            let screenwidth += <sid>ScreenOutput(
+                    \ (start == 0 && screenwidth == 0 ? 1 : 0),
+                    \ printf(format[0], item[2]), 
+                    \ printf(format[1], item[1], item[3]),
+                    \ empty(tchar) ? '' : printf(format[2], keys(tchar)[0]))
+            let start = 0
+        else
+            let dict         = {}
+            let dict.glyph   = matchstr(item[2], '\S*\ze\s*$')
+            let dict.dig     = item[1]
+            let dict.decimal = item[3]
+            let dict.hex     = printf("0x%02X", item[3])
+            let dict.name    = printf(format[2], keys(tchar)[0])
+            call add(outlist, dict)
         endif
-        let screenwidth += <sid>ScreenOutput(
-                \ (start == 0 && screenwidth == 0 ? 1 : 0),
-                \ printf(format[0], item[2]), 
-                \ printf(format[1], item[1], item[3]),
-                \ empty(tchar) ? '' : printf(format[2], keys(tchar)[0]))
-        let start = 0
     endfor
+    if !print_out
+        return outlist
+    endif
 endfu
 
 fu! unicode#FindUnicodeBy(match, ...) "{{{1
