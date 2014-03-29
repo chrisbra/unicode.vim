@@ -14,7 +14,8 @@ Copyright: (c) 2009 - 2013 by Christian Brabandt
         1.  Functionality...........................: |unicode-plugin|
         2.  Completing Unicode chars................: |unicode-plugin-usage|
         3.  Completing digraphs.....................: |digraph-completion|
-        4.  Changelog...............................: |unicode-plugin-history|
+        4.  Public functions........................: |unicode-functions|
+        5.  Changelog...............................: |unicode-plugin-history|
 
 ==============================================================================
                                                               *unicode-plugin*
@@ -90,14 +91,15 @@ If you know the name, you can also search for the unicode name:
 will display all Digraphs, where their unicode name contains the word "copy"
 (e.g. copyright symbol). Case is ignored. Note, you need at least to enter 2
 characters.
-
-                                                                    *:UnicodeChar*
+								*:SearchUnicode*
     :SearchUnicode [name|nr]
 
 Outputs a list of unicode characters whose decimal value equals <nr> (use U+
 or 0x prefix to search using hexadecimal values) or whose name matches the
-given name. If possible, digraphs chars are displayed in (), separated by
-commas and html entitities are displayed as well.
+given name (can be a regular expression). (Matching is done with the case
+being ignored.) If possible, digraphs chars are displayed in (), separated by
+commas and html entitities are displayed as well. Note, depending on your
+search term, this might be a little bit slow.
 
 ==============================================================================
                                                     *unicode-plugin-usage*
@@ -238,12 +240,43 @@ If you like to change the default map, put a line like this into your |.vimrc|
 <
 Now, the <f2> can be used to generate digraphs from their pairs. This is  done
 using an 'opfunc'-mapping (see |:map-operator|).
+
 ==============================================================================
-4. unicode History                                    *unicode-plugin-history*
+							    *unicode-functions*
+The unicode plugins also makes some functions publicly available, so you can
+use it, if you want to write your own VimScript and need to handle unicode.
+
+These functions are available:
+
+unicode#FindUnicodeBy({match}[, {list}])		*unicode#FindUnicodeBy*
+	Searches the unicode data for {match} and outputs the results as
+	|:FindUnicode| does. {match} can be a regular expression or a decimal
+	or hex value (in which case the unicode characters will be searched
+	for their decimal/hex values). Use the prefix "0x" or "U+" to force
+	searching for that particular hex value. If {match} is an expression,
+	it will be matched against the charactername (and case will be
+	ignored).
+	If {list} is given, returns a list of dicts, each dict representing
+	one match.
+			    
+unicode#Digraphs({match}, {bang}[, {list}])		*unicode#Digraphs*
+	Searches the digraphs for {match} and outputs the results as
+	|:Digraphs| does. {match} can be a regular expression or a decimal
+	or hex value (in which case the unicode characters will be searched
+	for their decimal/hex values). Use the prefix "0x" to force
+	searching for that particular hex value. If {match} is an expression,
+	it will be matched against the charactername (and case will be
+	ignored).
+	If {list} is given, returns a list of dicts, each dict representing
+	one match.
+
+==============================================================================
+5. unicode History                                    *unicode-plugin-history*
     0.19: (unreleased)  - |:UnicodeName| shows all digraphs per character
 			- |:UnicodeName| shows decimal value for glyph
 			- |:SearchUnicode| search unicode character by name or
 			  value
+			- Make functions publicly available
     0.18: Mar 27, 2014  - include mapping for easier digraph generation
                         - fix wrong display of :Digraphs 57344
 			- |:Digraphs| can also search for unicode name
