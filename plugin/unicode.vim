@@ -24,7 +24,7 @@ com! EnableUnicodeCompletion call unicode#Init(1)
 com! DisableUnicodeCompletion call unicode#Init(0)
 com! -nargs=? UnicodeName call unicode#GetUniChar(<q-args>)
 com! -nargs=? -bang Digraphs call unicode#OutputDigraphs(<q-args>, <q-bang>)
-com! -nargs=1 SearchUnicode call unicode#FindUnicodeByName(<q-args>)
+com! -nargs=1 SearchUnicode call unicode#FindUnicodeBy(<q-args>)
 
 if get(g:, 'enableUnicodeCompletion', 0)
     " prevent sourcing autoload file

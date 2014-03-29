@@ -568,7 +568,13 @@ fu! unicode#OutputDigraphs(match, bang) "{{{1
     endfor
 endfu
 
-fu! unicode#FindUnicodeByName(match) "{{{1
+fu! unicode#FindUnicodeBy(match, ...) "{{{1
+    " if a:1 is given and is 1, return list of
+    " dicts with all matching unicode characters
+    let print_out = 1
+    if a:0 == 1 && a:1 == 1
+        let print_out = 0
+    endif
     let digit = a:match + 0
     if a:match[0:1] == 'U+'
         let digit = str2nr(a:match[2:], 16)
@@ -583,7 +589,7 @@ fu! unicode#FindUnicodeByName(match) "{{{1
         " try to match digest name from unicode name
         let name = a:match
     endif
-    if (digit == 0 && emty(name))
+    if (digit == 0 && empty(name))
         echoerr "No argument was specified!"
         return
     endif
@@ -609,23 +615,42 @@ fu! unicode#FindUnicodeByName(match) "{{{1
         endif
         " Get html entity
         let html  = <sid>GetHtmlEntity(decimal)
-        call add(output, printf(format[0], nr2char(decimal)).
+        if print_out == 0
+            let dict          = {}
+            let dict.name     = name
+            let dict.glyph    = nr2char(decimal)
+            let dict.dec      = decimal
+            let dict.hex      = printf("0x%02X", decimal)
+            if !empty(dchar)
+                let dict.dig  = dchar
+            endif
+            if !empty(html)
+                let dict.html = html
+            endif
+            call add(output, dict)
+        else
+            call add(output, printf(format[0], nr2char(decimal)).
                     \ printf(join(format[1:]), decimal, decimal, name, dchar, html))
-    endfor
-    let i=1
-    for item in sort(output, '<sid>CompareListsByHex')
-        if i == 1
-            redraw!
         endif
-        let list = matchlist(item, '\(.*\)\(Dec.*\)')
-        echohl Normal
-        echon printf("%*d ", strdisplaywidth(len(output)),i)
-        echohl Title
-        echon printf("%s", list[1])
-        echohl Normal
-        echon printf("%s", list[2]). (i < len(output) ?  "\n" : '')
-        let i+=1
     endfor
+    if print_out == 0
+        return output
+    else
+        let i=1
+        for item in sort(output, '<sid>CompareListsByHex')
+            if i == 1
+                redraw!
+            endif
+            let list = matchlist(item, '\(.*\)\(Dec.*\)')
+            echohl Normal
+            echon printf("%*d ", strdisplaywidth(len(output)),i)
+            echohl Title
+            echon printf("%s", list[1])
+            echohl Normal
+            echon printf("%s", list[2]). (i < len(output) ?  "\n" : '')
+            let i+=1
+        endfor
+    endif
 endfu
 
 fu! unicode#GetDigraph(type, ...) "{{{1
