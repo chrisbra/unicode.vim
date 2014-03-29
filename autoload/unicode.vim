@@ -570,6 +570,9 @@ endfu
 
 fu! unicode#FindUnicodeByName(match) "{{{1
     let digit = a:match + 0
+    if a:match[0:1] == 'U+'
+        let digit = str2nr(a:match[2:], 16)
+    endif
     let unidict = {}
     let name = ''
     let output = []

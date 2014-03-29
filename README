@@ -60,12 +60,12 @@ The plugin will then output the character, the character's hexadecimal value
 and the official Unicode name.
 
 Additionally, if there exists a digraph for that character, it will also be
-shown in paranthesis.
+shown in paranthesis (in case of several digraphs for that character, all will
+be shown, separated by comma).
 
 If you specify a register name, the message will also be saved into that
 register.
                                                                     *:Digraphs*
->
     :Digraphs
 
 Outputs the digraph list in an easier way to read with coloring of the digraphs.
@@ -90,6 +90,13 @@ If you know the name, you can also search for the unicode name:
 will display all Digraphs, where their unicode name contains the word "copy"
 (e.g. copyright symbol). Case is ignored. Note, you need at least to enter 2
 characters.
+
+                                                                    *:UnicodeChar*
+    :UnicodeChar [name|nr]
+
+Outputs a list of unicode characters whose value is either nr or whose name
+matches name. If possible, digraphs chars are displayed in (), separated by
+commas and html entitities are displayed as well.
 
 ==============================================================================
                                                     *unicode-plugin-usage*
@@ -232,6 +239,9 @@ Now, the <f2> can be used to generate digraphs from their pairs. This is  done
 using an 'opfunc'-mapping (see |:map-operator|).
 ==============================================================================
 4. unicode History                                    *unicode-plugin-history*
+    0.19: (unreleased)  - |:UnicodeName| shows all digraphs per character
+			- |:UnicodeName| shows decimal value for glyph
+			- |:UnicodeChar| search unicode character by name
     0.18: Mar 27, 2014  - include mapping for easier digraph generation
                         - fix wrong display of :Digraphs 57344
 			- |:Digraphs| can also search for unicode name
@@ -286,4 +296,4 @@ using an 'opfunc'-mapping (see |:map-operator|).
     0.1: Oct 22, 2009:  First working version
 
 ==============================================================================
-vim:tw=78:ts=8:ft=help
+vim:tw=78:ts=8:ft=help:fenc=utf-8
