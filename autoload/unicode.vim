@@ -793,8 +793,8 @@ fu! <sid>CompareDigraphs(d1, d2) "{{{1
 endfu
 
 fu! <sid>CompareListsByHex(l1, l2) "{{{1
-    let d1=matchstr(a:l1, 'Hex:\zs\x\+\ze\s')+0
-    let d2=matchstr(a:l2, 'Hex:\zs\x\+\ze\s')+0
+    let d1 = str2nr(matchstr(a:l1, 'Hex:\zs\x\{6}\ze\s'), 16)
+    let d2 = str2nr(matchstr(a:l2, 'Hex:\zs\x\{6}\ze\s'), 16)
     if d1 == d2
         return 0
     elseif d1 > d2
