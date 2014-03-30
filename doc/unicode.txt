@@ -280,14 +280,11 @@ unicode#Digraphs({match})			    *unicode#Digraphs*
 			by comma). This key is optional.
 		"html"	Html entity to create this Unicode Codepoint.
 
-	{match} can be a regular expression or a decimal
-	or hex value (in which case the unicode characters will be searched
-	for their decimal/hex values). Use the prefix "0x" to force
-	searching for that particular hex value. If {match} is an expression,
-	it will be matched against the charactername (and case will be
-	ignored).
-	If {list} is given, returns a list of dicts, each dict representing
-	one match.
+	{match} can be a regular expression or a decimal or hex value (in which
+	case the unicode characters will be searched for their decimal/hex
+	values). Use the prefix "0x" to force searching for that particular hex
+	value. If {match} is an expression, it will be matched against the
+	charactername (and case will be ignored).
 
 ==============================================================================
 5. unicode History                                    *unicode-plugin-history*
