@@ -573,9 +573,6 @@ fu! unicode#DigraphsInternal(match, bang, ...) "{{{1
         endif
 
         if print_out
-            if start
-                redraw! "fix annoying redraw bug
-            endif
             let screenwidth += <sid>ScreenOutput(
                     \ (start == 0 && screenwidth == 0 ? 1 : 0),
                     \ printf(format[0], item[2]), 
@@ -671,9 +668,6 @@ fu! unicode#FindUnicodeByInternal(match, ...) "{{{1
     else
         let i=1
         for item in sort(output, '<sid>CompareListsByHex')
-            if i == 1
-                redraw!
-            endif
             let list = matchlist(item, '\(.*\)\(Dec.*\)')
             echohl Normal
             echon printf("%*d ", strdisplaywidth(len(output)),i)
@@ -840,6 +834,7 @@ fu! <sid>GetDigraph() "{{{1
         if idx > -1
             let s:dlist[idx]='   '.s:dlist[idx]
         endif
+	redraw! "fix annoying redraw bug
         return s:dlist
     endif
 endfu
