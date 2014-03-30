@@ -502,7 +502,11 @@ fu! unicode#GetUniChar(...) "{{{1
     endtry
 endfun
 
-fu! unicode#Digraphs(match, bang, ...) "{{{1
+fu! unicode#Digraphs(match) "{{{1
+    return unicode#DigraphsInternal(a:match, "", 1)
+endfu
+
+fu! unicode#DigraphsInternal(match, bang, ...) "{{{1
     " if a:1 is given and is 1, return list of
     " dicts with all matching unicode characters
     let print_out = 1
@@ -593,7 +597,11 @@ fu! unicode#Digraphs(match, bang, ...) "{{{1
     endif
 endfu
 
-fu! unicode#FindUnicodeBy(match, ...) "{{{1
+fu! unicode#FindUnicodeBy(match) "{{{1
+    return unicode#FindUnicodeByInternal(a:match, 1)
+endfu
+
+fu! unicode#FindUnicodeByInternal(match, ...) "{{{1
     " if a:1 is given and is 1, return list of
     " dicts with all matching unicode characters
     let print_out = 1

@@ -248,20 +248,39 @@ use it, if you want to write your own VimScript and need to handle unicode.
 
 These functions are available:
 
-unicode#FindUnicodeBy({match}[, {list}])		*unicode#FindUnicodeBy*
-	Searches the unicode data for {match} and outputs the results as
-	|:FindUnicode| does. {match} can be a regular expression or a decimal
-	or hex value (in which case the unicode characters will be searched
-	for their decimal/hex values). Use the prefix "0x" or "U+" to force
-	searching for that particular hex value. If {match} is an expression,
-	it will be matched against the charactername (and case will be
-	ignored).
-	If {list} is given, returns a list of dicts, each dict representing
-	one match.
+unicode#FindUnicodeBy({match}])			*unicode#FindUnicodeBy*
+	Searches the unicode data for {match} and returns a list of dicts,
+	each dict representing one dict. The dict can have the following keys:
+		"name"	Unicode name
+		"glyph"	Unicode Codepoint
+		"dec"	Unicode Codepoint decimal value
+		"hex"	Unicode Codepoint hex value
+		"dig"	Digraph, to output this Unicode codepoint
+			in Vim (see |i_CTRL-K|) (If there
+			exists several digraphs, they will be separated
+			by comma). This key is optional.
+		"html"	Html entity to create this Unicode Codepoint.
+
+	{match} can be a regular expression or a decimal or hex value (in which
+	case the unicode characters will be searched for their decimal/hex
+	values). Use the prefix "0x" or "U+" to force searching for that
+	particular hex value. If {match} is an expression, it will be matched
+	against the charactername (and case will be ignored).
 			    
-unicode#Digraphs({match}, {bang}[, {list}])		*unicode#Digraphs*
-	Searches the digraphs for {match} and outputs the results as
-	|:Digraphs| does. {match} can be a regular expression or a decimal
+unicode#Digraphs({match})			    *unicode#Digraphs*
+	Searches the digraphs for {match} and returns a list of dicts for
+	each match. The dict can have the following keys:
+		"name"	Unicode name
+		"glyph"	Unicode Codepoint
+		"dec"	Unicode Codepoint decimal value
+		"hex"	Unicode Codepoint hex value
+		"dig"	Digraph, to output this Unicode codepoint
+			in Vim (see |i_CTRL-K|) (If there
+			exists several digraphs, they will be separated
+			by comma). This key is optional.
+		"html"	Html entity to create this Unicode Codepoint.
+
+	{match} can be a regular expression or a decimal
 	or hex value (in which case the unicode characters will be searched
 	for their decimal/hex values). Use the prefix "0x" to force
 	searching for that particular hex value. If {match} is an expression,
