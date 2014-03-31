@@ -685,6 +685,20 @@ fu! unicode#FindUnicodeByInternal(match, ...) "{{{1
     endif
 endfu
 
+fu! unicode#Digraph(char1, char2) "{{{1
+    if empty(a:char1) || empty(a:char2)
+        return ''
+    endif
+    let s=''
+    " How about a digrpah() function?
+    " already sent a patch to Bram
+    exe "sil! norm! :let s.='\<c-k>".a:char1.a:char2."'\<cr>"
+    if s == a:char1
+        return ''
+    endif
+    return (s ==# a:char1 ? '' : s)
+endfu
+
 fu! unicode#GetDigraph(type, ...) "{{{1
     let sel_save = &selection
     let &selection = "inclusive"
@@ -722,7 +736,7 @@ fu! unicode#GetDigraph(type, ...) "{{{1
         if exists("char0") && exists("char1")
             " How about a digraph() function?
             " e.g. :let s.=digraph(char[0], char[1])
-            exe "sil! norm! :let s.='\<c-k>".char0.char1."'\<cr>"
+            let s.=unicode#Digraph(char0, char1)
         endif
         unlet! char0 char1
     endw
@@ -839,7 +853,9 @@ fu! <sid>GetDigraph() "{{{1
         if idx > -1
             let s:dlist[idx]='   '.s:dlist[idx]
         endif
-	redraw! "fix annoying redraw bug
+        " Because of the redir, the next message might not be
+        " displayed correctly. So force a redraw now.
+        redraw!
         return s:dlist
     endif
 endfu
