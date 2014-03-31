@@ -949,7 +949,10 @@ endfu
 fu! <sid>UnicodeWrite(data) "{{{1
     " Take unicode dictionary and write it in VimL form
     " so it will be faster to load
-    let list = ['let unicode#unicode#data = {}']
+    let list = ['" internal cache file for unicode.vim plugin',
+        \ '" this file can safely be removed, it will be recreated if needed',
+        \ '',
+        \ 'let unicode#unicode#data = {}']
     for items in items(a:data)
         call add(list, printf("let unicode#unicode#data['%s'] = '%s'",
             \ items[0], items[1]))
