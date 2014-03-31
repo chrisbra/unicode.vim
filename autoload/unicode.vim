@@ -19,10 +19,8 @@ if !exists("g:UnicodeShowPreviewWindow")
     let g:UnicodeShowPreviewWindow = 0
 endif
 
-let s:file=matchstr(s:unicode_URL, '[^/]*$')
-
-let s:directory  = expand("<sfile>:p:h")."/unicode"
-let s:UniFile    = s:directory . '/UnicodeData.txt'
+let s:directory = expand("<sfile>:p:h")."/unicode"
+let s:UniFile   = s:directory . '/UnicodeData.txt'
 
 " HTML entitities {{{2
 let s:html = {}
@@ -531,7 +529,7 @@ fu! unicode#DigraphsInternal(match, bang, ...) "{{{1
     endif
     if (len(a:match) > 1 && digit == 0)
         let name    = a:match
-        let unidict = filter(copy(s:UniDict), 'v:key = ~? name')
+        let unidict = filter(copy(s:UniDict), 'v:key =~? name')
     elseif print_out == 0
         let unidict = copy(s:UniDict)
     endif
@@ -790,12 +788,18 @@ fu! <sid>UnicodeDict() "{{{1
     let dict={}
     " make sure unicodedata.txt is found
     if <sid>CheckDir()
-        let list=readfile(s:UniFile)
-        for glyph in list
-            let val          = split(glyph, ";")
-            let Name         = val[1]
-            let dict[Name]   = str2nr(val[0],16)
-        endfor
+        if filereadable(s:directory. '/UnicodeData.vim')
+            exe "source" s:directory. '/UnicodeData.vim'
+            let dict=g:unicode#unicode#data
+            unlet! g:unicode#unicode#data
+        else
+            let list=readfile(s:UniFile)
+            for glyph in list
+                let val          = split(glyph, ";")
+                let Name         = val[1]
+                let dict[Name]   = str2nr(val[0],16)
+            endfor
+            call <sid>UnicodeWrite(dict)
     endif
     return dict
 endfu
@@ -923,6 +927,18 @@ endfun
 
 fu! <sid>GetHtmlEntity(hex) "{{{1
     return get(s:html, a:hex, '')
+endfu
+
+fu! <sid>UnicodeWrite(data) "{{{1
+    " Take unicode dictionary and write it in VimL form
+    " so it will be faster to load
+    let list = ['let unicode#unicode#data = {}']
+    for items in items(a:data)
+        call add(list, printf("let unicode#unicode#data['%s'] = '%s'",
+            \ items[0], items[1]))
+    endfor
+    call writefile(list, s:directory. '/UnicodeData.vim')
+    unlet list
 endfu
 " Modeline "{{{1
 " vim: ts=4 sts=4 fdm=marker com+=l\:\" fdl=0 et
