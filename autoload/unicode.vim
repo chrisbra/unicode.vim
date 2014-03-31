@@ -581,18 +581,24 @@ fu! unicode#DigraphsInternal(match, bang, ...) "{{{1
                     \ empty(tchar) ? '' : printf(format[2], keys(tchar)[0]))
             let start = 0
         else
-	    let name = keys(tchar)[0]
-	    let clist=filter(copy(outlist), 'v:val["name"] ==? name')
-	    if empty(clist)
-            let dict         = {}
-            let dict.glyph   = matchstr(item[2], '\S*\ze\s*$')
-            let dict.dig     = item[1]
-            let dict.decimal = item[3]
-            let dict.hex     = printf("0x%02X", item[3])
-            let dict.name    = name
-            call add(outlist, dict)
-	    endif
-	    let clist=[]
+            let name = keys(tchar)[0]
+            let clist=filter(copy(outlist), 'v:val["name"] ==? name')
+            if empty(clist)
+                let dict         = {}
+                let dict.glyph   = matchstr(item[2], '\S*\ze\s*$')
+                let dict.dig     = item[1]
+                let dict.decimal = item[3]
+                let dict.hex     = printf("0x%02X", item[3])
+                let dict.name    = name
+                call add(outlist, dict)
+            else
+                let cdict = clist[0]
+                " digraph already in list, get index and add
+                " digraph char
+                let idx = index(outlist, cdict)
+                let outlist[idx].dig.=' '.item[1]
+            endif
+            let clist=[]
         endif
     endfor
     if !print_out
