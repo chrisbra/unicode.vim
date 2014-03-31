@@ -27,8 +27,11 @@ com! -nargs=? -bang Digraphs call unicode#DigraphsInternal(<q-args>, <q-bang>)
 com! -nargs=1 SearchUnicode call unicode#FindUnicodeByInternal(<q-args>)
 
 if get(g:, 'enableUnicodeCompletion', 0)
-    " prevent sourcing autoload file
-    exe "call unicode#Init(s:enableUnicodeCompletion)"
+    aug UnicodeVimEnter
+	au!
+	" prevent sourcing autoload file
+	au VimEnter * :exe "sil call unicode#Init(1)"
+    aug end
 endif
 
 " Setup Mappings
