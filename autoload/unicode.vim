@@ -304,30 +304,17 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
             let dg_char=''
             if s:showDigraphCode
                 let dg_char=<sid>GetDigraphChars(value)
-                if !empty(dg_char)
-                    let fstring = printf("U+%04X %s (%s):'%s'",
-                        \ value, key, dg_char, nr2char(value))
-                else
-                    let fstring=printf("U+%04X %s:%s", value, key, nr2char(value))
-                endif
-            else
-                let fstring=printf("U+%04X %s:'%s'", value, key, nr2char(value))
             endif
-            let istring = printf("U+%04X %s%s:'%s'", value, key,
-                \ empty(dg_char) ? '' : '('.dg_char.')', nr2char(value))
+            let fstring = printf("U+%04X %s%s:'%s'", value, key, dg_char, nr2char(value))
             if s:unicode_complete_name
                 let dict = {'word':key, 'abbr':fstring}
-                if get(g:,'UnicodeShowPreviewWindow',0)
-                    call extend(dict, {'info': istring})
-                endif
-                call complete_add(dict)
             else
                 let dict = {'word':nr2char(value), 'abbr':fstring}
-                if get(g:,'UnicodeShowPreviewWindow',0)
-                    call extend(dict, {'info': istring})
-                endif
-                call complete_add(dict)
             endif
+            if get(g:,'UnicodeShowPreviewWindow',0)
+                call extend(dict, {'info': fstring})
+            endif
+            call complete_add(dict)
             if complete_check()
                 break
             endif
