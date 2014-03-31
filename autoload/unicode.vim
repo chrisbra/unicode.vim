@@ -14,7 +14,6 @@
 if exists("g:unicode_URL")
     let s:unicode_URL=g:unicode_URL
 else
-    "let s:unicode_URL='http://www.unicode.org/Public/UNIDATA/Index.txt'
     let s:unicode_URL='http://www.unicode.org/Public/UNIDATA/UnicodeData.txt'
 endif
 if !exists("g:UnicodeShowPreviewWindow")
@@ -440,7 +439,8 @@ fu! unicode#GetUniChar(...) "{{{1
             let dchar = '' " digraph char
 
             " Get glyph at Cursor
-            " need to use redir, cause we also want to capture combining chars
+            " need to use redir, cause we also want to capture
+            " combining chars
             redir => a | exe "silent norm! ga" | redir end 
             let a = substitute(a, '\n', '', 'g')
             " Special case: no character under cursor
@@ -460,42 +460,50 @@ fu! unicode#GetUniChar(...) "{{{1
                         let dec = 10
                     endif
                     let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
-                    call add(msg, printf("'%s' U+%04X <Control Char> %s", glyph, dec,
-                            \ empty(dig) ? '' : '('.dig[0][0:1].')'))
+                    call add(msg, printf("'%s' U+%04X <Control Char> %s",
+                        \ glyph, dec,
+                        \ empty(dig) ? '' : '('.dig[0][0:1].')'))
                 " CJK Unigraphs start at U+4E00 and go until U+9FFF
                 elseif dec >= 0x4E00 && dec <= 0x9FFF
-                    call add(msg, printf("'%s' U+%04X CJK Ideograph", glyph, dec))
+                    call add(msg, printf("'%s' U+%04X CJK Ideograph",
+                        \ glyph, dec))
                 elseif dec >= 0xF0000 && dec <= 0xFFFFD
-                    call add(msg, printf("'%s' U+%04X character from Plane 15 for private use",
-                    \ glyph, dec))
+                    call add(msg, printf("'%s' U+%04X character from".
+                        \ Plane 15 for private use",  glyph, dec))
                 elseif dec >= 0x100000 && dec <= 0x10FFFD
-                    call add(msg, printf("'%s' U+%04X character from Plane 16 for private use",
-                \ glyph, dec))
+                    call add(msg, printf("'%s' U+%04X character from".
+                        \ "Plane 16 for private use",  glyph, dec))
                 else
                     let dict = filter(copy(s:UniDict), 'v:val == dec')
                     if empty(dict)
                         " not found
-                        call add(msg, printf("Character '%s' U+%04X not found", glyph, dec))
+                        call add(msg, printf("Character '%s' U+%04X".
+                            \ "not found", glyph, dec))
                         return
                     endif
-                    let dig   = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
+                    let dig   = filter(copy(dlist),
+                        \ 'v:val =~ ''\D''.dec.''$''')
                     if !empty(dig)
                         " get digraph for character
                         for val in dig
                             let dchar .= printf("%s,", val[0:1])
                         endfor
-                        let dchar = printf('(%s)', dchar[0:-2]) " strip trailing komma
+                         " strip trailing comma
+                        let dchar = printf('(%s)', dchar[0:-2])
                     endif
                     let html  = <sid>GetHtmlEntity(dec)
                     call add(msg, printf("'%s' U+%04X, Dec:%d, %s %s %s",
-                        \ glyph, dec, values(dict)[0],  keys(dict)[0], dchar, html))
+                        \ glyph, dec, values(dict)[0], 
+                        \ keys(dict)[0], dchar, html))
                 endif
             endfor
             if exists("a:1") && !empty(a:1)
                 exe "let @".a:1. "=join(msg)"
             endif
         else
-            call add(msg, printf("Can't determine char under cursor, %s not found", s:UniFile))
+            call add(msg,
+                \ printf("Can't determine char under cursor,".
+                \ "%s not found", s:UniFile))
         endif
     finally
         call <sid>OutputMessage(msg)
