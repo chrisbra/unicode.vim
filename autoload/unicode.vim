@@ -311,7 +311,7 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
             else
                 let dict = {'word':nr2char(value), 'abbr':fstring}
             endif
-            if get(g:,'UnicodeShowPreviewWindow',0)
+            if get(g:,'Unicode_ShowPreviewWindow',0)
                 call extend(dict, {'info': fstring})
             endif
             call complete_add(dict)
