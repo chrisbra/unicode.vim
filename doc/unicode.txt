@@ -307,6 +307,8 @@ unicode#Digraph({char1},{char2})		   *unicode#Digraph()*
 	returns the digraph of {char1} and {char2}. If it is not valid,
 	returns en empty string.
 
+unicode#UnicodeName({val})			 *unicode#UnicodeName()*
+	returns the unicode name of the character with the decimal value {val}
 ==============================================================================
 5. unicode History                                    *unicode-plugin-history*
     0.19: (unreleased)  - |:UnicodeName| shows all digraphs per character
@@ -315,7 +317,7 @@ unicode#Digraph({char1},{char2})		   *unicode#Digraph()*
 			  value
 			- Make functions publicly available
 			  (|unicode#Digraphs()|, |unicode#Digraph()|,
-			  |unicode#FindUnicodeBy()|)
+			  |unicode#FindUnicodeBy()|, |unicode#UnicodeName()|)
 			- cache UnicodeData.txt file in VimL dictionary
 			  format (so reading will be faster)
 			- Performance tuning, more comments, better error

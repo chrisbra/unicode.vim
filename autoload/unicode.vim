@@ -699,6 +699,9 @@ fu! unicode#GetDigraph(type, ...) "{{{1
     let &selection = sel_save
     call call("setreg", ["a"]+_a)
 endfu
+fu! unicode#UnicodeName(val) "{{{1
+    return <sid>GetUnicodeName(a:val)
+endfu
 fu! <sid>ScreenOutput(...) "{{{1
     if a:1 "first argument indicates whether we need a linebreak
         echon "\n"
