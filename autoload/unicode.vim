@@ -638,9 +638,14 @@ fu! unicode#FindUnicodeByInternal(match, ...) "{{{1
 
     for [name, decimal] in items(unidict)
         let format = ["% 6S\t", "Dec:%06d, Hex:%06X\t", '%s', '%s', '%s']
+        if v:version <= 703 && !has("patch713")
+            " patch 7.3.713 introduced the %S modifier for printf
+            let format[0] = substitute(format[0], 'S', 's', '')
+        endif
         " Try to get digraph char
         let dchar=''
-        let dig = filter(copy(<sid>GetDigraph()), 'v:val =~ ''\D''.decimal.''$''')
+        let dig = filter(copy(<sid>GetDigraph()),
+                    \ 'v:val =~ ''\D''.decimal.''$''')
         if !empty(dig)
             " get digraph for character
             for val in dig
@@ -666,7 +671,8 @@ fu! unicode#FindUnicodeByInternal(match, ...) "{{{1
             call add(output, dict)
         else
             call add(output, printf(format[0], nr2char(decimal)).
-                    \ printf(join(format[1:]), decimal, decimal, name, dchar, html))
+                \ printf(join(format[1:]), decimal, decimal,
+                \ name, dchar, html))
         endif
     endfor
     if print_out == 0
