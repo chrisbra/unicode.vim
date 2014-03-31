@@ -638,7 +638,7 @@ fu! unicode#FindUnicodeByInternal(match, ...) "{{{1
 
     for [name, decimal] in items(unidict)
         let format = ["% 6S\t", "Dec:%06d, Hex:%06X\t", '%s', '%s', '%s']
-        if v:version <= 703 && !has("patch713")
+        if (v:version == 703 && !has("patch713")) || v:version < 703
             " patch 7.3.713 introduced the %S modifier for printf
             let format[0] = substitute(format[0], 'S', 's', '')
         endif
