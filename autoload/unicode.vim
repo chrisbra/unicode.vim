@@ -418,10 +418,8 @@ fu! unicode#GetUniChar(...) "{{{1
                 return
             endif
         endif
-        let dchar = '' " digraph char
-        " Get char at Cursor
-        " need to use redir, cause we also want to capture
-        " combining chars
+        " Get char at Cursor, need to use redir, cause we also want
+        " to capture combining chars
         redir => a | exe "silent norm! ga" | redir end 
         let a = substitute(a, '\n', '', 'g')
         " Special case: no character under cursor
@@ -429,50 +427,40 @@ fu! unicode#GetUniChar(...) "{{{1
             call add(msg, "'NUL' U+0000 NULL")
             return
         endif
-        let dlist = <sid>GetDigraphList()
         " Split string, in case cursor was on a combining char
         for item in split(a, 'Octal \d\+\zs \?')
             let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
             let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
+            if dec == 0
+                let dec = 10
+            endif
+            let dig   = <sid>GetDigraphChars(dec)
             " Check for control char (has no name)
             if dec <= 0x1F || ( dec >= 0x7F && dec <= 0x9F)
-                if dec == 0
-                    let dec = 10
-                endif
-                let dig = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
-                call add(msg, printf("'%s' U+%04X <Control Char> %s",
-                    \ glyph, dec,
-                    \ empty(dig) ? '' : '('.dig[0][0:1].')'))
+                call add(msg, printf("'%s' U+%04X, Dec:%d <Control Char>%s",
+                    \ glyph, dec, dec, dig))
             " CJK Unigraphs start at U+4E00 and go until U+9FFF
             elseif dec >= 0x4E00 && dec <= 0x9FFF
-                call add(msg, printf("'%s' U+%04X CJK Ideograph", glyph, dec))
+                call add(msg, printf("'%s' U+%04X, Dec:%d CJK Ideograph%s",
+                    \ glyph, dec, dec, dig))
             elseif dec >= 0xF0000 && dec <= 0xFFFFD
-                call add(msg, printf("'%s' U+%04X character from".
-                    \ Plane 15 for private use",  glyph, dec))
+                call add(msg, printf("'%s' U+%04X, Dec:%d character from".
+                    \ " Plane 15 for private use%s",  glyph, dec, dec, dig))
             elseif dec >= 0x100000 && dec <= 0x10FFFD
-                call add(msg, printf("'%s' U+%04X character from".
-                    \ "Plane 16 for private use",  glyph, dec))
+                call add(msg, printf("'%s' U+%04X, Dec:%d character from".
+                    \ "Plane 16 for private use%s",  glyph, dec, dec, dig))
             else
                 let dict = filter(copy(s:UniDict), 'v:val == dec')
                 if empty(dict)
                     " not found
-                    call add(msg, printf("Character '%s' U+%04X".
-                        \ "not found", glyph, dec))
+                    call add(msg, printf("Character '%s' U+%04X, Dec: %d ".
+                        \ "not found%s", glyph, dec, dec, dig))
                     return
                 endif
-                let dig   = filter(copy(dlist), 'v:val =~ ''\D''.dec.''$''')
-                if !empty(dig)
-                    " get digraph for character
-                    for val in dig
-                        let dchar .= printf("%s,", val[0:1])
-                    endfor
-                        " strip trailing comma
-                    let dchar = printf('(%s)', dchar[0:-2])
-                endif
                 let html  = <sid>GetHtmlEntity(dec)
-                call add(msg, printf("'%s' U+%04X, Dec:%d, %s %s %s",
+                call add(msg, printf("'%s' U+%04X, Dec:%d, %s%s %s",
                     \ glyph, dec, values(dict)[0], 
-                    \ keys(dict)[0], dchar, html))
+                    \ keys(dict)[0], dig, html))
             endif
         endfor
         if exists("a:1") && !empty(a:1)
@@ -758,11 +746,12 @@ fu! <sid>Screenwidth(item) "{{{1
 endfu
 fu! <sid>GetDigraphChars(code) "{{{1
     "returns digraph of given decimal value
+    let tlist=[]
     for digraph in filter(copy(<sid>GetDigraphList()),
         \ 'split(v:val)[-1] ==? a:code')
-        return split(digraph)[0]
+        call add(tlist, printf("%s", split(digraph)[0]))
     endfor
-    return ''
+    return (empty(tlist) ? '' : printf(" (%s)", join(tlist, ' ')))
 endfu
 fu! <sid>UnicodeDict() "{{{1
     let dict={}
