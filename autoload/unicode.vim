@@ -811,6 +811,9 @@ fu! <sid>CheckUniFile(force) "{{{1
         call s:WarningMsg("If this doesn't work, you should download ")
         call s:WarningMsg(s:unicode_URL . " and save it as " . s:UniFile)
         sleep 10
+        if filereadable(s:directory. '/UnicodeData.vim')
+            call delete(s:directory. '/UnicodeData.vim')
+        endif
         if exists(":Nread")
             sp +enew
             " Use the default download method. You can specify a different
@@ -938,7 +941,7 @@ fu! <sid>UnicodeWrite(data) "{{{1
             \ items[0], items[1]))
     endfor
     call writefile(list, s:directory. '/UnicodeData.vim')
-    unlet list
+    unlet! list
 endfu
 " Modeline "{{{1
 " vim: ts=4 sts=4 fdm=marker com+=l\:\" fdl=0 et
