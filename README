@@ -1,9 +1,9 @@
-*unicode.txt* A completion plugin for Unicode glyphs
+*unicode.txt* A useful functions for use with unicode
 
 Author:  Christian Brabandt <cb@256bit.org>
 Version: 0.18 Thu, 27 Mar 2014 23:31:27 +0100
                                                         *unicode-copyright*
-Copyright: (c) 2009 - 2013 by Christian Brabandt
+Copyright: (c) 2009 - 2014 by Christian Brabandt
            The VIM LICENSE applies to unicode.vim and unicode.txt
            (see |copyright|) except use unicode instead of "Vim".
            NO WARRANTY, EXPRESS OR IMPLIED.  USE AT-YOUR-OWN-RISK.
@@ -14,7 +14,8 @@ Copyright: (c) 2009 - 2013 by Christian Brabandt
         1.  Functionality...........................: |unicode-plugin|
         2.  Completing Unicode chars................: |unicode-plugin-usage|
         3.  Completing digraphs.....................: |digraph-completion|
-        4.  Changelog...............................: |unicode-plugin-history|
+        4.  Public functions........................: |unicode-functions|
+        5.  Changelog...............................: |unicode-plugin-history|
 
 ==============================================================================
                                                               *unicode-plugin*
@@ -60,15 +61,16 @@ The plugin will then output the character, the character's hexadecimal value
 and the official Unicode name.
 
 Additionally, if there exists a digraph for that character, it will also be
-shown in paranthesis (in case of several digraphs for that character, all will
-be shown, separated by comma).
+shown in paranthesis (in case of several digraphs for that character, all
+will be shown, separated by comma).
 
 If you specify a register name, the message will also be saved into that
 register.
-                                                                    *:Digraphs*
+								*:Digraphs*
     :Digraphs
 
-Outputs the digraph list in an easier way to read with coloring of the digraphs.
+Outputs the digraph list in an easier way to read with coloring of the
+digraphs.
 
 If you want to display a list with a line break after each digraph, use the
 bang attribute >
@@ -90,13 +92,15 @@ If you know the name, you can also search for the unicode name:
 will display all Digraphs, where their unicode name contains the word "copy"
 (e.g. copyright symbol). Case is ignored. Note, you need at least to enter 2
 characters.
+							    *:SearchUnicode*
+    :SearchUnicode [name|nr]
 
-                                                                    *:UnicodeChar*
-    :UnicodeChar [name|nr]
-
-Outputs a list of unicode characters whose value is either nr or whose name
-matches name. If possible, digraphs chars are displayed in (), separated by
-commas and html entitities are displayed as well.
+Outputs a list of unicode characters whose decimal value equals <nr> (use U+
+or 0x prefix to search using hexadecimal values) or whose name matches the
+given name (can be a regular expression). (Matching is done with the case
+being ignored.) If possible, digraphs chars are displayed in (), separated by
+commas and html entitities are displayed as well. Note, depending on your
+search term, this might be a little bit slow.
 
 ==============================================================================
                                                     *unicode-plugin-usage*
@@ -235,13 +239,70 @@ If you like to change the default map, put a line like this into your |.vimrc|
 >
     nmap <f2> <Plug>(MakeDigraph)
 <
-Now, the <f2> can be used to generate digraphs from their pairs. This is  done
-using an 'opfunc'-mapping (see |:map-operator|).
+Now, the <f2> can be used to generate digraphs from their pairs. This is
+done using an 'opfunc'-mapping (see |:map-operator|).
+
 ==============================================================================
-4. unicode History                                    *unicode-plugin-history*
+							*unicode-functions*
+The unicode plugins also makes some functions publicly available, so you can
+use it, if you want to write your own VimScript and need to handle unicode.
+
+These functions are available:
+
+unicode#FindUnicodeBy({match}])			*unicode#FindUnicodeBy()*
+	Searches the unicode data for {match} and returns a list of dicts,
+	each dict representing one dict. The dict can have the following
+	keys:
+		"name"	Unicode name
+		"glyph"	Unicode Codepoint
+		"dec"	Unicode Codepoint decimal value
+		"hex"	Unicode Codepoint hex value
+		"dig"	Digraph, to output this Unicode codepoint
+			in Vim (see |i_CTRL-K|) (If there
+			exists several digraphs, they will be separated
+			by comma). This key is optional.
+		"html"	Html entity to create this Unicode Codepoint.
+
+	{match} can be a regular expression or a decimal or hex value (in
+	which case the unicode characters will be searched for their
+	decimal/hex values). Use the prefix "0x" or "U+" to force searching
+	for that particular hex value. If {match} is an expression, it will
+	be matched against the charactername (and case will be ignored).
+			    
+unicode#Digraphs({match})			    *unicode#Digraphs()*
+	Searches the digraphs for {match} and returns a list of dicts for
+	each match. The dict can have the following keys:
+		"name"	Unicode name
+		"glyph"	Unicode Codepoint
+		"dec"	Unicode Codepoint decimal value
+		"hex"	Unicode Codepoint hex value
+		"dig"	Digraph, to output this Unicode codepoint
+			in Vim (see |i_CTRL-K|) (If there
+			exists several digraphs, they will be separated
+			by comma). This key is optional.
+		"html"	Html entity to create this Unicode Codepoint.
+
+	{match} can be a regular expression or a decimal or hex value (in
+	which case the unicode characters will be searched for their
+	decimal/hex values). Use the prefix "0x" to force searching for that
+	particular hex value. If {match} is an expression, it will be matched
+	against the charactername (and case will be ignored).
+
+unicode#Digraph({char1},{char2})		   *unicode#Digraph()*
+	returns the digraph of {char1} and {char2}. If it is not valid,
+	returns en empty string.
+
+==============================================================================
+5. unicode History                                    *unicode-plugin-history*
     0.19: (unreleased)  - |:UnicodeName| shows all digraphs per character
 			- |:UnicodeName| shows decimal value for glyph
-			- |:UnicodeChar| search unicode character by name
+			- |:SearchUnicode| search unicode character by name or
+			  value
+			- Make functions publicly available
+			  (|unicode#Digraphs()|, |unicode#Digraph()|,
+			  |unicode#FindUnicodeBy()|)
+			- cache UnicodeData.txt file in VimL dictionary
+			  format (so reading will be faster)
     0.18: Mar 27, 2014  - include mapping for easier digraph generation
                         - fix wrong display of :Digraphs 57344
 			- |:Digraphs| can also search for unicode name
