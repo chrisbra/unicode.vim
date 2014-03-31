@@ -327,10 +327,13 @@ fu! unicode#CompleteDigraph() "{{{1
     let prevchar=getline('.')[col('.')-2]
     let prevchar1=getline('.')[col('.')-3]
     let dlist=<sid>GetDigraphList()
+    if !exists("s:UniDict")
+        let s:UniDict=<sid>UnicodeDict()
+    endif
     if prevchar !~ '\s' && !empty(prevchar)
-        let filter1 =  '( v:val[0] == prevchar1 && v:val[1] == prevchar)'
+        let filter1 =  '(v:val[0] == prevchar1 && v:val[1] == prevchar)'
         let filter2 = 'v:val[0] == prevchar || v:val[1] == prevchar'
-        let dlist1 = filter(copy(dlist), filter1)
+        let dlist1  = filter(copy(dlist), filter1)
         if empty(dlist1)
             let dlist = filter(dlist, filter2)
             let col=col('.')-1
@@ -345,11 +348,16 @@ fu! unicode#CompleteDigraph() "{{{1
     let tlist=[]
     for args in dlist
         let t=matchlist(args, '^\(..\)\s<\?\(..\?\)>\?\s\+\(\d\+\)$')
+        let prev_fmt="Abbrev\tGlyph\tCodepoint\tName\n%s\t%s\tU+%04X\t\t%s"
         if !empty(t)
-            let format=printf("'%s' %s U+%04X",t[1], t[2], t[3])
+            let format = printf("'%s' %s U+%04X",t[1], t[2], t[3])
+            let name   = ''
+            if get(g:, 'Unicode_ShowDigraphName', 0)
+                " returning the unicode name is expensive!
+                let name   = <sid>GetUnicodeName(t[3])
+            endif
             call add(tlist, {'word':nr2char(t[3]), 'abbr':format,
-                \ 'info': printf("Abbrev\tGlyph\tCodepoint\n%s\t%s\tU+%04X",
-                \ t[1],t[2],t[3])})
+                \ 'info': printf(prev_fmt, t[1],t[2],t[3],name)})
        endif
     endfor
     call complete(col, tlist)
@@ -422,33 +430,10 @@ fu! unicode#GetUniChar(...) "{{{1
                 let dec = 10
             endif
             let dig   = <sid>GetDigraphChars(dec)
-            " Check for control char (has no name)
-            if dec <= 0x1F || ( dec >= 0x7F && dec <= 0x9F)
-                call add(msg, printf("'%s' U+%04X, Dec:%d <Control Char>%s",
-                    \ glyph, dec, dec, dig))
-            " CJK Unigraphs start at U+4E00 and go until U+9FFF
-            elseif dec >= 0x4E00 && dec <= 0x9FFF
-                call add(msg, printf("'%s' U+%04X, Dec:%d CJK Ideograph%s",
-                    \ glyph, dec, dec, dig))
-            elseif dec >= 0xF0000 && dec <= 0xFFFFD
-                call add(msg, printf("'%s' U+%04X, Dec:%d character from".
-                    \ " Plane 15 for private use%s",  glyph, dec, dec, dig))
-            elseif dec >= 0x100000 && dec <= 0x10FFFD
-                call add(msg, printf("'%s' U+%04X, Dec:%d character from".
-                    \ "Plane 16 for private use%s",  glyph, dec, dec, dig))
-            else
-                let dict = filter(copy(s:UniDict), 'v:val == dec')
-                if empty(dict)
-                    " not found
-                    call add(msg, printf("Character '%s' U+%04X, Dec: %d ".
-                        \ "not found%s", glyph, dec, dec, dig))
-                    return
-                endif
-                let html  = <sid>GetHtmlEntity(dec)
-                call add(msg, printf("'%s' U+%04X, Dec:%d, %s%s %s",
-                    \ glyph, dec, values(dict)[0], 
-                    \ keys(dict)[0], dig, html))
-            endif
+            let name  = <sid>GetUnicodeName(dec)
+            let html  = <sid>GetHtmlEntity(dec)
+            call add(msg, printf("'%s' U+%04X, Dec:%d %s%s%s",
+                    \ glyph, dec, dec, name, dig, html))
         endfor
         if exists("a:1") && !empty(a:1)
             exe "let @".a:1. "=join(msg)"
@@ -895,6 +880,28 @@ fu! <sid>UnicodeWrite(data) "{{{1
     endfor
     call writefile(list, s:directory. '/UnicodeData.vim')
     unlet! list
+endfu
+fu! <sid>GetUnicodeName(dec) "{{{1
+    " returns Unicodename for decimal value
+    "
+    " Check for control char (has no name)
+    if a:dec <= 0x1F || (a:dec >= 0x7F && a:dec <= 0x9F)
+        return "<Control Char>"
+    " CJK Unigraphs start at U+4E00 and go until U+9FFF
+    elseif a:dec >= 0x4E00 && a:dec <= 0x9FFF
+        return "CJK Ideograph"
+    elseif a:dec >= 0xF0000 && a:dec <= 0xFFFFD
+        return "Character from Plane 15 for private use"
+    elseif a:dec >= 0x100000 && a:dec <= 0x10FFFD
+        return "Character from Plane 16 for private use"
+    else
+        let dict = filter(copy(s:UniDict), 'v:val ==? a:dec')
+        if empty(dict)
+            return "Character not found"
+        else
+            return keys(dict)[0]
+        endif
+    endif
 endfu
 " Modeline "{{{1
 " vim: ts=4 sts=4 fdm=marker com+=l\:\" fdl=0 et
