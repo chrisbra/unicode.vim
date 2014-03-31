@@ -311,9 +311,9 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
         let complete_list = filter(copy(s:UniDict), 'v:key =~? a:base')
     endif
     for [key, value] in sort(items(complete_list), "<sid>CompareList")
-        "let key=matchstr(key, "^[^0-9 ]*")
-        let dg_char=<sid>GetDigraphChars(value)
+        let dg_char=''
         if s:showDigraphCode
+            let dg_char=<sid>GetDigraphChars(value)
             if !empty(dg_char)
                 let fstring = printf("U+%04X %s (%s):'%s'",
                     \ value, key, dg_char, nr2char(value))
@@ -351,7 +351,7 @@ endfu
 fu! unicode#CompleteDigraph() "{{{1
     let prevchar=getline('.')[col('.')-2]
     let prevchar1=getline('.')[col('.')-3]
-    let dlist=<sid>GetDigraph()
+    let dlist=<sid>GetDigraphList()
     if prevchar !~ '\s' && !empty(prevchar)
         let filter1 =  '( v:val[0] == prevchar1 && v:val[1] == prevchar)'
         let filter2 = 'v:val[0] == prevchar || v:val[1] == prevchar'
@@ -447,7 +447,7 @@ fu! unicode#GetUniChar(...) "{{{1
             call add(msg, "'NUL' U+0000 NULL")
             return
         endif
-        let dlist = <sid>GetDigraph()
+        let dlist = <sid>GetDigraphList()
         " Split string, in case cursor was on a combining char
         for item in split(a, 'Octal \d\+\zs \?')
 
@@ -534,7 +534,7 @@ fu! unicode#DigraphsInternal(match, bang, ...) "{{{1
         let unidict = copy(s:UniDict)
     endif
 
-    for dig in sort(<sid>GetDigraph(), '<sid>CompareDigraphs')
+    for dig in sort(<sid>GetDigraphList(), '<sid>CompareDigraphs')
         " display digraphs that match value
         if dig !~# a:match && digit == 0 && empty(unidict)
             continue
@@ -594,7 +594,7 @@ fu! unicode#DigraphsInternal(match, bang, ...) "{{{1
             else
                 let cdict = clist[0]
                 " digraph already in list, get index and add
-                " digraph char
+                " digraph characters
                 let idx = index(outlist, cdict)
                 let outlist[idx].dig.=' '.item[1]
             endif
@@ -650,7 +650,7 @@ fu! unicode#FindUnicodeByInternal(match, ...) "{{{1
         endif
         " Try to get digraph char
         let dchar=''
-        let dig = filter(copy(<sid>GetDigraph()),
+        let dig = filter(copy(<sid>GetDigraphList()),
                     \ 'v:val =~ ''\D''.decimal.''$''')
         if !empty(dig)
             " get digraph for character
@@ -786,14 +786,12 @@ endfu
 
 
 fu! <sid>GetDigraphChars(code) "{{{1
-    let dlist = <sid>GetDigraph()
-    let ddict = {}
-    for digraph in dlist
-        let key=matchstr(digraph, '\d\+$')+0
-        let val=split(digraph)
-        let ddict[key] = val[0]
+    "returns digraph of given decimal value
+    for digraph in filter(copy(<sid>GetDigraphList()),
+        \ 'v:val =~? printf(''\s%s$'',a:code)')
+        return split(digraph)[0]
     endfor
-    return get(ddict, a:code, '')
+    return ''
 endfu
 
 fu! <sid>UnicodeDict() "{{{1
@@ -862,7 +860,9 @@ fu! <sid>CheckDir() "{{{1
     return <sid>CheckUniFile(0)
 endfu
 
-fu! <sid>GetDigraph() "{{{1
+fu! <sid>GetDigraphList() "{{{1
+    " returns list of digraphs 
+    " as output by :digraphs
     if exists("s:dlist") && !empty(s:dlist)
         return s:dlist
     else
