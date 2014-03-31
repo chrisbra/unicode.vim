@@ -315,8 +315,8 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
         let dg_char=<sid>GetDigraphChars(value)
         if s:showDigraphCode
             if !empty(dg_char)
-                let fstring = printf("U+%04X %s (%s):'%s'", value, key, dg_char,
-                    \ nr2char(value))
+                let fstring = printf("U+%04X %s (%s):'%s'",
+                    \ value, key, dg_char, nr2char(value))
             else
                 let fstring=printf("U+%04X %s:%s", value, key, nr2char(value))
             endif
