@@ -798,8 +798,10 @@ fu! <sid>UnicodeDict() "{{{1
     let dict={}
     " make sure unicodedata.txt is found
     if <sid>CheckDir()
-        if filereadable(s:directory. '/UnicodeData.vim')
-            exe "source" s:directory. '/UnicodeData.vim'
+        let uni_cache_file = s:directory. '/UnicodeData.vim'
+        if filereadable(uni_cache_file) &&
+            \ getftime(uni_cache_file) > getftime(s:UniFile)
+            exe "source" uni_cache_file
             let dict=g:unicode#unicode#data
             unlet! g:unicode#unicode#data
         else
