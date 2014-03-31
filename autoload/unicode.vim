@@ -788,7 +788,7 @@ endfu
 fu! <sid>GetDigraphChars(code) "{{{1
     "returns digraph of given decimal value
     for digraph in filter(copy(<sid>GetDigraphList()),
-        \ 'v:val =~? printf(''\s%s$'',a:code)')
+        \ 'split(v:val)[-1] ==? a:code')
         return split(digraph)[0]
     endfor
     return ''
