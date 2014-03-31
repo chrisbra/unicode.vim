@@ -248,9 +248,10 @@ use it, if you want to write your own VimScript and need to handle unicode.
 
 These functions are available:
 
-unicode#FindUnicodeBy({match}])			*unicode#FindUnicodeBy*
+unicode#FindUnicodeBy({match}])			*unicode#FindUnicodeBy()*
 	Searches the unicode data for {match} and returns a list of dicts,
-	each dict representing one dict. The dict can have the following keys:
+	each dict representing one dict. The dict can have the following
+	keys:
 		"name"	Unicode name
 		"glyph"	Unicode Codepoint
 		"dec"	Unicode Codepoint decimal value
@@ -261,13 +262,13 @@ unicode#FindUnicodeBy({match}])			*unicode#FindUnicodeBy*
 			by comma). This key is optional.
 		"html"	Html entity to create this Unicode Codepoint.
 
-	{match} can be a regular expression or a decimal or hex value (in which
-	case the unicode characters will be searched for their decimal/hex
-	values). Use the prefix "0x" or "U+" to force searching for that
-	particular hex value. If {match} is an expression, it will be matched
-	against the charactername (and case will be ignored).
+	{match} can be a regular expression or a decimal or hex value (in
+	which case the unicode characters will be searched for their
+	decimal/hex values). Use the prefix "0x" or "U+" to force searching
+	for that particular hex value. If {match} is an expression, it will
+	be matched against the charactername (and case will be ignored).
 			    
-unicode#Digraphs({match})			    *unicode#Digraphs*
+unicode#Digraphs({match})			    *unicode#Digraphs()*
 	Searches the digraphs for {match} and returns a list of dicts for
 	each match. The dict can have the following keys:
 		"name"	Unicode name
@@ -280,11 +281,15 @@ unicode#Digraphs({match})			    *unicode#Digraphs*
 			by comma). This key is optional.
 		"html"	Html entity to create this Unicode Codepoint.
 
-	{match} can be a regular expression or a decimal or hex value (in which
-	case the unicode characters will be searched for their decimal/hex
-	values). Use the prefix "0x" to force searching for that particular hex
-	value. If {match} is an expression, it will be matched against the
-	charactername (and case will be ignored).
+	{match} can be a regular expression or a decimal or hex value (in
+	which case the unicode characters will be searched for their
+	decimal/hex values). Use the prefix "0x" to force searching for that
+	particular hex value. If {match} is an expression, it will be matched
+	against the charactername (and case will be ignored).
+
+unicode#Digraph({char1},{char2})		   *unicode#Digraph()*
+	returns the digraph of {char1} and {char2}. If it is not valid,
+	returns en empty string.
 
 ==============================================================================
 5. unicode History                                    *unicode-plugin-history*
@@ -293,6 +298,8 @@ unicode#Digraphs({match})			    *unicode#Digraphs*
 			- |:SearchUnicode| search unicode character by name or
 			  value
 			- Make functions publicly available
+			  (|unicode#Digraphs()|, |unicode#Digraph()|,
+			  |unicode#FindUnicodeBy()|)
     0.18: Mar 27, 2014  - include mapping for easier digraph generation
                         - fix wrong display of :Digraphs 57344
 			- |:Digraphs| can also search for unicode name
