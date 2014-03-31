@@ -38,6 +38,7 @@ endif
 " Setup Mappings
 nnoremap <silent> <Plug>(MakeDigraph) :set opfunc=unicode#GetDigraph<CR>g@
 vnoremap <silent> <Plug>(MakeDigraph) :<C-U>call unicode#GetDigraph(visualmode(), 1)<CR>
+nnoremap <silent> <Plug>(UnicodeGA)   :<C-U>UnicodeName<CR>
 
 if !hasmapto('<Plug>(MakeDigraph)', 'n')
     nmap <F4> <Plug>(MakeDigraph)
