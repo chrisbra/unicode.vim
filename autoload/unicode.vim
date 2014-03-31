@@ -10,17 +10,10 @@
 " ---------------------------------------------------------------------
 
 " initialize Variables {{{1
-if exists("g:unicode_URL")
-    let s:unicode_URL=g:unicode_URL
-else
-    let s:unicode_URL='http://www.unicode.org/Public/UNIDATA/UnicodeData.txt'
-endif
-if !exists("g:UnicodeShowPreviewWindow")
-    let g:UnicodeShowPreviewWindow = 0
-endif
-
-let s:directory = expand("<sfile>:p:h")."/unicode"
-let s:UniFile   = s:directory . '/UnicodeData.txt'
+let s:unicode_URL = get(g:, 'Unicode_URL',
+    \ 'http://www.unicode.org/Public/UNIDATA/UnicodeData.txt')
+let s:directory   = expand("<sfile>:p:h")."/unicode"
+let s:UniFile     = s:directory . '/UnicodeData.txt'
 
 " HTML entitities {{{2
 let s:html = {}
@@ -300,11 +293,7 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
         endif
         return start
     else
-        if exists("g:showDigraphCode")
-            let s:showDigraphCode=g:showDigraphCode
-        else
-            let s:showDigraphCode = 0
-        endif
+        let s:showDigraphCode = get(g:, 'Unicode_ShowDigraphCode', 0)
         if s:numeric
             let complete_list = filter(copy(s:UniDict),
                 \ 'printf("%04X", v:val) =~? "^0*".a:base[2:]')
@@ -328,13 +317,13 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
                 \ empty(dg_char) ? '' : '('.dg_char.')', nr2char(value))
             if s:unicode_complete_name
                 let dict = {'word':key, 'abbr':fstring}
-                if g:UnicodeShowPreviewWindow
+                if get(g:,'UnicodeShowPreviewWindow',0)
                     call extend(dict, {'info': istring})
                 endif
                 call complete_add(dict)
             else
                 let dict = {'word':nr2char(value), 'abbr':fstring}
-                if g:UnicodeShowPreviewWindow
+                if get(g:,'UnicodeShowPreviewWindow',0)
                     call extend(dict, {'info': istring})
                 endif
                 call complete_add(dict)
@@ -383,11 +372,8 @@ fu! unicode#SwapCompletion() "{{{1
     if !exists('s:unicode_complete_name')
         let s:unicode_complete_name = 1
     endif
-    if exists('g:unicode_complete_name')
-        let s:unicode_complete_name = g:unicode_complete_name
-    else
-        let s:unicode_complete_name = !s:unicode_complete_name
-    endif
+    let s:unicode_complete_name = get(g:, 'Unicode_complete_name',
+            \ !s:unicode_complete_name)
     echo "Unicode Completion Names " .
     \ (s:unicode_complete_name ? 'ON':'OFF')
 endfu

@@ -26,7 +26,8 @@ com! -nargs=? UnicodeName call unicode#GetUniChar(<q-args>)
 com! -nargs=? -bang Digraphs call unicode#DigraphsInternal(<q-args>, <q-bang>)
 com! -nargs=1 SearchUnicode call unicode#FindUnicodeByInternal(<q-args>)
 
-if get(g:, 'enableUnicodeCompletion', 0)
+if get(g:, 'Unicode_EnableCompletion', 0)
+    " prevent that other plugins override thos settings afterwards.
     aug UnicodeVimEnter
 	au!
 	" prevent sourcing autoload file
