@@ -1,9 +1,9 @@
-*unicode.txt* A completion plugin for Unicode glyphs
+*unicode.txt* A useful functions for use with unicode
 
 Author:  Christian Brabandt <cb@256bit.org>
 Version: 0.18 Thu, 27 Mar 2014 23:31:27 +0100
                                                         *unicode-copyright*
-Copyright: (c) 2009 - 2013 by Christian Brabandt
+Copyright: (c) 2009 - 2014 by Christian Brabandt
            The VIM LICENSE applies to unicode.vim and unicode.txt
            (see |copyright|) except use unicode instead of "Vim".
            NO WARRANTY, EXPRESS OR IMPLIED.  USE AT-YOUR-OWN-RISK.
@@ -61,15 +61,16 @@ The plugin will then output the character, the character's hexadecimal value
 and the official Unicode name.
 
 Additionally, if there exists a digraph for that character, it will also be
-shown in paranthesis (in case of several digraphs for that character, all will
-be shown, separated by comma).
+shown in paranthesis (in case of several digraphs for that character, all
+will be shown, separated by comma).
 
 If you specify a register name, the message will also be saved into that
 register.
-                                                                    *:Digraphs*
+								*:Digraphs*
     :Digraphs
 
-Outputs the digraph list in an easier way to read with coloring of the digraphs.
+Outputs the digraph list in an easier way to read with coloring of the
+digraphs.
 
 If you want to display a list with a line break after each digraph, use the
 bang attribute >
@@ -91,7 +92,7 @@ If you know the name, you can also search for the unicode name:
 will display all Digraphs, where their unicode name contains the word "copy"
 (e.g. copyright symbol). Case is ignored. Note, you need at least to enter 2
 characters.
-								*:SearchUnicode*
+							    *:SearchUnicode*
     :SearchUnicode [name|nr]
 
 Outputs a list of unicode characters whose decimal value equals <nr> (use U+
@@ -238,11 +239,11 @@ If you like to change the default map, put a line like this into your |.vimrc|
 >
     nmap <f2> <Plug>(MakeDigraph)
 <
-Now, the <f2> can be used to generate digraphs from their pairs. This is  done
-using an 'opfunc'-mapping (see |:map-operator|).
+Now, the <f2> can be used to generate digraphs from their pairs. This is
+done using an 'opfunc'-mapping (see |:map-operator|).
 
 ==============================================================================
-							    *unicode-functions*
+							*unicode-functions*
 The unicode plugins also makes some functions publicly available, so you can
 use it, if you want to write your own VimScript and need to handle unicode.
 
@@ -300,6 +301,8 @@ unicode#Digraph({char1},{char2})		   *unicode#Digraph()*
 			- Make functions publicly available
 			  (|unicode#Digraphs()|, |unicode#Digraph()|,
 			  |unicode#FindUnicodeBy()|)
+			- cache UnicodeData.txt file in VimL dictionary
+			  format (so reading will be faster)
     0.18: Mar 27, 2014  - include mapping for easier digraph generation
                         - fix wrong display of :Digraphs 57344
 			- |:Digraphs| can also search for unicode name
