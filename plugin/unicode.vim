@@ -36,9 +36,10 @@ if get(g:, 'Unicode_EnableCompletion', 0)
 endif
 
 " Setup Mappings
-nnoremap <silent> <Plug>(MakeDigraph) :set opfunc=unicode#GetDigraph<CR>g@
-vnoremap <silent> <Plug>(MakeDigraph) :<C-U>call unicode#GetDigraph(visualmode(), 1)<CR>
-nnoremap <silent> <Plug>(UnicodeGA)   :<C-U>UnicodeName<CR>
+nnoremap <unique><script><silent> <Plug>(MakeDigraph) :set opfunc=unicode#GetDigraph<CR>g@
+vnoremap <unique><script><silent> <Plug>(MakeDigraph) :<C-U>call unicode#GetDigraph(visualmode(), 1)<CR>
+nnoremap <unique><script><silent> <Plug>(UnicodeGA)   :<C-U>UnicodeName<CR>
+inoremap <unique><script><silent> <Plug>(DigraphComplete) <C-R>=unicode#CompleteDigraph()<CR>
 
 if !hasmapto('<Plug>(MakeDigraph)', 'n')
     nmap <F4> <Plug>(MakeDigraph)
@@ -47,6 +48,14 @@ endif
 if !hasmapto('<Plug>(MakeDigraph)', 'v')
     vmap <F4> <Plug>(MakeDigraph)
 endif
+
+if !hasmapto('<Plug>(DigraphComplete)', 'i')
+    imap <C-X><C-G> <Plug>(DigraphComplete)
+endif
+
+"if !hasmapto('<Plug>(UnicodeGA)')
+"    nmap ga <Plug>(UnicodeGA)
+"endif
 
 " =====================================================================
 " Restoration And Modelines: {{{1

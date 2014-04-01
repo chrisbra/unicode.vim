@@ -381,7 +381,6 @@ fu! unicode#Init(enable) "{{{1
         let s:UniDict = <sid>UnicodeDict()
         setl completefunc=unicode#CompleteUnicode
         set completeopt+=menuone
-        inoremap <C-X><C-G> <C-R>=unicode#CompleteDigraph()<CR>
         nnoremap <leader>un :call unicode#SwapCompletion()<CR>
     else
         if exists("b:oldfunc") && !empty(b:oldfunc)
