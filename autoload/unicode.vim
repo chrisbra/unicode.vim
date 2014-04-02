@@ -392,9 +392,9 @@ fu! unicode#Init(enable) "{{{1
         if maparg("<leader>un", 'n')
             nunmap <leader>un
         endif
-        if maparg("<C-X><C-G>")
-            iunmap <C-X><C-G>
-        endif
+"        if maparg("<C-X><C-G>")
+"            iunmap <C-X><C-G>
+"        endif
     endif
     echo "Unicode Completion " . (a:enable? 'ON' : 'OFF')
 endfu
