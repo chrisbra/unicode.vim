@@ -434,7 +434,7 @@ fu! unicode#GetUniChar(...) "{{{1
             let name  = <sid>GetUnicodeName(dec)
             let html  = <sid>GetHtmlEntity(dec)
             call add(msg_title, printf("'%s'", glyph))
-            call add(msg, printf(" U+%04X, Dec:%d %s%s%s",
+            call add(msg, printf(" U+%04X, Dec:%d %s%s %s",
                     \ dec, dec, name, dig, html))
             call add(msg_script, msg_title[-1].msg[-1])
         endfor
