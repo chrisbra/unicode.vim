@@ -705,19 +705,6 @@ endfu
 fu! unicode#UnicodeName(val) "{{{1
     return <sid>GetUnicodeName(a:val)
 endfu
-fu! <sid>ScreenOutput(...) "{{{1
-    if a:1 "first argument indicates whether we need a linebreak
-        echon "\n"
-    endif
-    let list=filter(a:000[1:], '!empty(v:val)')
-    let i=0
-    for value in list
-        exe "echohl ". (i ? "Normal" : "Title")
-        echon value
-        let i+=<sid>Screenwidth(value)
-    endfor
-    return i
-endfu
 fu! <sid>Screenwidth(item) "{{{1
     " Takes string arguments and calculates the width
     return strdisplaywidth(a:item)
@@ -859,6 +846,19 @@ fu! <sid>OutputMessage(title, msg) " {{{1
         call remove(title, 0)
         call remove(msg, 0)
     endw
+endfu
+fu! <sid>ScreenOutput(...) "{{{1
+    if a:1 "first argument indicates whether we need a linebreak
+        echon "\n"
+    endif
+    let list=filter(a:000[1:], '!empty(v:val)')
+    let i=0
+    for value in list
+        exe "echohl ". (i ? "Normal" : "Title")
+        echon value
+        let i+=<sid>Screenwidth(value)
+    endfor
+    return i
 endfu
 fu! <sid>WarningMsg(msg) "{{{1
     echohl WarningMsg
