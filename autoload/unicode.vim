@@ -882,8 +882,24 @@ fu! <sid>GetUnicodeName(dec) "{{{1
     if a:dec <= 0x1F || (a:dec >= 0x7F && a:dec <= 0x9F)
         return "<Control Char>"
     " CJK Unigraphs start at U+4E00 and go until U+9FFF
+    elseif a:dec >= 0x3400 && a:dec <=0x4DB5
+        return "Ideograph Extension A"
     elseif a:dec >= 0x4E00 && a:dec <= 0x9FFF
         return "CJK Ideograph"
+    elseif a:dec >= 0xAC00 && a:dec <= 0xD7AF
+        return "Hangul Syllable"
+    elseif a:dec >= 0xD800 && a:dec <= 0xDB7F
+        return "Non-Private Use High Surrogates"
+    elseif a:dec >= 0xDB80 && a:dec <= 0xDBFF
+        return "Private Use High Surrogates"
+    elseif a:dec >= 0xDC00 && a:dec <= 0xDFFF
+        return "Low Surrogates"
+    elseif a:dec >= 0xE000 && a:dec <= 0xF8FF
+        return "Private Use Zone"
+    elseif a:dec >= 0x20000 && a:dec <= 0x2A6D6
+        return "Ideograph Extension B"
+    elseif a:dec >= 0x2A700 && a:dec <= 0x2B73F
+        return "Ideograph Extension C"
     elseif a:dec >= 0xF0000 && a:dec <= 0xFFFFD
         return "Character from Plane 15 for private use"
     elseif a:dec >= 0x100000 && a:dec <= 0x10FFFD
