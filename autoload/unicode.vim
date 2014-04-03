@@ -402,7 +402,6 @@ fu! unicode#GetUniChar(...) "{{{1
     " Return Unicode Name of Character under cursor
     " :UnicodeName
     let msg        = []
-    let msg_title  = []
     let msg_script = []
     try
         if !exists("s:UniDict")
@@ -433,16 +432,19 @@ fu! unicode#GetUniChar(...) "{{{1
             let dig   = <sid>GetDigraphChars(dec)
             let name  = <sid>GetUnicodeName(dec)
             let html  = <sid>GetHtmlEntity(dec)
-            call add(msg_title, printf("'%s'", glyph))
-            call add(msg, printf(" U+%04X, Dec:%d %s%s %s",
+            call add(msg, printf("'%s' U+%04X, Dec:%d %s%s %s", glyph,
                     \ dec, dec, name, dig, html))
-            call add(msg_script, msg_title[-1].msg[-1])
         endfor
         if exists("a:1") && !empty(a:1)
-            exe "let @".a:1. "=join(msg_script)"
+            exe "let @".a:1. "=join(msg)"
         endif
     finally
-        call <sid>OutputMessage(msg_title, msg)
+        let start      = 1
+        for val in msg
+            let l=split(val)
+            call <sid>ScreenOutput((start ? 0 : 1), l[0], ' '.join(l[1:]))
+            let start = 0
+        endfor
     endtry
 endfun
 fu! unicode#Digraphs(match) "{{{1
@@ -832,20 +834,6 @@ fu! <sid>CompareListsByHex(l1, l2) "{{{1
     else
         return -1
     endif
-endfu
-fu! <sid>OutputMessage(title, msg) " {{{1
-    let title=a:title
-    let msg  =a:msg
-    let i = (len(title) >= len(msg) ? len(title) : len(msg))
-    while i > 0
-        let i -= 1
-        echohl Title
-        echon title[0]
-        echohl Normal
-        echon msg[0] . (i > 0 ? "\n" : '')
-        call remove(title, 0)
-        call remove(msg, 0)
-    endw
 endfu
 fu! <sid>ScreenOutput(...) "{{{1
     if a:1 "first argument indicates whether we need a linebreak
