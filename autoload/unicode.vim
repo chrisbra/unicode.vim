@@ -401,7 +401,9 @@ endfu
 fu! unicode#GetUniChar(...) "{{{1
     " Return Unicode Name of Character under cursor
     " :UnicodeName
-    let msg = []
+    let msg        = []
+    let msg_title  = []
+    let msg_script = []
     try
         if !exists("s:UniDict")
             let s:UniDict=<sid>UnicodeDict()
@@ -431,14 +433,16 @@ fu! unicode#GetUniChar(...) "{{{1
             let dig   = <sid>GetDigraphChars(dec)
             let name  = <sid>GetUnicodeName(dec)
             let html  = <sid>GetHtmlEntity(dec)
-            call add(msg, printf("'%s' U+%04X, Dec:%d %s%s%s",
-                    \ glyph, dec, dec, name, dig, html))
+            call add(msg_title, printf("'%s'", glyph))
+            call add(msg, printf(" U+%04X, Dec:%d %s%s%s",
+                    \ dec, dec, name, dig, html))
+            call add(msg_script, msg_title[-1].msg[-1])
         endfor
         if exists("a:1") && !empty(a:1)
-            exe "let @".a:1. "=join(msg)"
+            exe "let @".a:1. "=join(msg_script)"
         endif
     finally
-        call <sid>OutputMessage(msg)
+        call <sid>OutputMessage(msg_title, msg)
     endtry
 endfun
 fu! unicode#Digraphs(match) "{{{1
@@ -842,19 +846,19 @@ fu! <sid>CompareListsByHex(l1, l2) "{{{1
         return -1
     endif
 endfu
-fu! <sid>OutputMessage(msg) " {{{1
-    redraw
-    echohl Title
-    if type(a:msg) == type([])
-        " List
-        for item in a:msg
-            echom item
-        endfor
-    elseif type(a:msg) == type("")
-        " string
-        echom a:msg
-    endif
-    echohl Normal
+fu! <sid>OutputMessage(title, msg) " {{{1
+    let title=a:title
+    let msg  =a:msg
+    let i = (len(title) >= len(msg) ? len(title) : len(msg))
+    while i > 0
+        let i -= 1
+        echohl Title
+        echon title[0]
+        echohl Normal
+        echon msg[0] . (i > 0 ? "\n" : '')
+        call remove(title, 0)
+        call remove(msg, 0)
+    endw
 endfu
 fu! <sid>WarningMsg(msg) "{{{1
     echohl WarningMsg
