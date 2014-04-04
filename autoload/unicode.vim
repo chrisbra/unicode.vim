@@ -716,7 +716,7 @@ fu! <sid>Screenwidth(item) "{{{2
     endif
 endfu
 fu! <sid>GetDigraphChars(code) "{{{2
-    "returns digraph of given decimal value
+    "returns digraph for given decimal value
     let tlist=[]
     for digraph in filter(copy(<sid>GetDigraphList()),
         \ 'split(v:val)[-1] ==? a:code')
