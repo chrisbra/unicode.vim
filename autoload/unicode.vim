@@ -319,6 +319,7 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
                 break
             endif
         endfor
+        unlet! s:numeric
         return {}
   endif
 endfu
