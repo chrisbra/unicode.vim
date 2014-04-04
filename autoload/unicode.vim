@@ -293,7 +293,6 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
         endif
         return start
     else
-        let s:showDigraphCode = get(g:, 'Unicode_ShowDigraphCode', 0)
         if s:numeric
             let complete_list = filter(copy(s:UniDict),
                 \ 'printf("%04X", v:val) =~? "^0*".a:base[2:]')
@@ -301,11 +300,9 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
             let complete_list = filter(copy(s:UniDict), 'v:key =~? a:base')
         endif
         for [key, value] in sort(items(complete_list), "<sid>CompareList")
-            let dg_char=''
-            if s:showDigraphCode
-                let dg_char=<sid>GetDigraphChars(value)
-            endif
-            let fstring = printf("U+%04X %s%s:'%s'", value, key, dg_char, nr2char(value))
+            let dg_char=<sid>GetDigraphChars(value)
+            let fstring = printf("U+%04X %s%s:'%s'",
+                    \ value, key, dg_char, nr2char(value))
             if s:unicode_complete_name
                 let dict = {'word':key, 'abbr':fstring}
             else
