@@ -762,10 +762,9 @@ fu! <sid>CheckUniFile(force) "{{{2
             exe ":lcd " . s:directory
             exe "0Nread " . s:unicode_URL
             $d _
-            exe ":w!" . s:UniFile
+            exe ":noa :keepalt :sil w! " . s:UniFile
             if getfsize(s:UniFile)==0
-                call s:WarningMsg("Error fetching Unicode File from ".
-                    \ s:unicode_URL)
+                call s:WarningMsg("Error fetching File from ". s:unicode_URL)
                 return 0
             endif
             bw
