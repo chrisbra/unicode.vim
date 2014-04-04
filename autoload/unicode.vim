@@ -638,7 +638,7 @@ fu! unicode#FindUnicodeByInternal(match, ...) "{{{2
         for item in sort(output, '<sid>CompareListsByHex')
             let list = matchlist(item, '\(.*\)\(Dec.*\)')
             echohl Normal
-            echon printf("%*d ", strdisplaywidth(len(output)),i)
+            echon printf("%*d ", <sid>Screenwidth(len(output)),i)
             echohl Title
             echon printf("%s", list[1])
             echohl Normal
