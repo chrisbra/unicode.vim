@@ -813,24 +813,15 @@ endfu
 fu! <sid>CompareDigraphs(d1, d2) "{{{2
     let d1=matchstr(a:d1, '\d\+$')+0
     let d2=matchstr(a:d2, '\d\+$')+0
-    if d1 == d2
-        return 0
-    elseif d1 > d2
-        return 1
-    else
-        return -1
-    endif
+    return <sid>CompareByValue(d1,d2)
 endfu
 fu! <sid>CompareListsByHex(l1, l2) "{{{2
     let d1 = str2nr(matchstr(a:l1, 'Hex:\zs\x\{6}\ze\s'), 16)
     let d2 = str2nr(matchstr(a:l2, 'Hex:\zs\x\{6}\ze\s'), 16)
-    if d1 == d2
-        return 0
-    elseif d1 > d2
-        return 1
-    else
-        return -1
-    endif
+    return <sid>CompareByValue(d1,d2)
+endfu
+fu! <sid>CompareByValue(v1, v2) "{{{2
+    return (a:v1 == a:v2 ? 0 : (a:v1 > a:v2 ? 1 : -1))
 endfu
 fu! <sid>ScreenOutput(...) "{{{2
     if a:1 "first argument indicates whether we need a linebreak
