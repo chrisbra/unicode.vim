@@ -275,7 +275,31 @@ let s:html[0x2660] = "&spades;"
 let s:html[0x2663] = "&clubs;"
 let s:html[0x2665] = "&hearts;"
 let s:html[0x2666] = "&diams;" "}}}2
-fu! unicode#CompleteUnicode(findstart,base) "{{{1
+" public functions {{{1
+fu! unicode#Digraphs(match) "{{{2
+    return unicode#DigraphsInternal(a:match, "", 1)
+endfu
+fu! unicode#FindUnicodeBy(match) "{{{2
+    return unicode#FindUnicodeByInternal(a:match, 1)
+endfu
+fu! unicode#Digraph(char1, char2) "{{{2
+    if empty(a:char1) || empty(a:char2)
+        return ''
+    endif
+    let s=''
+    " How about a digrpah() function?
+    " already sent a patch to Bram
+    exe "sil! norm! :let s.='\<c-k>".a:char1.a:char2."'\<cr>"
+    if s == a:char1
+        return ''
+    endif
+    return (s ==# a:char1 ? '' : s)
+endfu
+fu! unicode#UnicodeName(val) "{{{2
+    return <sid>GetUnicodeName(a:val)
+endfu
+" internal functions {{{1
+fu! unicode#CompleteUnicode(findstart,base) "{{{2
     " Completion function for Unicode characters
     if !exists("s:numeric")
         let s:numeric=0
@@ -320,7 +344,7 @@ fu! unicode#CompleteUnicode(findstart,base) "{{{1
         return {}
   endif
 endfu
-fu! unicode#CompleteDigraph() "{{{1
+fu! unicode#CompleteDigraph() "{{{2
     " Completion function for digraphs
     let prevchar=getline('.')[col('.')-2]
     let prevchar1=getline('.')[col('.')-3]
@@ -361,7 +385,7 @@ fu! unicode#CompleteDigraph() "{{{1
     call complete(col, tlist)
     return ''
 endfu
-fu! unicode#SwapCompletion() "{{{1
+fu! unicode#SwapCompletion() "{{{2
     if !exists('s:unicode_complete_name')
         let s:unicode_complete_name = 1
     endif
@@ -370,7 +394,7 @@ fu! unicode#SwapCompletion() "{{{1
     echo "Unicode Completion Names " .
     \ (s:unicode_complete_name ? 'ON':'OFF')
 endfu
-fu! unicode#Init(enable) "{{{1
+fu! unicode#Init(enable) "{{{2
     if !exists("s:unicode_complete_name")
         let s:unicode_complete_name = 0
     endif
@@ -390,13 +414,10 @@ fu! unicode#Init(enable) "{{{1
         if maparg("<leader>un", 'n')
             nunmap <leader>un
         endif
-"        if maparg("<C-X><C-G>")
-"            iunmap <C-X><C-G>
-"        endif
     endif
     echo "Unicode Completion " . (a:enable? 'ON' : 'OFF')
 endfu
-fu! unicode#GetUniChar(...) "{{{1
+fu! unicode#GetUniChar(...) "{{{2
     " Return Unicode Name of Character under cursor
     " :UnicodeName
     let msg        = []
@@ -445,10 +466,7 @@ fu! unicode#GetUniChar(...) "{{{1
         endfor
     endtry
 endfun
-fu! unicode#Digraphs(match) "{{{1
-    return unicode#DigraphsInternal(a:match, "", 1)
-endfu
-fu! unicode#DigraphsInternal(match, bang, ...) "{{{1
+fu! unicode#DigraphsInternal(match, bang, ...) "{{{2
     " if a:1 is given and is 1, return list of
     " dicts with all matching unicode characters
     let print_out = 1
@@ -543,10 +561,7 @@ fu! unicode#DigraphsInternal(match, bang, ...) "{{{1
         return outlist
     endif
 endfu
-fu! unicode#FindUnicodeBy(match) "{{{1
-    return unicode#FindUnicodeByInternal(a:match, 1)
-endfu
-fu! unicode#FindUnicodeByInternal(match, ...) "{{{1
+fu! unicode#FindUnicodeByInternal(match, ...) "{{{2
     " if a:1 is given and is 1, return list of
     " dicts with all matching unicode characters
     let print_out = 1
@@ -632,20 +647,7 @@ fu! unicode#FindUnicodeByInternal(match, ...) "{{{1
         endfor
     endif
 endfu
-fu! unicode#Digraph(char1, char2) "{{{1
-    if empty(a:char1) || empty(a:char2)
-        return ''
-    endif
-    let s=''
-    " How about a digrpah() function?
-    " already sent a patch to Bram
-    exe "sil! norm! :let s.='\<c-k>".a:char1.a:char2."'\<cr>"
-    if s == a:char1
-        return ''
-    endif
-    return (s ==# a:char1 ? '' : s)
-endfu
-fu! unicode#GetDigraph(type, ...) "{{{1
+fu! unicode#GetDigraph(type, ...) "{{{2
     " turns a movement or selection into digraphs, each pair of chars
     " will be converted into the belonging digraph, e.g: This line:
     " a:e:o:u:1Sß/\
@@ -702,14 +704,11 @@ fu! unicode#GetDigraph(type, ...) "{{{1
     let &selection = sel_save
     call call("setreg", ["a"]+_a)
 endfu
-fu! unicode#UnicodeName(val) "{{{1
-    return <sid>GetUnicodeName(a:val)
-endfu
-fu! <sid>Screenwidth(item) "{{{1
+fu! <sid>Screenwidth(item) "{{{2
     " Takes string arguments and calculates the width
     return strdisplaywidth(a:item)
 endfu
-fu! <sid>GetDigraphChars(code) "{{{1
+fu! <sid>GetDigraphChars(code) "{{{2
     "returns digraph of given decimal value
     let tlist=[]
     for digraph in filter(copy(<sid>GetDigraphList()),
@@ -718,7 +717,7 @@ fu! <sid>GetDigraphChars(code) "{{{1
     endfor
     return (empty(tlist) ? '' : printf(" (%s)", join(tlist, ' ')))
 endfu
-fu! <sid>UnicodeDict() "{{{1
+fu! <sid>UnicodeDict() "{{{2
     let dict={}
     " make sure unicodedata.txt is found
     if <sid>CheckDir()
@@ -739,7 +738,7 @@ fu! <sid>UnicodeDict() "{{{1
     endif
     return dict
 endfu
-fu! <sid>CheckUniFile(force) "{{{1
+fu! <sid>CheckUniFile(force) "{{{2
     if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
         call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
         call s:WarningMsg("Let's see, if we can download it.")
@@ -772,7 +771,7 @@ fu! <sid>CheckUniFile(force) "{{{1
     endif
     return 1
 endfu
-fu! <sid>CheckDir() "{{{1
+fu! <sid>CheckDir() "{{{2
     try
         if (!isdirectory(s:directory))
             call mkdir(s:directory)
@@ -783,7 +782,7 @@ fu! <sid>CheckDir() "{{{1
     endtry
     return <sid>CheckUniFile(0)
 endfu
-fu! <sid>GetDigraphList() "{{{1
+fu! <sid>GetDigraphList() "{{{2
     " returns list of digraphs 
     " as output by :digraphs
     if exists("s:dlist") && !empty(s:dlist)
@@ -808,10 +807,10 @@ fu! <sid>GetDigraphList() "{{{1
         return s:dlist
     endif
 endfu
-fu! <sid>CompareList(l1, l2) "{{{1
+fu! <sid>CompareList(l1, l2) "{{{2
     return a:l1[1] == a:l2[1] ? 0 : a:l1[1] > a:l2[1] ? 1 : -1
 endfu
-fu! <sid>CompareDigraphs(d1, d2) "{{{1
+fu! <sid>CompareDigraphs(d1, d2) "{{{2
     let d1=matchstr(a:d1, '\d\+$')+0
     let d2=matchstr(a:d2, '\d\+$')+0
     if d1 == d2
@@ -822,7 +821,7 @@ fu! <sid>CompareDigraphs(d1, d2) "{{{1
         return -1
     endif
 endfu
-fu! <sid>CompareListsByHex(l1, l2) "{{{1
+fu! <sid>CompareListsByHex(l1, l2) "{{{2
     let d1 = str2nr(matchstr(a:l1, 'Hex:\zs\x\{6}\ze\s'), 16)
     let d2 = str2nr(matchstr(a:l2, 'Hex:\zs\x\{6}\ze\s'), 16)
     if d1 == d2
@@ -833,7 +832,7 @@ fu! <sid>CompareListsByHex(l1, l2) "{{{1
         return -1
     endif
 endfu
-fu! <sid>ScreenOutput(...) "{{{1
+fu! <sid>ScreenOutput(...) "{{{2
     if a:1 "first argument indicates whether we need a linebreak
         echon "\n"
     endif
@@ -846,7 +845,7 @@ fu! <sid>ScreenOutput(...) "{{{1
     endfor
     return i
 endfu
-fu! <sid>WarningMsg(msg) "{{{1
+fu! <sid>WarningMsg(msg) "{{{2
     echohl WarningMsg
     let msg = "UnicodePlugin: " . a:msg
     if exists(":unsilent") == 2
@@ -856,10 +855,10 @@ fu! <sid>WarningMsg(msg) "{{{1
     endif
     echohl Normal
 endfun
-fu! <sid>GetHtmlEntity(hex) "{{{1
+fu! <sid>GetHtmlEntity(hex) "{{{2
     return get(s:html, a:hex, '')
 endfu
-fu! <sid>UnicodeWrite(data) "{{{1
+fu! <sid>UnicodeWrite(data) "{{{2
     " Take unicode dictionary and write it in VimL form
     " so it will be faster to load
     let list = ['" internal cache file for unicode.vim plugin',
@@ -873,7 +872,7 @@ fu! <sid>UnicodeWrite(data) "{{{1
     call writefile(list, s:directory. '/UnicodeData.vim')
     unlet! list
 endfu
-fu! <sid>GetUnicodeName(dec) "{{{1
+fu! <sid>GetUnicodeName(dec) "{{{2
     " returns Unicodename for decimal value
     "
     " Check for control char (has no name)
