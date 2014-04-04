@@ -706,7 +706,14 @@ fu! unicode#GetDigraph(type, ...) "{{{2
 endfu
 fu! <sid>Screenwidth(item) "{{{2
     " Takes string arguments and calculates the width
-    return strdisplaywidth(a:item)
+    if exists("*strdisplaywidth")
+        return strdisplaywidth(a:item)
+    else
+        " old vims doen't have strdisplaywidth function
+        " return number of chars (which might be wrong 
+        " for double width chars...)
+        return len(split(a:item, '\zs'))
+    endif
 endfu
 fu! <sid>GetDigraphChars(code) "{{{2
     "returns digraph of given decimal value
