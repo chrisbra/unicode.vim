@@ -128,21 +128,6 @@ itself by setting the variable g:Unicode_ShowPreviewWindow (see below). By
 default, this feature is off.
 
                                                     *unicode-plugin-config*
-The plugin can be customized to include the 2 digraph characters you have to
-type, to get that character. This works only, if there is a digraph defined
-for that Unicode char. If you would like this you need to set
-g:showDigraphCode, e.g. >
-
-    :let g:Unicode_ShowDigraphCode=1
-
-This functionality is by default disabled, cause it seems to cause some delay
-and screen-rendering errors in the menu. However, the preview window will
-always show the digraph character in parenthesis. Enter: >
-
-    :let g:Unicode_ShowDigraphCode=0
-
-to disable the Digraph feature afterwards.
-
 If you would like to specify a different URL from which to download
 UnicodeData.txt, enter the URL as: >
 
@@ -284,7 +269,7 @@ unicode#FindUnicodeBy({match}])			*unicode#FindUnicodeBy()*
 	for that particular hex value. If {match} is an expression, it will
 	be matched against the charactername (and case will be ignored).
 			    
-unicode#Digraphs({match})			    *unicode#Digraphs()*
+unicode#FindDigraphBy({match})			   *unicode#FindDigraphBy()*
 	Searches the digraphs for {match} and returns a list of dicts for
 	each match. The dict can have the following keys:
 		"name"	Unicode name
@@ -328,6 +313,8 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			- Digraph completion can display unicode name in
 			  preview window (if enabled, set
 			  g:Unicode_ShowDigraphName variable to enable)
+			- Always display digraph char when completing unicode
+			  char (and a digraph is available).
     0.18: Mar 27, 2014  - include mapping for easier digraph generation
                         - fix wrong display of :Digraphs 57344
 			- |:Digraphs| can also search for unicode name
