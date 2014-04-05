@@ -269,7 +269,7 @@ unicode#FindUnicodeBy({match}])			*unicode#FindUnicodeBy()*
 	for that particular hex value. If {match} is an expression, it will
 	be matched against the charactername (and case will be ignored).
 			    
-unicode#Digraphs({match})			    *unicode#Digraphs()*
+unicode#FindDigraphBy({match})			   *unicode#FindDigraphBy()*
 	Searches the digraphs for {match} and returns a list of dicts for
 	each match. The dict can have the following keys:
 		"name"	Unicode name
