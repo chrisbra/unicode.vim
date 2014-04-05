@@ -4,9 +4,9 @@ DOC=$(wildcard doc/*.txt)
 PLUGIN=$(shell basename "$$PWD")
 VERSION=$(shell sed -n '/Version:/{s/^.*\(\S\.\S\+\)$$/\1/;p}' $(SCRIPT))
 
-.PHONY: $(PLUGIN).vmb README
+.PHONY: $(PLUGIN).vmb
 
-all: uninstall vimball install README
+all: uninstall vimball install
 
 vimball: $(PLUGIN).vmb
 
@@ -23,9 +23,6 @@ uninstall:
 
 undo:
 	for i in */*.orig; do mv -f "$$i" "$${i%.*}"; done
-
-README:
-	cp -f $(DOC) README
 
 $(PLUGIN).vmb:
 	rm -f $(PLUGIN)-$(VERSION).vmb
