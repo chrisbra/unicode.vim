@@ -3,6 +3,7 @@ Unicode plugin
 > A Vim plugin for handling unicode and digraphs characters
 
 This plugin aims to make the handling of unicode and digraphs chars in Vim easier. It serves 3 purposes:
+
     1. Provide the possibility to complete characters using their Unicode name or Unicode Codepoint using `<C-X><C-U>` using user defined completion function (to enable use the command `:EnableUnicodeCompletion`
     2. Provide the possibility to identify the character under the cursor using the `:UnicodeName` command that works similar to the builtin `ga` command (but also displays the HTML entity name and Digraph to create that character if possible).
     3. Ease the use of Digraphs (e.g. search Digraphs using the `:Digraphs` command or modify characters into their digraph chars).
