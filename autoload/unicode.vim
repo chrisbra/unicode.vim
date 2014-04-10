@@ -512,7 +512,7 @@ fu! unicode#DigraphsInternal(match) "{{{2
         endif
         if empty(clist)
             let dict         = {}
-            " skip linefeed, backspace, etc...
+            " Space is different
             let dict.glyph   = item[3] != 32 ? matchstr(item[2],'\s\?\S*\ze\s*$') : '  '
             let dict.dig     = item[1]
             let dict.decimal = item[3]
