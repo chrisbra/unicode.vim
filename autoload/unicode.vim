@@ -277,7 +277,7 @@ let s:html[0x2665] = "&hearts;"
 let s:html[0x2666] = "&diams;" "}}}2
 " public functions {{{1
 fu! unicode#FindDigraphBy(match) "{{{2
-    return unicode#DigraphsInternal(a:match, "", 1)
+    return unicode#DigraphsInternal(a:match)
 endfu
 fu! unicode#FindUnicodeBy(match) "{{{2
     return unicode#FindUnicodeByInternal(a:match, 1)
