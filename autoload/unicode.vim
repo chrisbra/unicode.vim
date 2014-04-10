@@ -388,29 +388,6 @@ fu! unicode#SwapCompletion() "{{{2
     echo "Unicode Completion Names " .
     \ (g:Unicode_complete_name ? 'ON':'OFF')
 endfu
-fu! unicode#Init(enable) "{{{2
-    if !exists("s:unicode_complete_name")
-        let s:unicode_complete_name = 0
-    endif
-    if a:enable
-        let b:oldfunc=&l:cfu
-        let s:UniDict = <sid>UnicodeDict()
-        setl completefunc=unicode#CompleteUnicode
-        set completeopt+=menuone
-        nnoremap <leader>un :call unicode#SwapCompletion()<CR>
-    else
-        if exists("b:oldfunc") && !empty(b:oldfunc)
-            let &l:cfu=b:oldfunc
-        else
-            setl completefunc=
-        endif
-        unlet! s:UniDict
-        if maparg("<leader>un", 'n')
-            nunmap <leader>un
-        endif
-    endif
-    echo "Unicode Completion " . (a:enable? 'ON' : 'OFF')
-endfu
 fu! unicode#GetUniChar(...) "{{{2
     " Return Unicode Name of Character under cursor
     " :UnicodeName
