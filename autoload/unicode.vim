@@ -801,7 +801,7 @@ fu! <sid>GetDigraphList() "{{{2
     endif
 endfu
 fu! <sid>CompareList(l1, l2) "{{{2
-    return a:l1[1] == a:l2[1] ? 0 : a:l1[1] > a:l2[1] ? 1 : -1
+    return <sid>CompareByValue((a:l1[1]+0),(a:l2[1]+0))
 endfu
 fu! <sid>CompareDigraphs(d1, d2) "{{{2
     let d1=matchstr(a:d1, '\d\+$')+0
