@@ -19,18 +19,27 @@ let g:loaded_unicodePlugin = 1
 let s:keepcpo              = &cpo
 set cpo&vim
 " ------------------------------------------------------------------------------
+" Internal Functions: {{{1
+fu! <sid>ToggleUnicodeCompletion() "{{{2
+    if get(g:, 'Unicode_complete_name') == ''
+        let g:Unicode_complete_name = 1
+    else
+        let g:Unicode_complete_name = !g:Unicode_complete_name
+    endif
+    echo "Unicode Completion Names " .(g:Unicode_complete_name?'ON':'OFF')
+endfu
 " Public Interface: {{{1
 com! -nargs=? UnicodeName call unicode#GetUniChar(<q-args>)
 com! -nargs=? -bang Digraphs call unicode#DigraphsInternal(<q-args>, <q-bang>)
 com! -nargs=1 SearchUnicode call unicode#FindUnicodeByInternal(<q-args>)
 
 " Setup Mappings
-nnoremap <unique><script><silent> <Plug>(MakeDigraph) :set opfunc=unicode#GetDigraph<CR>g@
-vnoremap <unique><script><silent> <Plug>(MakeDigraph) :<C-U>call unicode#GetDigraph(visualmode(), 1)<CR>
-nnoremap <unique><script><silent> <Plug>(UnicodeGA)   :<C-U>UnicodeName<CR>
-inoremap <unique><script><silent> <Plug>(DigraphComplete) <C-R>=unicode#CompleteDigraph()<CR>
-inoremap <unique><script><silent> <Plug>(UnicodeComplete) <C-R>=unicode#CompleteUnicode()<CR>
-nnoremap <unique><script><silent> <Plug>(UnicodeSwapCompleteName) :<C-U>call unicode#SwapCompletion()<CR>
+nnoremap <unique><script><silent> <Plug>(MakeDigraph)	    :set opfunc=unicode#GetDigraph<CR>g@
+vnoremap <unique><script><silent> <Plug>(MakeDigraph)	    :<C-U>call unicode#GetDigraph(visualmode(), 1)<CR>
+nnoremap <unique><script><silent> <Plug>(UnicodeGA)	    :<C-U>UnicodeName<CR>
+inoremap <unique><script><silent> <Plug>(DigraphComplete)   <C-R>=unicode#CompleteDigraph()<CR>
+inoremap <unique><script><silent> <Plug>(UnicodeComplete)   <C-R>=unicode#CompleteUnicode()<CR>
+nnoremap <unique><script><silent> <Plug>(UnicodeSwapCompleteName) :<C-U>call <sid>ToggleUnicodeCompletion()<CR>
 
 if !hasmapto('<Plug>(MakeDigraph)', 'n')
     nmap <F4> <Plug>(MakeDigraph)
