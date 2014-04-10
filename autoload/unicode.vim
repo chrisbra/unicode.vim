@@ -1,7 +1,7 @@
 " unicodePlugin : A completion plugin for Unicode glyphs
 " Author: C.Brabandt <cb@256bit.org>
 " Version: 0.18
-" Copyright: (c) 2009 by Christian Brabandt
+" Copyright: (c) 2009-2014 by Christian Brabandt
 "            The VIM LICENSE applies to unicode.vim, and unicode.txt
 "            (see |copyright|) except use "unicode" instead of "Vim".
 "            No warranty, express or implied.
