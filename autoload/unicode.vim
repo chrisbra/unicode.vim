@@ -328,6 +328,7 @@ fu! unicode#CompleteUnicode() "{{{2
         endif
         echom printf('(Checking Unicode Names for "%s"... this might be slow)', base)
     endif
+    let starttime = localtime()
     for [key, value] in sort(items(complete_list), "<sid>CompareList")
         let dg_char=<sid>GetDigraphChars(value)
         let fstring = printf("U+%04X %s%s:'%s'",
@@ -342,6 +343,13 @@ fu! unicode#CompleteUnicode() "{{{2
                     \ substitute(dg_char, '(\(..\).*', '\1', ''), key)})
         endif
         call add(compl, dict)
+        " break too long running search
+        if localtime() - starttime > 2
+            echohl WarningMsg
+            echom "Completing takes too long, stopping now..."
+            echohl Normal
+            break
+        endif
     endfor
     call complete(start+1, compl)
     return ""

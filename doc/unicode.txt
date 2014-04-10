@@ -123,6 +123,10 @@ the digraph characters in parenthesis (if they exist) followed by the glyph
 itself by setting the variable g:Unicode_ShowPreviewWindow (see below). By
 default, this feature is off.
 
+Note: If completing takes longer than 2 seconds (because many unicode
+names match), you will be notified and completing further items will be
+aborted so you can only complete the so far matched unicode chars.
+
                                                     *unicode-plugin-config*
 If you would like to specify a different URL from which to download
 UnicodeData.txt, enter the URL as: >
