@@ -315,11 +315,17 @@ fu! unicode#CompleteUnicode() "{{{2
         let numeric=1
     endif
     let base = line[start : (col('.')-1)]
-    if numeric
-        let complete_list = filter(copy(s:UniDict),
-            \ 'printf("%04X", v:val) =~? "^0*".base[2:]')
+    if empty(base)
+        let complete_list = s:UniDict
+        echom '(Checking all Unicode Names... this might be slow)'
     else
-        let complete_list = filter(copy(s:UniDict), 'v:key =~? base')
+        if numeric
+            let complete_list = filter(copy(s:UniDict),
+                \ 'printf("%04X", v:val) =~? "^0*".base[2:]')
+        else
+            let complete_list = filter(copy(s:UniDict), 'v:key =~? base')
+        endif
+        echom printf('(Checking Unicode Names for "%s"... this might be slow)', base)
     endif
     for [key, value] in sort(items(complete_list), "<sid>CompareList")
         let dg_char=<sid>GetDigraphChars(value)
