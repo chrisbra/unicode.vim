@@ -21,11 +21,7 @@ set cpo&vim
 " ------------------------------------------------------------------------------
 " Internal Functions: {{{1
 fu! <sid>ToggleUnicodeCompletion() "{{{2
-    if get(g:, 'Unicode_complete_name') == ''
-        let g:Unicode_complete_name = 1
-    else
-        let g:Unicode_complete_name = !g:Unicode_complete_name
-    endif
+    let g:Unicode_complete_name = (get(g:, 'Unicode_complete_name') == '' ? 1 : !g:Unicode_complete_name)
     echo "Unicode Completion Names " .(g:Unicode_complete_name?'ON':'OFF')
 endfu
 " Public Interface: {{{1
