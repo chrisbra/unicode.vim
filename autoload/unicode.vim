@@ -452,16 +452,14 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
 
     for item in digraphs
         let output = printf(format[0].format[1], split(item.dig)[0], item.glyph, item.decimal)
-
         " if the output is too wide, echo an linebreak
         if screenwidth + <sid>Screenwidth(output) >= &columns
             \ || (!empty(a:bang) && start == 0)
             let screenwidth = 0
         endif
         let screenwidth += <sid>ScreenOutput(
-                \ (screenwidth == 0 && start == 0)?1:0,
-                \ item.glyph, printf(format[1], split(item.dig)[0],
-                \ item.decimal))
+                \ (start == 0 && screenwidth == 0 ? 1 : 0), item.glyph,
+                \ printf(format[1], split(item.dig)[0], item.decimal))
         let start = 0
     endfor
 endfu
@@ -503,7 +501,7 @@ fu! unicode#DigraphsInternal(match) "{{{2
 
         " add trailing  space for item[2] if there isn't one
         " (e.g. needed for digraph 132)
-        if item[2] !~? '\s$'
+        if item[2] !~? '\s$' || item[3] == 32
             let item[2].= ' '
         endif
 
@@ -515,7 +513,7 @@ fu! unicode#DigraphsInternal(match) "{{{2
         if empty(clist)
             let dict         = {}
             " skip linefeed, backspace, etc...
-            let dict.glyph   = item[3]!=32?matchstr(item[2],'\s\?\S*\ze\s*$'):nr2char(item[3])
+            let dict.glyph   = item[3] != 32 ? matchstr(item[2],'\s\?\S*\ze\s*$') : '  '
             let dict.dig     = item[1]
             let dict.decimal = item[3]
             let dict.hex     = printf("0x%02X", item[3])
