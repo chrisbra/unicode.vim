@@ -13,7 +13,7 @@ Copyright: (c) 2009 - 2014 by Christian Brabandt
 
         1.  Functionality...........................: |unicode-plugin|
 	2.  Commands................................: |unicode-commands|
-        3.  Completion Functions....................: |unicode-plugin-usage|
+        3.  Completions.............................: |unicode-plugin-usage|
         4.  Mappings................................: |unicode-mappings|
         5.  Public functions........................: |unicode-functions|
         6.  Changelog...............................: |unicode-plugin-history|
@@ -22,8 +22,34 @@ Copyright: (c) 2009 - 2014 by Christian Brabandt
                                                               *unicode-plugin*
 1. Functionality
 
-This plugin was written to enable an easier use of any Unicode glyph
-available. The unicode.vim Plugin uses the data available from the Unicode
+The plugins main purpose is to make handling unicode data and digraphs more
+easily. It serves 3 main purposes:
+
+    1) Complete Characters
+       This plugin provides a custom completion function to complete unicode
+       characters using their name or Codepoint value. If a digraph exists for
+       that character, it will be displayed in paranthesis. This is (by
+       default) activated by pressing Ctrl-X Ctrl-Z (|i_CTRL-X_CTRL-Z|) in
+       insert mode.
+
+       Additionally it provides a completion function for digraphs. This is
+       (by default) activated by pressing Ctrl-X Ctrl-G (|i_CTRL-X_CTRL-G|) in
+       insert mode.
+
+    2) Identify Characters
+       This plugin provides the |:UnicodeName| function to identify the
+       character under the cursor similar to the builtin command |ga|. The
+       |:SearchUnicode| command can be used to search for a unicode character
+       with a given name or value.
+
+    3) Ease the use of digraphs
+       Use the |:Digraphs| command to search for a digraph with a given name
+       or value (or simply display all available digraphs similar to how the
+       |:digraph| command works. By default it also maps the <F4> key (in
+       |Operator-pending-mode| and |Visual| mode) to transform 2 given characters
+       into their corresponding digraph value.
+
+The unicode.vim Plugin uses the data available from the Unicode
 Consortium's website (http://www.unicode.org) to let you enter Unicode
 characters using a completion function.
 
@@ -40,7 +66,10 @@ UnicodeData.txt from the Unicode Consortium has been successfully downloaded.
 It should be located below the autoload/unicode.vim script in a directory
 called unicode. So if you have installed unicode.vim into
 /home/user/.vim, UnicodeData.txt should be located at:
-/home/user/.vim/autoload/unicode/UnicodeData.txt and should look like this:
+/home/user/.vim/autoload/unicode/UnicodeData.txt (after the plugin has been
+first used, it automatically creates a cache file of that data in the same
+directory called UnicodeData.vim, which can be safely removed, it will be
+recreated the next time this plugin is used) and should look like this:
 
 0020;SPACE;Zs;0;WS;;;;;N;;;;;
 0021;EXCLAMATION MARK;Po;0;ON;;;;;N;;;;;
@@ -56,7 +85,7 @@ called unicode. So if you have installed unicode.vim into
 (several thounsand lines following)
 
 If the file looks correct, and the plugin is still not working correctly
-contact the maintainer. You'll find his email-adress in the first line of this
+contact the maintainer. You'll find my email-adress in the third line of this
 document. Please be patient, it might take a while, until I can take care of
 your report.
 
@@ -132,7 +161,6 @@ CTRL-X CTRL-Z           Search for the character in front of the cursor and
        CTRL-P           Use previous match. This match replaces the previous
                         one.
 
-
 There are 2 possibilities to use the plugin. You can either enter the Unicode
 Character name, or enter the Unicode-Codeposition.
 
@@ -144,7 +172,7 @@ have a codepoint like C6 with leading zeros, eg. U+00C6 and U+0C66
 A popup menu will appear, showing you the Unicode-Codeposition value, the
 Unicode Character Name and the Unicode Character (and if you have enabled it,
 it can also show you the digraph characters needed to create this character in
-paranthesis, see |unicode-plugin-config| ). You can scroll down in the menu by
+paranthesis, see |unicode-plugin-config|). You can scroll down in the menu by
 pressing <C-N> and up by pressing <C-P>.
 
 A |preview-window| can be opened, if your Vim was compiled with the
@@ -153,9 +181,9 @@ the digraph characters in parenthesis (if they exist) followed by the glyph
 itself by setting the variable g:Unicode_ShowPreviewWindow (see below). By
 default, this feature is off.
 
-Note: If completing takes longer than 2 seconds (because many unicode
+Note: If completing takes longer than 2 seconds (e.g. because many unicode
 names match), you will be notified and completing further items will be
-aborted so you can only complete the so far matched unicode chars.
+stopped so you can only complete the so far matched unicode chars.
 
                                                     *unicode-plugin-config*
 If you would like to specify a different URL from which to download
@@ -182,14 +210,6 @@ window, set the variable >
 <
 in your |.vimrc|.
 
-If you want, that the digraph completion also lists the unicode names, you
-need to set the g:Unicode_ShowDigraphName variable like this: >
-
-    let g:Unicode_ShowDigraphName = 1
-
-Note, this will make completion possibly more expensive and slower. Therefore
-this is by default disabled.
-
                                         *i_CTRL-X_CTRL-G* *digraph-completion*
 3.2 Completing Digraphs
 -----------------------
@@ -206,24 +226,31 @@ CTRL-X CTRL-G           Search for the character in front of the cursor and
        CTRL-P           Use previous match. This match replaces the previous
                         one.
 
+If you want, that the digraph completion also lists the unicode names, you
+need to set the g:Unicode_ShowDigraphName variable like this: >
+
+    let g:Unicode_ShowDigraphName = 1
+
+Note, this will make completion possibly more expensive and slower. Therefore
+this is by default disabled.
+
 ==============================================================================
 4. Mappings						*unicode-mappings*
 
 The unicode plugin provides those mappings:
 
-Key		Mode	    Function
-<C-X><C-Z>	i	    Complete Unicode Name before cursor |i_CTRL-X_CTRL-G|
-<C-X><C-G>	i	    Complete Digraph before cursor |i_CTRL-X_CTRL-Z|
-<F4>		n,v	    Generate Digraph from chars |<Plug>(MakeDigraph)|
-<Leader>un	n	    Toggle Completion of Unicode Names and Chars
+Key		Mode		Function
+<C-X><C-Z>	Insert		Complete Unicode Name before cursor |i_CTRL-X_CTRL-G|
+<C-X><C-G>	Insert		Complete Digraph before cursor |i_CTRL-X_CTRL-Z|
+<F4>		Normal/Visual   Generate Digraph from chars |<Plug>(MakeDigraph)|
+<Leader>un	Normal		Toggle Completion of Unicode Names and Chars
 
 To remap those mappings to different keys see below.
 
                                                         *<Plug>(MakeDigraph)*
-Alternatively, the plugin sets up a map to <f4>, for easier generation of
-digraphs. This allows you to enter the digraph base characters and let the
-plugin convert a certain range to its corresponding digraphs. Consider this
-line: >
+The plugin sets up a map to <F4>, for easier generation of digraphs. This
+allows you to enter the digraph base characters and let the plugin convert a
+certain range to its corresponding digraphs. Consider this line: >
 
     a:e:o:u:1Sß/\
 <
@@ -255,7 +282,6 @@ This will invoke the |:UnicodeName| command whenever the ga command is used.
 Instead of completing to the actual glyphs, the plugin can also complete
 unicode names. Use the <Plug>(UnicodeSwapCompleteName) to toggle between both
 completion types. By default, this is mapped to <Leader>un
-
 ==============================================================================
 5. Public functions					*unicode-functions*
 

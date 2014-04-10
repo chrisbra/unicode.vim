@@ -9,7 +9,7 @@ This plugin aims to make the handling of unicode and digraphs chars in Vim easie
 3. Ease the use of Digraphs
 
 ###Complete Characters
-Once you have enabled completing of Unicode Characters (`:EnableUnicodeCompletion`) a custom completion function is available to complete characters using their Unicode name or Codepoint. If a digraph exists for that character, it will be displayed in paranthesis. Press `Ctrl-X Ctrl-U` to trigger this completion from insert mode.
+A custom completion function is available to complete characters using their Unicode name or Codepoint. If a digraph exists for that character, it will be displayed in paranthesis. Press `Ctrl-X Ctrl-Z` to trigger this completion from insert mode.
 Also a new custom completion for digraph chars is available. Press `Ctrl-X Ctrl-G` to trigger this completion. It will display all digraphs, that are reachable from the previous typed letter.
 
 ###Identify Characters
