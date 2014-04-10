@@ -395,15 +395,6 @@ fu! unicode#CompleteDigraph() "{{{2
     call complete(col, tlist)
     return ''
 endfu
-fu! unicode#SwapCompletion() "{{{2
-    if get(g:, 'Unicode_complete_name') == ''
-        let g:Unicode_complete_name = 1
-    else
-        let g:Unicode_complete_name = !g:Unicode_complete_name
-    endif
-    echo "Unicode Completion Names " .
-    \ (g:Unicode_complete_name ? 'ON':'OFF')
-endfu
 fu! unicode#GetUniChar(...) "{{{2
     " Return Unicode Name of Character under cursor
     " :UnicodeName
