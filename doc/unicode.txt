@@ -12,10 +12,11 @@ Copyright: (c) 2009 - 2014 by Christian Brabandt
 0. Contents                                                  *unicode-toc*
 
         1.  Functionality...........................: |unicode-plugin|
-        2.  Completing Unicode chars................: |unicode-plugin-usage|
-        3.  Completing digraphs.....................: |digraph-completion|
-        4.  Public functions........................: |unicode-functions|
-        5.  Changelog...............................: |unicode-plugin-history|
+	2.  Commands................................: |unicode-commands|
+        3.  Completion Functions....................: |unicode-plugin-usage|
+        4.  Mappings................................: |unicode-mappings|
+        5.  Public functions........................: |unicode-functions|
+        6.  Changelog...............................: |unicode-plugin-history|
 
 ==============================================================================
                                                               *unicode-plugin*
@@ -33,7 +34,34 @@ which it will try to download using |netrw| . If this is unsuccessfull, or
 you do not have |netrw| enabled, dowload the file manually and save it in the
 unicode directory below the autoload directory in which unicode.vim is
 located.
+                                                     *unicode-plugin-error*
+If the plugin gives an error or does not complete anything, first check, that
+UnicodeData.txt from the Unicode Consortium has been successfully downloaded.
+It should be located below the autoload/unicode.vim script in a directory
+called unicode. So if you have installed unicode.vim into
+/home/user/.vim, UnicodeData.txt should be located at:
+/home/user/.vim/autoload/unicode/UnicodeData.txt and should look like this:
 
+0020;SPACE;Zs;0;WS;;;;;N;;;;;
+0021;EXCLAMATION MARK;Po;0;ON;;;;;N;;;;;
+0022;QUOTATION MARK;Po;0;ON;;;;;N;;;;;
+0023;NUMBER SIGN;Po;0;ET;;;;;N;;;;;
+0024;DOLLAR SIGN;Sc;0;ET;;;;;N;;;;;
+0025;PERCENT SIGN;Po;0;ET;;;;;N;;;;;
+0026;AMPERSAND;Po;0;ON;;;;;N;;;;;
+0027;APOSTROPHE;Po;0;ON;;;;;N;APOSTROPHE-QUOTE;;;;
+0028;LEFT PARENTHESIS;Ps;0;ON;;;;;Y;OPENING PARENTHESIS;;;;
+0029;RIGHT PARENTHESIS;Pe;0;ON;;;;;Y;CLOSING PARENTHESIS;;;;
+[...]
+(several thounsand lines following)
+
+If the file looks correct, and the plugin is still not working correctly
+contact the maintainer. You'll find his email-adress in the first line of this
+document. Please be patient, it might take a while, until I can take care of
+your report.
+
+==============================================================================
+2. Commands                                                 *unicode-commands*
                                                             *:UnicodeName*
 Suppose, you want to know, what the Unicode Name for the Character under the
 cursor is. You simply enter the ex command: >
@@ -86,8 +114,10 @@ commas and html entitities are displayed as well. Note, depending on your
 search term, this might be a little bit slow.
 
 ==============================================================================
+3. Completing Functions
                                         *i_CTRL-X_CTRL-Z* *unicode-completion*
-2. Completing Unicode chars
+3.1 Completing Unicode Characters
+---------------------------------
 
 CTRL-X CTRL-Z           Search for the character in front of the cursor and
                         try to complete this letter using unicode names or
@@ -160,35 +190,9 @@ need to set the g:Unicode_ShowDigraphName variable like this: >
 Note, this will make completion possibly more expensive and slower. Therefore
 this is by default disabled.
 
-                                                     *unicode-plugin-error*
-If the plugin gives an error or does not complete anything, first check, that
-UnicodeData.txt from the Unicode Consortium has been successfully downloaded.
-It should be located below the autoload/unicode.vim script in a directory
-called unicode. So if you have installed unicode.vim into
-/home/user/.vim, UnicodeData.txt should be located at:
-/home/user/.vim/autoload/unicode/UnicodeData.txt and should look like this:
-
-0020;SPACE;Zs;0;WS;;;;;N;;;;;
-0021;EXCLAMATION MARK;Po;0;ON;;;;;N;;;;;
-0022;QUOTATION MARK;Po;0;ON;;;;;N;;;;;
-0023;NUMBER SIGN;Po;0;ET;;;;;N;;;;;
-0024;DOLLAR SIGN;Sc;0;ET;;;;;N;;;;;
-0025;PERCENT SIGN;Po;0;ET;;;;;N;;;;;
-0026;AMPERSAND;Po;0;ON;;;;;N;;;;;
-0027;APOSTROPHE;Po;0;ON;;;;;N;APOSTROPHE-QUOTE;;;;
-0028;LEFT PARENTHESIS;Ps;0;ON;;;;;Y;OPENING PARENTHESIS;;;;
-0029;RIGHT PARENTHESIS;Pe;0;ON;;;;;Y;CLOSING PARENTHESIS;;;;
-[...]
-(several thounsand lines following)
-
-If the file looks correct, and the plugin is still not working correctly
-contact the maintainer. You'll find his email-adress in the first line of this
-document. Please be patient, it might take a while, until I can take care of
-your report.
-
-==============================================================================
                                         *i_CTRL-X_CTRL-G* *digraph-completion*
-3. Completing digraphs
+3.2 Completing Digraphs
+-----------------------
 
 CTRL-X CTRL-G           Search for the character in front of the cursor and
                         try to complete this letter using a digraph. If there
@@ -201,6 +205,19 @@ CTRL-X CTRL-G           Search for the character in front of the cursor and
                         match.
        CTRL-P           Use previous match. This match replaces the previous
                         one.
+
+==============================================================================
+4. Mappings						*unicode-mappings*
+
+The unicode plugin provides those mappings:
+
+Key		Mode	    Function
+<C-X><C-Z>	i	    Complete Unicode Name before cursor |i_CTRL-X_CTRL-G|
+<C-X><C-G>	i	    Complete Digraph before cursor |i_CTRL-X_CTRL-Z|
+<F4>		n,v	    Generate Digraph from chars |<Plug>(MakeDigraph)|
+<Leader>un	n	    Toggle Completion of Unicode Names and Chars
+
+To remap those mappings to different keys see below.
 
                                                         *<Plug>(MakeDigraph)*
 Alternatively, the plugin sets up a map to <f4>, for easier generation of
@@ -240,7 +257,8 @@ unicode names. Use the <Plug>(UnicodeSwapCompleteName) to toggle between both
 completion types. By default, this is mapped to <Leader>un
 
 ==============================================================================
-							*unicode-functions*
+5. Public functions					*unicode-functions*
+
 The unicode plugins also makes some functions publicly available, so you can
 use it, if you want to write your own VimScript and need to handle unicode.
 
@@ -292,7 +310,7 @@ unicode#Digraph({char1},{char2})		   *unicode#Digraph()*
 unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 	returns the unicode name of the character with the decimal value {val}
 ==============================================================================
-5. unicode History                                    *unicode-plugin-history*
+6. unicode History                                    *unicode-plugin-history*
     0.19: (unreleased)  - |:UnicodeName| shows all digraphs per character
 			- |:UnicodeName| shows decimal value for glyph
 			- |:SearchUnicode| search unicode character by name or
