@@ -308,6 +308,7 @@ fu! unicode#CompleteUnicode() "{{{2
     endif
     let line = getline('.')
     let start = col('.') - 1
+    let prev_fmt="Char\tCodepoint  Digraph\tName\n%s\tU+%04X\t  %s\t\t%s"
     while start > 0 && line[start - 1] =~ '\w\|+'
         let start -= 1
     endwhile
@@ -337,7 +338,8 @@ fu! unicode#CompleteUnicode() "{{{2
             let dict = {'word':nr2char(value), 'abbr':fstring}
         endif
         if get(g:,'Unicode_ShowPreviewWindow',0)
-            call extend(dict, {'info': fstring})
+            call extend(dict, {'info': printf(prev_fmt, nr2char(value),value,
+                    \ substitute(dg_char, '(\(..\).*', '\1', ''), key)})
         endif
         call add(compl, dict)
     endfor
