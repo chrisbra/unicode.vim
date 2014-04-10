@@ -41,6 +41,7 @@ vnoremap <unique><script><silent> <Plug>(MakeDigraph) :<C-U>call unicode#GetDigr
 nnoremap <unique><script><silent> <Plug>(UnicodeGA)   :<C-U>UnicodeName<CR>
 inoremap <unique><script><silent> <Plug>(DigraphComplete) <C-R>=unicode#CompleteDigraph()<CR>
 inoremap <unique><script><silent> <Plug>(UnicodeComplete) <C-R>=unicode#CompleteUnicode()<CR>
+nnoremap <unique><script><silent> <Plug>(UnicodeSwapCompleteName) :<C-U>call unicode#SwapCompletion()<CR>
 
 if !hasmapto('<Plug>(MakeDigraph)', 'n')
     nmap <F4> <Plug>(MakeDigraph)
@@ -56,6 +57,10 @@ endif
 
 if !hasmapto('<Plug>(UnicodeComplete)', 'i')
     imap <C-X><C-Z> <Plug>(UnicodeComplete)
+endif
+
+if !hasmapto('<Plug>(UnicodeSwapCompleteName))', 'n')
+    nmap <leader>un <Plug>(UnicodeSwapCompleteName)
 endif
 
 "if !hasmapto('<Plug>(UnicodeGA)')
