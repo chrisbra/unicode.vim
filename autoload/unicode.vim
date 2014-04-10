@@ -325,8 +325,7 @@ fu! unicode#CompleteUnicode() "{{{2
         let dg_char=<sid>GetDigraphChars(value)
         let fstring = printf("U+%04X %s%s:'%s'",
                 \ value, key, dg_char, nr2char(value))
-        let s:unicode_complete_name = get(g:, 'Unicode_complete_name',0)
-        if s:unicode_complete_name
+        if get(g:, 'Unicode_complete_name',0)
             let dict = {'word':key, 'abbr':fstring}
         else
             let dict = {'word':nr2char(value), 'abbr':fstring}
@@ -381,13 +380,13 @@ fu! unicode#CompleteDigraph() "{{{2
     return ''
 endfu
 fu! unicode#SwapCompletion() "{{{2
-    if !exists('s:unicode_complete_name')
-        let s:unicode_complete_name = 1
+    if get(g:, 'Unicode_complete_name') == ''
+        let g:Unicode_complete_name = 1
+    else
+        let g:Unicode_complete_name = !g:Unicode_complete_name
     endif
-    let s:unicode_complete_name = get(g:, 'Unicode_complete_name',
-            \ !s:unicode_complete_name)
     echo "Unicode Completion Names " .
-    \ (s:unicode_complete_name ? 'ON':'OFF')
+    \ (g:Unicode_complete_name ? 'ON':'OFF')
 endfu
 fu! unicode#Init(enable) "{{{2
     if !exists("s:unicode_complete_name")
