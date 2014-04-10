@@ -444,21 +444,33 @@ fu! unicode#GetUniChar(...) "{{{2
         endfor
     endtry
 endfun
-fu! unicode#DigraphsInternal(match, bang, ...) "{{{2
-    " if a:1 is given and is 1, return list of
-    " dicts with all matching unicode characters
-    let print_out = 1
-    if a:0 == 1 && a:1 == 1
-        let print_out = 0
-        let outlist = []
-    endif
+fu! unicode#PrintDigraphs(match, bang) "{{{2
+    let digraphs = unicode#DigraphsInternal(a:match)
     let screenwidth = 0
+    let format = ['%s',' %s %s ']
+    let start = 1
+
+    for item in digraphs
+        let output = printf(format[0].format[1], split(item.dig)[0], item.glyph, item.decimal)
+
+        " if the output is too wide, echo an linebreak
+        if screenwidth + <sid>Screenwidth(output) >= &columns
+            \ || (!empty(a:bang) && start == 0)
+            let screenwidth = 0
+        endif
+        let screenwidth += <sid>ScreenOutput(
+                \ (screenwidth == 0 && start == 0)?1:0,
+                \ item.glyph, printf(format[1], split(item.dig)[0],
+                \ item.decimal))
+        let start = 0
+    endfor
+endfu
+fu! unicode#DigraphsInternal(match) "{{{2
+    let outlist = []
     let digit = a:match + 0
     let name = ''
     let unidict = {}
     let tchar = {}
-    let start = 1
-    let format = ['%s','%s %s ', '(%s) ']
     if (len(a:match > 1 && digit == 0) || print_out == 0)
         " try to match digest name from unicode name
         if !exists("s:UniDict")
@@ -468,8 +480,6 @@ fu! unicode#DigraphsInternal(match, bang, ...) "{{{2
     if (len(a:match) > 1 && digit == 0)
         let name    = a:match
         let unidict = filter(copy(s:UniDict), 'v:key =~? name')
-    elseif print_out == 0
-        let unidict = copy(s:UniDict)
     endif
     for dig in sort(<sid>GetDigraphList(), '<sid>CompareDigraphs')
         " display digraphs that match value
@@ -497,47 +507,28 @@ fu! unicode#DigraphsInternal(match, bang, ...) "{{{2
             let item[2].= ' '
         endif
 
-        let output = printf(format[0].format[1], item[2], item[1], item[3])
+        let clist=[]
         if !empty(name)
-            let output .= printf(format[2], keys(tchar)[0])
-        endif
-
-        " if the output is too wide, echo an linebreak
-        if screenwidth + <sid>Screenwidth(output) >= &columns
-            \ || (!empty(a:bang) && start == 0)
-            let screenwidth = 0
-        endif
-
-        if print_out
-            let screenwidth += <sid>ScreenOutput(
-                \ (start == 0 && screenwidth == 0 ? 1 : 0),
-                \ printf(format[0], item[2]), 
-                \ printf(format[1], item[1], item[3]),
-                \ empty(tchar) ? '' : printf(format[2], keys(tchar)[0]))
-            let start = 0
-        else
             let name = keys(tchar)[0]
             let clist=filter(copy(outlist), 'v:val["name"] ==? name')
-            if empty(clist)
-                let dict         = {}
-                let dict.glyph   = matchstr(item[2], '\S*\ze\s*$')
-                let dict.dig     = item[1]
-                let dict.decimal = item[3]
-                let dict.hex     = printf("0x%02X", item[3])
-                let dict.name    = name
-                call add(outlist, dict)
-            else
-                let cdict = clist[0]
-                " digraph already in list, get index and add
-                " digraph characters
-                let outlist[index(outlist, cdict)].dig.=' '.item[1]
-            endif
-            let clist=[]
+        endif
+        if empty(clist)
+            let dict         = {}
+            " skip linefeed, backspace, etc...
+            let dict.glyph   = item[3]!=32?matchstr(item[2],'\s\?\S*\ze\s*$'):nr2char(item[3])
+            let dict.dig     = item[1]
+            let dict.decimal = item[3]
+            let dict.hex     = printf("0x%02X", item[3])
+            let dict.name    = name
+            call add(outlist, dict)
+        else
+            let cdict = clist[0]
+            " digraph already in list, get index and add
+            " digraph characters
+            let outlist[index(outlist, cdict)].dig.=' '.item[1]
         endif
     endfor
-    if !print_out
-        return outlist
-    endif
+    return outlist
 endfu
 fu! unicode#FindUnicodeByInternal(match, ...) "{{{2
     " if a:1 is given and is 1, return list of
@@ -763,6 +754,7 @@ fu! <sid>GetDigraphList() "{{{2
     " returns list of digraphs 
     " as output by :digraphs
     if exists("s:dlist") && !empty(s:dlist)
+"        return filter(s:dlist, 'v:val =~ 1611')
         return s:dlist
     else
         redir => digraphs
