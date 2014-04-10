@@ -86,8 +86,22 @@ commas and html entitities are displayed as well. Note, depending on your
 search term, this might be a little bit slow.
 
 ==============================================================================
-                                                    *unicode-plugin-usage*
+                                        *i_CTRL-X_CTRL-Z* *unicode-completion*
 2. Completing Unicode chars
+
+CTRL-X CTRL-Z           Search for the character in front of the cursor and
+                        try to complete this letter using unicode names or
+			values. If there is no letter in front of the cursor,
+			a list with all available unicode characters is shown
+			in a popup menu.
+			(should have been <C-X><C-U> but this is used for user
+			defined completions, so Z was chosen, since it is
+			right next to it.)
+       CTRL-N           Use next match. This match replaces the previous
+                        match.
+       CTRL-P           Use previous match. This match replaces the previous
+                        one.
+
 
 There are 2 possibilities to use the plugin. You can either enter the Unicode
 Character name, or enter the Unicode-Codeposition.
@@ -215,6 +229,11 @@ like to do this, then simply map the ga command like this in your |.vimrc| >
     nnoremap ga <Plug>(UnicodeGA)
 
 This will invoke the |:UnicodeName| command whenever the ga command is used.
+
+					*<Plug>(UnicodeSwapCompleteName)*
+Instead of completing to the actual glyphs, the plugin can also complete
+unicode names. Use the <Plug>(UnicodeSwapCompleteName) to toggle between both
+completion types. By default, this is mapped to <Leader>un
 
 ==============================================================================
 							*unicode-functions*
