@@ -299,50 +299,45 @@ fu! unicode#UnicodeName(val) "{{{2
     return <sid>GetUnicodeName(a:val)
 endfu
 " internal functions {{{1
-fu! unicode#CompleteUnicode(findstart,base) "{{{2
+fu! unicode#CompleteUnicode() "{{{2
     " Completion function for Unicode characters
-    if !exists("s:numeric")
-        let s:numeric=0
+    let compl=[]
+    let numeric=0
+    if !exists("s:UniDict")
+        let s:UniDict=<sid>UnicodeDict()
     endif
-    if a:findstart
-        let line = getline('.')
-        let start = col('.') - 1
-        while start > 0 && line[start - 1] =~ '\w\|+'
+    let line = getline('.')
+    let start = col('.') - 1
+    while start > 0 && line[start - 1] =~ '\w\|+'
         let start -= 1
-        endwhile
-        if line[start] =~# 'U' && line[start+1] == '+' && col('.')-1 >=start+2
-            let s:numeric=1
-        else
-            let s:numeric=0
-        endif
-        return start
+    endwhile
+    if line[start] =~# 'U' && line[start+1] == '+' && col('.')-1 >=start+2
+        let numeric=1
+    endif
+    let base = line[start : (col('.')-1)]
+    if numeric
+        let complete_list = filter(copy(s:UniDict),
+            \ 'printf("%04X", v:val) =~? "^0*".base[2:]')
     else
-        if s:numeric
-            let complete_list = filter(copy(s:UniDict),
-                \ 'printf("%04X", v:val) =~? "^0*".a:base[2:]')
+        let complete_list = filter(copy(s:UniDict), 'v:key =~? base')
+    endif
+    for [key, value] in sort(items(complete_list), "<sid>CompareList")
+        let dg_char=<sid>GetDigraphChars(value)
+        let fstring = printf("U+%04X %s%s:'%s'",
+                \ value, key, dg_char, nr2char(value))
+        let s:unicode_complete_name = get(g:, 'Unicode_complete_name',0)
+        if s:unicode_complete_name
+            let dict = {'word':key, 'abbr':fstring}
         else
-            let complete_list = filter(copy(s:UniDict), 'v:key =~? a:base')
+            let dict = {'word':nr2char(value), 'abbr':fstring}
         endif
-        for [key, value] in sort(items(complete_list), "<sid>CompareList")
-            let dg_char=<sid>GetDigraphChars(value)
-            let fstring = printf("U+%04X %s%s:'%s'",
-                    \ value, key, dg_char, nr2char(value))
-            if s:unicode_complete_name
-                let dict = {'word':key, 'abbr':fstring}
-            else
-                let dict = {'word':nr2char(value), 'abbr':fstring}
-            endif
-            if get(g:,'Unicode_ShowPreviewWindow',0)
-                call extend(dict, {'info': fstring})
-            endif
-            call complete_add(dict)
-            if complete_check()
-                break
-            endif
-        endfor
-        unlet! s:numeric
-        return {}
-  endif
+        if get(g:,'Unicode_ShowPreviewWindow',0)
+            call extend(dict, {'info': fstring})
+        endif
+        call add(compl, dict)
+    endfor
+    call complete(start+1, compl)
+    return ""
 endfu
 fu! unicode#CompleteDigraph() "{{{2
     " Completion function for digraphs
@@ -670,7 +665,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
     else
         silent exe "normal! `[v`]\"ay"
     endif
-
+ 
     let s = ''
     while !empty(@a)
         " need to check the next 2 characters
