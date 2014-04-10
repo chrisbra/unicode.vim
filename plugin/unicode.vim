@@ -20,20 +20,9 @@ let s:keepcpo              = &cpo
 set cpo&vim
 " ------------------------------------------------------------------------------
 " Public Interface: {{{1
-com! EnableUnicodeCompletion call unicode#Init(1)
-com! DisableUnicodeCompletion call unicode#Init(0)
 com! -nargs=? UnicodeName call unicode#GetUniChar(<q-args>)
 com! -nargs=? -bang Digraphs call unicode#DigraphsInternal(<q-args>, <q-bang>)
 com! -nargs=1 SearchUnicode call unicode#FindUnicodeByInternal(<q-args>)
-
-if get(g:, 'Unicode_EnableCompletion', 0)
-    " prevent that other plugins override thos settings afterwards.
-    aug UnicodeVimEnter
-	au!
-	" prevent sourcing autoload file
-	au VimEnter * :exe "sil call unicode#Init(1)"
-    aug end
-endif
 
 " Setup Mappings
 nnoremap <unique><script><silent> <Plug>(MakeDigraph) :set opfunc=unicode#GetDigraph<CR>g@

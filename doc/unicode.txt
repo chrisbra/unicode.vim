@@ -34,23 +34,6 @@ you do not have |netrw| enabled, dowload the file manually and save it in the
 unicode directory below the autoload directory in which unicode.vim is
 located.
 
-                                                 *:EnableUnicodeCompletion*
-By default the plugin is not enabled. To enable it enter: >
-
-    :EnableUnicodeCompletion
-
-When you run this command, unicode.vim checks for the availability of
-UnicodeData.txt from the Unicode Consortium, and if it is not available,
-it will try to download it.
-
-This will also set up the completion function |completefunc| to use for your
-buffer. You can use |i_CTRL-X_CTRL-U| then to start the completion.
-
-                                                 *:DisableUnicodeCompletion*
-If you want to disable the plugin, enter >
-
-    :DisableUnicodeCompletion
-<
                                                             *:UnicodeName*
 Suppose, you want to know, what the Unicode Name for the Character under the
 cursor is. You simply enter the ex command: >
@@ -106,13 +89,12 @@ search term, this might be a little bit slow.
                                                     *unicode-plugin-usage*
 2. Completing Unicode chars
 
-If you have enabled the plugin using |:EnableUnicodeCompletion| then there are
-2 possibilities to use the plugin. You can either enter the Unicode Character
-name, or enter the Unicode-Codeposition.
+There are 2 possibilities to use the plugin. You can either enter the Unicode
+Character name, or enter the Unicode-Codeposition.
 
-For example, you would like to enter Æ, so you enter AE and press |<C-X><C-U>|
+For example, you would like to enter Æ, so you enter AE and press |<C-X><C-Z>|
 while in insert mode. Alternatively you can enter the Unicode-Codepoint: U+C6
-and press |<C-X><C-U>| and the popup menu will show you all characters, that
+and press |<C-X><C-Z>| and the popup menu will show you all characters, that
 have a codepoint like C6 with leading zeros, eg. U+00C6 and U+0C66
 
 A popup menu will appear, showing you the Unicode-Codeposition value, the
@@ -136,14 +118,6 @@ UnicodeData.txt, enter the URL as: >
 To force downloading the file from that new url, enter >
 
     :call unicode#CheckUniFile(1)
-
-If you'd like Unicode completion to be always enabled, you can set the
-variable g:enableUnicodeCompletion to 1 in your |.vimrc| like this: >
-
-     let g:Unicode_EnableCompletion = 1
-<
-Thus, you won't need to use EnableUnicodeCompletion, it will be already
-available.
 
 If you only want to complete the Unicode Names instead of the glyphs,
 you can either set the global variable >
@@ -315,6 +289,9 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			  g:Unicode_ShowDigraphName variable to enable)
 			- Always display digraph char when completing unicode
 			  char (and a digraph is available).
+			- Unicode completion always available using <C-X><C-Z>
+			- Therefore removed |:EnableUnicodeCompletion| and
+			  |:DisableUnicodeCompletion| commands
     0.18: Mar 27, 2014  - include mapping for easier digraph generation
                         - fix wrong display of :Digraphs 57344
 			- |:Digraphs| can also search for unicode name
