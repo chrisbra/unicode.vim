@@ -31,17 +31,14 @@ Use the plugin manager of your choice. Or download the [stable][] version of the
 Once installed, take a look at the help at `:h unicode-plugin`
 
 Here is a short overview of the functionality provided by the plugin:
-
 ####Ex commands:
     :Digraphs      - Search for specific digraph char
     :SearchUnicode - Search for specific unicode char
     :UnicodeName   - Identify character under cursor (like ga command)
-
 ####Normal mode commands:
     <C-X><C-G>  - Complete Digraph char
     <C-X><C-Z>  - Complete Unicode char
     <F4>	      - Combine characters into digraphs
-
 ####Scripting Functions:
     unicode#FindUnicodeBy() - Find unicode characters
     unicode#FindDigraphBy() - Find Digraph char
@@ -56,5 +53,4 @@ Here is a short overview of the functionality provided by the plugin:
 ##License & Copyright
 The Vim License applies. See `:h license`
 © 2009-2014 by Christian Brabandt
-
 __NO WARRANTY, EXPRESS OR IMPLIED.  USE AT-YOUR-OWN-RISK__
