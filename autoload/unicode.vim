@@ -301,7 +301,6 @@ endfu
 " internal functions {{{1
 fu! unicode#CompleteUnicode() "{{{2
     " Completion function for Unicode characters
-    let compl=[]
     let numeric=0
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
@@ -328,29 +327,7 @@ fu! unicode#CompleteUnicode() "{{{2
         endif
         echom printf('(Checking Unicode Names for "%s"... this might be slow)', base)
     endif
-    let starttime = localtime()
-    for [key, value] in sort(items(complete_list), "<sid>CompareList")
-        let dg_char=<sid>GetDigraphChars(value)
-        let fstring = printf("U+%04X %s%s:'%s'",
-                \ value, key, dg_char, nr2char(value))
-        if get(g:, 'Unicode_complete_name',0)
-            let dict = {'word':key, 'abbr':fstring}
-        else
-            let dict = {'word':nr2char(value), 'abbr':fstring}
-        endif
-        if get(g:,'Unicode_ShowPreviewWindow',0)
-            call extend(dict, {'info': printf(prev_fmt, nr2char(value),value,
-                    \ substitute(dg_char, '(\(..\).*', '\1', ''), key)})
-        endif
-        call add(compl, dict)
-        " break too long running search
-        if localtime() - starttime > 2
-            echohl WarningMsg
-            echom "Completing takes too long, stopping now..."
-            echohl Normal
-            break
-        endif
-    endfor
+    let compl = <sid>AddCompleteEntries(complete_list)
     call complete(start+1, compl)
     return ""
 endfu
@@ -532,6 +509,33 @@ fu! unicode#GetDigraph(type, ...) "{{{2
     endif
     let &selection = sel_save
     call call("setreg", ["a"]+_a)
+endfu
+fu! <sid>AddCompleteEntries(list) "{{{2
+    let compl=[]
+    let starttime = localtime()
+    for [key, value] in sort(items(a:list), "<sid>CompareList")
+        let dg_char=<sid>GetDigraphChars(value)
+        let fstring = printf("U+%04X %s%s:'%s'",
+                \ value, key, dg_char, nr2char(value))
+        if get(g:, 'Unicode_complete_name',0)
+            let dict = {'word':key, 'abbr':fstring}
+        else
+            let dict = {'word':nr2char(value), 'abbr':fstring}
+        endif
+        if get(g:,'Unicode_ShowPreviewWindow',0)
+            call extend(dict, {'info': printf(prev_fmt, nr2char(value),value,
+                    \ substitute(dg_char, '(\(..\).*', '\1', ''), key)})
+        endif
+        call add(compl, dict)
+        " break too long running search
+        if localtime() - starttime > 2
+            echohl WarningMsg
+            echom "Completing takes too long, stopping now..."
+            echohl Normal
+            break
+        endif
+    endfor
+    return compl
 endfu
 fu! <sid>DigraphsInternal(match) "{{{2
     let outlist = []
