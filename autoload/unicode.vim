@@ -816,7 +816,7 @@ fu! <sid>UnicodeWrite(data) "{{{2
         \ '',
         \ 'let unicode#unicode#data = {}']
     for items in items(a:data)
-        call add(list, printf("let unicode#unicode#data['%s'] = '%s'",
+        call add(list, printf("let unicode#unicode#data['%s'] = %d",
             \ items[0], items[1]))
     endfor
     call writefile(list, s:directory. '/UnicodeData.vim')
