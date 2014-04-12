@@ -445,6 +445,8 @@ fu! unicode#GetUniChar(...) "{{{2
     endtry
 endfun
 fu! unicode#PrintDigraphs(match, bang) "{{{2
+    " outputs only first digraph that exists for char
+    " makes a difference for e.g. Euro which has (=e Eu)
     let digraphs = <sid>DigraphsInternal(a:match)
     let screenwidth = 0
     let format = ['%s',' %s %s ']
@@ -452,7 +454,7 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
 
     for item in digraphs
         let output = printf(format[0].format[1], split(item.dig)[0], item.glyph, item.decimal)
-        " if the output is too wide, echo an linebreak
+        " if the output is too wide, echo a linebreak
         if screenwidth + <sid>Screenwidth(output) >= &columns
             \ || (!empty(a:bang) && start == 0)
             let screenwidth = 0
@@ -466,7 +468,7 @@ endfu
 fu! unicode#PrintUnicode(match) "{{{2
     let uni = <sid>FindUnicodeByInternal(a:match)
     let i=1
-    let format = ["% 6S\t", "Dec:%06d, Hex:%06X\t", ' %s', ' (%s)', '%s']
+    let format = ["% 6S\t", "Dec:%06d, Hex:%06X\t", ' %s', ' (%s)', ' %s']
     if (v:version == 703 && !has("patch713")) || v:version < 703
         " patch 7.3.713 introduced the %S modifier for printf
         let format[0] = substitute(format[0], 'S', 's', '')
