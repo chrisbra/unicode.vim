@@ -1,5 +1,4 @@
 #Unicode plugin
-==============
 > A Vim plugin for handling unicode and digraphs characters
 
 This plugin aims to make the handling of unicode and digraphs chars in Vim easier. It serves 3 purposes:
@@ -24,43 +23,37 @@ See also the following screencast, that shows several features available:
 ![screencast of the plugin](screencast.gif "Screencast")
 
 ##Installation
----
 Use the plugin manager of your choice. Or download the [stable][] version of the plugin, edit it with Vim (`vim unicode-XXX.vmb`) and simply source it (`:so %`). Restart and take a look at the help (`:h unicode-plugin`)
 
 [stable]: http://www.vim.org/scripts/script.php?script_id=2822
 
 ##Usage
----
 Once installed, take a look at the help at `:h unicode-plugin`
 
 Here is a short overview of the functionality provided by the plugin:
 
 ####Ex commands:
-    `:Digraphs`      - Search for specific digraph char
-    `:SearchUnicode` - Search for specific unicode char
-    `:UnicodeName`   - Identify character under cursor (like ga command)
+    :Digraphs      - Search for specific digraph char
+    :SearchUnicode - Search for specific unicode char
+    :UnicodeName   - Identify character under cursor (like ga command)
 
 ####Normal mode commands:
-    `<C-X><C-G>`  - Complete Digraph char
-    `<C-X><C-Z>`  - Complete Unicode char
-    `<F4>`	      - Combine characters into digraphs
+    <C-X><C-G>  - Complete Digraph char
+    <C-X><C-Z>  - Complete Unicode char
+    <F4>	      - Combine characters into digraphs
 
-####ScriptingFunctions:
-    `unicode#FindUnicodeBy()` - Find unicode characters
-    `unicode#FindDigraphBy()` - Find Digraph char
-    `unicode#Digraph()`       - Returns digraph char
-    `unicode#UnicodeName()`   - Identifies unicode character (by value)
+####Scripting Functions:
+    unicode#FindUnicodeBy() - Find unicode characters
+    unicode#FindDigraphBy() - Find Digraph char
+    unicode#Digraph()       - Returns digraph char
+    unicode#UnicodeName()   - Identifies unicode character (by value)
 
 ####Similar Work
-[vim-characterize](https://github.com/tpope/vim-characterize)
-Only supports identifying characters, no completion, no public functions, until recently did not detect combining chars correctly.
+[vim-characterize](https://github.com/tpope/vim-characterize) Only supports identifying characters, no completion, no public functions, until recently did not detect combining chars correctly.
 
-[easydigraph](https://github.com/Rykka/easydigraph.vim)
-Only supports easier digraph generation.
+[easydigraph](https://github.com/Rykka/easydigraph.vim) Only supports easier digraph generation.
 
 ##License & Copyright
----
-
 The Vim License applies. See `:h license`
 © 2009-2014 by Christian Brabandt
 
