@@ -25,9 +25,9 @@ fu! <sid>ToggleUnicodeCompletion() "{{{2
     echo "Unicode Completion Names " .(g:Unicode_complete_name?'ON':'OFF')
 endfu
 " Public Interface: {{{1
-com! -nargs=? UnicodeName	call unicode#GetUniChar(<q-args>)
-com! -nargs=? -bang Digraphs	call unicode#PrintDigraphs(<q-args>, <q-bang>)
-com! -nargs=1 SearchUnicode	call unicode#FindUnicodeByInternal(<q-args>)
+com! -nargs=?       UnicodeName	    call unicode#GetUniChar(<q-args>)
+com! -nargs=? -bang Digraphs	    call unicode#PrintDigraphs(<q-args>, <q-bang>)
+com! -nargs=1       SearchUnicode   call unicode#PrintUnicode(<q-args>)
 
 " Setup Mappings
 nnoremap <unique><script><silent> <Plug>(MakeDigraph)	    :set opfunc=unicode#GetDigraph<CR>g@

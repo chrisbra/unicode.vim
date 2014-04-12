@@ -280,7 +280,7 @@ fu! unicode#FindDigraphBy(match) "{{{2
     return unicode#DigraphsInternal(a:match)
 endfu
 fu! unicode#FindUnicodeBy(match) "{{{2
-    return unicode#FindUnicodeByInternal(a:match, 1)
+    return unicode#FindUnicodeByInternal(a:match)
 endfu
 fu! unicode#Digraph(char1, char2) "{{{2
     if empty(a:char1) || empty(a:char2)
@@ -528,13 +528,32 @@ fu! unicode#DigraphsInternal(match) "{{{2
     endfor
     return outlist
 endfu
-fu! unicode#FindUnicodeByInternal(match, ...) "{{{2
-    " if a:1 is given and is 1, return list of
-    " dicts with all matching unicode characters
-    let print_out = 1
-    if a:0 == 1 && a:1 == 1
-        let print_out = 0
+fu! unicode#PrintUnicode(match) "{{{2
+    let uni = unicode#FindUnicodeByInternal(a:match)
+    let i=1
+    let format = ["% 6S\t", "Dec:%06d, Hex:%06X\t", ' %s', ' (%s)', '%s']
+    if (v:version == 703 && !has("patch713")) || v:version < 703
+        " patch 7.3.713 introduced the %S modifier for printf
+        let format[0] = substitute(format[0], 'S', 's', '')
     endif
+    for item in sort(uni, '<sid>CompareListsByHex')
+        echohl Normal
+        echon printf("%*d ", <sid>Screenwidth(len(uni)),i)
+        echohl Title
+        echon printf(format[0], item.glyph)
+        echohl Normal
+        echon printf(format[1].format[2], item.dec, item.dec, item.name)
+        if has_key(item, 'dig')
+            echon printf(format[3], item.dig)
+        endif 
+        if has_key(item, 'html')
+            echon printf(format[4], item.html)
+        endif
+        echon printf("%s", (i==len(uni) ? "" : "\n"))
+        let i+=1
+    endfor
+endfu
+fu! unicode#FindUnicodeByInternal(match) "{{{2
     let digit = a:match + 0
     if a:match[0:1] == 'U+'
         let digit = str2nr(a:match[2:], 16)
@@ -560,11 +579,6 @@ fu! unicode#FindUnicodeByInternal(match, ...) "{{{2
         let unidict = filter(copy(s:UniDict), 'v:val == digit')
     endif
     for [name, decimal] in items(unidict)
-        let format = ["% 6S\t", "Dec:%06d, Hex:%06X\t", '%s', '%s', '%s']
-        if (v:version == 703 && !has("patch713")) || v:version < 703
-            " patch 7.3.713 introduced the %S modifier for printf
-            let format[0] = substitute(format[0], 'S', 's', '')
-        endif
         " Try to get digraph char
         let dchar=''
         let dig = filter(copy(<sid>GetDigraphList()),
@@ -574,45 +588,24 @@ fu! unicode#FindUnicodeByInternal(match, ...) "{{{2
             for val in dig
                 let dchar .= printf("%s,", val[0:1])
             endfor
-            let format[3] = ' (%s) '
             let dchar = printf('%s', dchar[0:-2]) " strip trailing komma
         endif
         " Get html entity
-        let html  = <sid>GetHtmlEntity(decimal)
-        if print_out == 0
-            let dict          = {}
-            let dict.name     = name
-            let dict.glyph    = nr2char(decimal)
-            let dict.dec      = decimal
-            let dict.hex      = printf("0x%02X", decimal)
-            if !empty(dchar)
-                let dict.dig  = dchar
-            endif
-            if !empty(html)
-                let dict.html = html
-            endif
-            call add(output, dict)
-        else
-            call add(output, printf(format[0], nr2char(decimal)).
-                \ printf(join(format[1:]), decimal, decimal,
-                \ name, dchar, html))
+        let html          = <sid>GetHtmlEntity(decimal)
+        let dict          = {}
+        let dict.name     = name
+        let dict.glyph    = nr2char(decimal)
+        let dict.dec      = decimal
+        let dict.hex      = printf("0x%02X", decimal)
+        if !empty(dchar)
+            let dict.dig  = dchar
         endif
+        if !empty(html)
+            let dict.html = html
+        endif
+        call add(output, dict)
     endfor
-    if print_out == 0
-        return output
-    else
-        let i=1
-        for item in sort(output, '<sid>CompareListsByHex')
-            let list = matchlist(item, '\(.*\)\(Dec.*\)')
-            echohl Normal
-            echon printf("%*d ", <sid>Screenwidth(len(output)),i)
-            echohl Title
-            echon printf("%s", list[1])
-            echohl Normal
-            echon printf("%s", list[2]). (i < len(output) ?  "\n" : '')
-            let i+=1
-        endfor
-    endif
+    return output
 endfu
 fu! unicode#GetDigraph(type, ...) "{{{2
     " turns a movement or selection into digraphs, each pair of chars
@@ -783,8 +776,8 @@ fu! <sid>CompareDigraphs(d1, d2) "{{{2
     return <sid>CompareByValue(d1,d2)
 endfu
 fu! <sid>CompareListsByHex(l1, l2) "{{{2
-    let d1 = str2nr(matchstr(a:l1, 'Hex:\zs\x\{6}\ze\s'), 16)
-    let d2 = str2nr(matchstr(a:l2, 'Hex:\zs\x\{6}\ze\s'), 16)
+    let d1 = str2nr(a:l1["hex"], 16)
+    let d2 = str2nr(a:l2["hex"], 16)
     return <sid>CompareByValue(d1,d2)
 endfu
 fu! <sid>CompareByValue(v1, v2) "{{{2
