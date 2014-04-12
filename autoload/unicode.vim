@@ -277,10 +277,10 @@ let s:html[0x2665] = "&hearts;"
 let s:html[0x2666] = "&diams;" "}}}2
 " public functions {{{1
 fu! unicode#FindDigraphBy(match) "{{{2
-    return unicode#DigraphsInternal(a:match)
+    return <sid>DigraphsInternal(a:match)
 endfu
 fu! unicode#FindUnicodeBy(match) "{{{2
-    return unicode#FindUnicodeByInternal(a:match)
+    return <sid>FindUnicodeByInternal(a:match)
 endfu
 fu! unicode#Digraph(char1, char2) "{{{2
     if empty(a:char1) || empty(a:char2)
@@ -445,7 +445,7 @@ fu! unicode#GetUniChar(...) "{{{2
     endtry
 endfun
 fu! unicode#PrintDigraphs(match, bang) "{{{2
-    let digraphs = unicode#DigraphsInternal(a:match)
+    let digraphs = <sid>DigraphsInternal(a:match)
     let screenwidth = 0
     let format = ['%s',' %s %s ']
     let start = 1
@@ -463,7 +463,82 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
         let start = 0
     endfor
 endfu
-fu! unicode#DigraphsInternal(match) "{{{2
+fu! unicode#PrintUnicode(match) "{{{2
+    let uni = <sid>FindUnicodeByInternal(a:match)
+    let i=1
+    let format = ["% 6S\t", "Dec:%06d, Hex:%06X\t", ' %s', ' (%s)', '%s']
+    if (v:version == 703 && !has("patch713")) || v:version < 703
+        " patch 7.3.713 introduced the %S modifier for printf
+        let format[0] = substitute(format[0], 'S', 's', '')
+    endif
+    for item in sort(uni, '<sid>CompareListsByHex')
+        echohl Normal
+        echon printf("%*d ", <sid>Screenwidth(len(uni)),i)
+        echohl Title
+        echon printf(format[0], item.glyph)
+        echohl Normal
+        echon printf(format[1].format[2], item.dec, item.dec, item.name)
+        if has_key(item, 'dig')
+            echon printf(format[3], item.dig)
+        endif 
+        if has_key(item, 'html')
+            echon printf(format[4], item.html)
+        endif
+        echon printf("%s", (i==len(uni) ? "" : "\n"))
+        let i+=1
+    endfor
+endfu
+fu! unicode#GetDigraph(type, ...) "{{{2
+    " turns a movement or selection into digraphs, each pair of chars
+    " will be converted into the belonging digraph, e.g: This line:
+    " a:e:o:u:1Sß/\
+    " will be converted into:
+    " äëöü¹ß×
+    let sel_save = &selection
+    let &selection = "inclusive"
+    let _a = [getreg("a"), getregtype("a")]
+
+    if a:0  " Invoked from Visual mode, use '< and '> marks.
+        silent exe "norm! `<" . a:type . '`>"ay'
+    elseif a:type == 'line'
+        silent exe "norm! '[V']\"ay"
+    elseif a:type == 'block'
+        silent exe "norm! `[\<C-V>`]\"ay"
+    else
+        silent exe "normal! `[v`]\"ay"
+    endif
+ 
+    let s = ''
+    while !empty(@a)
+        " need to check the next 2 characters
+        for i in range(2)
+            let char{i} = matchstr(@a, '^.')
+            if char2nr(char{i}) > 126 || char2nr(char{i}) < 20 || char2nr(char{i}) == 0x20
+                let s.=char0. (exists("char1") ? "char1" : "")
+                let @a=substitute(@a, '^.', '', '')
+                break
+            endif
+            let @a=substitute(@a, '^.', '', '')
+            if empty(@a)
+                break
+            endif
+        endfor
+        if exists("char0") && exists("char1")
+            " How about a digraph() function?
+            " e.g. :let s.=digraph(char[0], char[1])
+            let s.=unicode#Digraph(char0, char1)
+        endif
+        unlet! char0 char1
+    endw
+
+    if s != @a
+        let @a = s
+        exe "norm! gv\"ap"
+    endif
+    let &selection = sel_save
+    call call("setreg", ["a"]+_a)
+endfu
+fu! <sid>DigraphsInternal(match) "{{{2
     let outlist = []
     let digit = a:match + 0
     let name = ''
@@ -528,32 +603,7 @@ fu! unicode#DigraphsInternal(match) "{{{2
     endfor
     return outlist
 endfu
-fu! unicode#PrintUnicode(match) "{{{2
-    let uni = unicode#FindUnicodeByInternal(a:match)
-    let i=1
-    let format = ["% 6S\t", "Dec:%06d, Hex:%06X\t", ' %s', ' (%s)', '%s']
-    if (v:version == 703 && !has("patch713")) || v:version < 703
-        " patch 7.3.713 introduced the %S modifier for printf
-        let format[0] = substitute(format[0], 'S', 's', '')
-    endif
-    for item in sort(uni, '<sid>CompareListsByHex')
-        echohl Normal
-        echon printf("%*d ", <sid>Screenwidth(len(uni)),i)
-        echohl Title
-        echon printf(format[0], item.glyph)
-        echohl Normal
-        echon printf(format[1].format[2], item.dec, item.dec, item.name)
-        if has_key(item, 'dig')
-            echon printf(format[3], item.dig)
-        endif 
-        if has_key(item, 'html')
-            echon printf(format[4], item.html)
-        endif
-        echon printf("%s", (i==len(uni) ? "" : "\n"))
-        let i+=1
-    endfor
-endfu
-fu! unicode#FindUnicodeByInternal(match) "{{{2
+fu! <sid>FindUnicodeByInternal(match) "{{{2
     let digit = a:match + 0
     if a:match[0:1] == 'U+'
         let digit = str2nr(a:match[2:], 16)
@@ -606,56 +656,6 @@ fu! unicode#FindUnicodeByInternal(match) "{{{2
         call add(output, dict)
     endfor
     return output
-endfu
-fu! unicode#GetDigraph(type, ...) "{{{2
-    " turns a movement or selection into digraphs, each pair of chars
-    " will be converted into the belonging digraph, e.g: This line:
-    " a:e:o:u:1Sß/\
-    " will be converted into:
-    " äëöü¹ß×
-    let sel_save = &selection
-    let &selection = "inclusive"
-    let _a = [getreg("a"), getregtype("a")]
-
-    if a:0  " Invoked from Visual mode, use '< and '> marks.
-        silent exe "norm! `<" . a:type . '`>"ay'
-    elseif a:type == 'line'
-        silent exe "norm! '[V']\"ay"
-    elseif a:type == 'block'
-        silent exe "norm! `[\<C-V>`]\"ay"
-    else
-        silent exe "normal! `[v`]\"ay"
-    endif
- 
-    let s = ''
-    while !empty(@a)
-        " need to check the next 2 characters
-        for i in range(2)
-            let char{i} = matchstr(@a, '^.')
-            if char2nr(char{i}) > 126 || char2nr(char{i}) < 20 || char2nr(char{i}) == 0x20
-                let s.=char0. (exists("char1") ? "char1" : "")
-                let @a=substitute(@a, '^.', '', '')
-                break
-            endif
-            let @a=substitute(@a, '^.', '', '')
-            if empty(@a)
-                break
-            endif
-        endfor
-        if exists("char0") && exists("char1")
-            " How about a digraph() function?
-            " e.g. :let s.=digraph(char[0], char[1])
-            let s.=unicode#Digraph(char0, char1)
-        endif
-        unlet! char0 char1
-    endw
-
-    if s != @a
-        let @a = s
-        exe "norm! gv\"ap"
-    endif
-    let &selection = sel_save
-    call call("setreg", ["a"]+_a)
 endfu
 fu! <sid>Screenwidth(item) "{{{2
     " Takes string arguments and calculates the width
