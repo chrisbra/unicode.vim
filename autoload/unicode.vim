@@ -466,27 +466,20 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
     endfor
 endfu
 fu! unicode#PrintUnicode(match) "{{{2
-    let uni = <sid>FindUnicodeByInternal(a:match)
-    let i=1
-    let format = ["% 6S\t", "Dec:%06d, Hex:%06X\t", ' %s', ' (%s)', ' %s']
+    let uni    = <sid>FindUnicodeByInternal(a:match)
+    let format = ["% 4S\t", "Dec:%06d, Hex:%06X\t", ' %s']
+    let i      = 0
     if (v:version == 703 && !has("patch713")) || v:version < 703
         " patch 7.3.713 introduced the %S modifier for printf
         let format[0] = substitute(format[0], 'S', 's', '')
     endif
     for item in sort(uni, '<sid>CompareListsByHex')
-        echohl Normal
-        echon printf("%*d ", <sid>Screenwidth(len(uni)),i)
-        echohl Title
-        echon printf(format[0], item.glyph)
-        echohl Normal
-        echon printf(format[1].format[2], item.dec, item.dec, item.name)
-        if has_key(item, 'dig')
-            echon printf(format[3], item.dig)
-        endif 
-        if has_key(item, 'html')
-            echon printf(format[4], item.html)
-        endif
-        echon printf("%s", (i==len(uni) ? "" : "\n"))
+        let dig  = get(item, 'dig' , '')
+        let html = get(item, 'html', '')
+        call <sid>ScreenOutput(i<len(uni) && i > 0, printf(format[0], item.glyph),
+                \ printf(format[1].format[2], item.dec, item.dec, item.name),
+                \ (empty(dig)  ? [] : printf(" (%s)", dig)),
+                \ (empty(html) ? [] : printf(" %s", html)))
         let i+=1
     endfor
 endfu
