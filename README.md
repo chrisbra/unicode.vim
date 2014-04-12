@@ -35,26 +35,27 @@ Once installed, take a look at the help at `:h unicode-plugin`
 
 Here is a short overview of the functionality provided by the plugin:
 
-###Ex commands:
-`:Digraphs`      - Search for specific digraph char
-`:SearchUnicode` - Search for specific unicode char
-`:UnicodeName`   - Identify character under cursor (like ga command)
+####Ex commands:
+    `:Digraphs`      - Search for specific digraph char
+    `:SearchUnicode` - Search for specific unicode char
+    `:UnicodeName`   - Identify character under cursor (like ga command)
 
-###Normal mode commands:
-`<C-X><C-G>`  - Complete Digraph char
-`<C-X><C-Z>`  - Complete Unicode char
-`<F4>`	      - Combine characters into digraphs
+####Normal mode commands:
+    `<C-X><C-G>`  - Complete Digraph char
+    `<C-X><C-Z>`  - Complete Unicode char
+    `<F4>`	      - Combine characters into digraphs
 
-###ScriptingFunctions:
-`unicode#FindUnicodeBy()` - Find unicode characters
-`unicode#FindDigraphBy()` - Find Digraph char
-`unicode#Digraph()`       - Returns digraph char
-`unicode#UnicodeName()`   - Identifies unicode character (by value)
+####ScriptingFunctions:
+    `unicode#FindUnicodeBy()` - Find unicode characters
+    `unicode#FindDigraphBy()` - Find Digraph char
+    `unicode#Digraph()`       - Returns digraph char
+    `unicode#UnicodeName()`   - Identifies unicode character (by value)
 
-##Similar Work
+####Similar Work
 [vim-characterize](https://github.com/tpope/vim-characterize)
 Only supports identifying characters, no completion, no public functions, until recently did not detect combining chars correctly.
-·[easydigraph](https://github.com/Rykka/easydigraph.vim)
+
+[easydigraph](https://github.com/Rykka/easydigraph.vim)
 Only supports easier digraph generation.
 
 ##License & Copyright
