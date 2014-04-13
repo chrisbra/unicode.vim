@@ -510,6 +510,31 @@ fu! unicode#GetDigraph(type, ...) "{{{2
     let &selection = sel_save
     call call("setreg", ["a"]+_a)
 endfu
+fu! unicode#PrintUnicodeTable() "{{{2
+    let winname = 'UnicodeTable.txt'
+	let win = bufwinnr('^'.winname.'$')
+	if win != -1
+		exe ":noa ". win. 'wincmd w'
+	else
+        exe  'noa sp' winname
+    endif
+
+    " just in case, a global nomodifiable was set 
+    setl ma
+    " Just in case
+    silent %d _
+    " Set up some options 
+    setl noswapfile buftype=nofile foldcolumn=0 nobuflisted bufhidden=wipe
+    if !exists("s:UniDict")
+        let s:UniDict=<sid>UnicodeDict()
+    endif
+    1put =\"Char\tCodepoint\tDigraph\tName\"
+    for [key, value] in sort(items(s:UniDict), '<sid>CompareList')
+        let dig = substitute(<sid>GetDigraphChars(value), '(\(..\).*', '\1', 'g')
+        $put =printf(\"%s\tU+%06X\t%s\t%s\n\", nr2char(value), value, dig, key)
+    endfor
+     noa wincmd p
+endfu
 fu! <sid>AddCompleteEntries(list) "{{{2
     let compl=[]
     let starttime = localtime()
@@ -744,7 +769,6 @@ fu! <sid>GetDigraphList() "{{{2
     " returns list of digraphs 
     " as output by :digraphs
     if exists("s:dlist") && !empty(s:dlist)
-"        return filter(s:dlist, 'v:val =~ 1611')
         return s:dlist
     else
         redir => digraphs
@@ -824,7 +848,6 @@ fu! <sid>UnicodeWrite(data) "{{{2
 endfu
 fu! <sid>GetUnicodeName(dec) "{{{2
     " returns Unicodename for decimal value
-    "
     " Check for control char (has no name)
     if a:dec <= 0x1F || (a:dec >= 0x7F && a:dec <= 0x9F)
         return "<Control Char>"

@@ -28,6 +28,7 @@ endfu
 com! -nargs=?       UnicodeName	    call unicode#GetUniChar(<q-args>)
 com! -nargs=? -bang Digraphs	    call unicode#PrintDigraphs(<q-args>, <q-bang>)
 com! -nargs=1       SearchUnicode   call unicode#PrintUnicode(<q-args>)
+com!		    UnicodeTable    call unicode#PrintUnicodeTable()
 
 " Setup Mappings
 nnoremap <unique><script><silent> <Plug>(MakeDigraph)	    :set opfunc=unicode#GetDigraph<CR>g@
