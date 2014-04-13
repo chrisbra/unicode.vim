@@ -367,6 +367,7 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			  seconds
 			- fix annoying new line bug, when using digraph
 			  generation in visual mode
+			- new command |:UnicodeTable|
     0.18: Mar 27, 2014  - include mapping for easier digraph generation
                         - fix wrong display of :Digraphs 57344
 			- |:Digraphs| can also search for unicode name
