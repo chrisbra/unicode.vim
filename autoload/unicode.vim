@@ -335,7 +335,7 @@ fu! unicode#CompleteDigraph() "{{{2
     " Completion function for digraphs
     let prevchar=getline('.')[col('.')-2]
     let prevchar1=getline('.')[col('.')-3]
-    let dlist=<sid>GetDigraphList()
+    let dlist=values(<sid>GetDigraphDict())
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
     endif
@@ -406,7 +406,7 @@ fu! unicode#GetUniChar(...) "{{{2
             let dig   = <sid>GetDigraphChars(dec)
             let name  = <sid>GetUnicodeName(dec)
             let html  = <sid>GetHtmlEntity(dec)
-            call add(msg, printf("'%s' U+%04X, Dec:%d %s%s %s", glyph,
+            call add(msg, printf("'%s' U+%04X, Dec:%d %s %s %s", glyph,
                     \ dec, dec, name, dig, html))
         endfor
         if exists("a:1") && !empty(a:1)
@@ -530,7 +530,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
     endif
     1put =\"Char\tCodepoint\tDigraph\tName\"
     for [key, value] in sort(items(s:UniDict), '<sid>CompareList')
-        let dig = substitute(<sid>GetDigraphChars(value), '(\(..\).*', '\1', 'g')
+        let dig = <sid>GetDigraphChars(value)
         $put =printf(\"%s\tU+%06X\t%s\t%s\n\", nr2char(value), value, dig, key)
     endfor
      noa wincmd p
@@ -578,7 +578,7 @@ fu! <sid>DigraphsInternal(match) "{{{2
         let name    = a:match
         let unidict = filter(copy(s:UniDict), 'v:key =~? name')
     endif
-    for dig in sort(<sid>GetDigraphList(), '<sid>CompareDigraphs')
+    for dig in sort(values(<sid>GetDigraphDict()), '<sid>CompareDigraphs')
         " display digraphs that match value
         if dig !~# a:match && digit == 0 && empty(unidict)
             continue
@@ -655,8 +655,7 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
     for [name, decimal] in items(unidict)
         " Try to get digraph char
         let dchar=''
-        let dig = filter(copy(<sid>GetDigraphList()),
-                    \ 'v:val =~ ''\D''.decimal.''$''')
+        let dig = get(<sid>GetDigraphDict(), decimal)
         if !empty(dig)
             " get digraph for character
             for val in dig
@@ -694,12 +693,8 @@ fu! <sid>Screenwidth(item) "{{{2
 endfu
 fu! <sid>GetDigraphChars(code) "{{{2
     "returns digraph for given decimal value
-    let tlist=[]
-    for digraph in filter(copy(<sid>GetDigraphList()),
-        \ 'split(v:val)[-1] ==? a:code')
-        call add(tlist, printf("%s", split(digraph)[0]))
-    endfor
-    return (empty(tlist) ? '' : printf(" (%s)", join(tlist, ' ')))
+    let dig = matchstr(get(<sid>GetDigraphDict(), a:code), '^\S\{2,4\}')
+    return (empty(dig) ? '' : '('. join(split(dig, '..\zs'), ' '). ')')
 endfu
 fu! <sid>UnicodeDict() "{{{2
     let dict={}
@@ -765,29 +760,35 @@ fu! <sid>CheckDir() "{{{2
     endtry
     return <sid>CheckUniFile(0)
 endfu
-fu! <sid>GetDigraphList() "{{{2
+fu! <sid>GetDigraphDict() "{{{2
     " returns list of digraphs 
     " as output by :digraphs
-    if exists("s:dlist") && !empty(s:dlist)
-        return s:dlist
+    if exists("s:digdict") && !empty(s:digdict)
+        return s:digdict
     else
         redir => digraphs
             silent digraphs
         redir END
-        let s:dlist=[]
-        let s:dlist=map(split(substitute(digraphs, "\n", ' ', 'g'),
+        " Because of the redir, the next message might not be
+        " displayed correctly. So force a redraw now.
+        redraw!
+        let s:digdict={}
+        let dlist=[]
+        let dlist=map(split(substitute(digraphs, "\n", ' ', 'g'),
             \ '..\s<\?.\{1,2\}>\?\s\+\d\{1,5\}\zs'),
             \ 'substitute(v:val, "^\\s\\+", "", "")')
         " special case: digraph 57344: starts with 2 spaces
         "return filter(dlist, 'v:val =~ "57344$"')
-        let idx=match(s:dlist, '57344$')
+        let idx=match(dlist, '57344$')
         if idx > -1
-            let s:dlist[idx]='   '.s:dlist[idx]
+            let dlist[idx]='   '.dlist[idx]
         endif
-        " Because of the redir, the next message might not be
-        " displayed correctly. So force a redraw now.
-        redraw!
-        return s:dlist
+        for val in dlist
+            let dec=matchstr(val, '\d\+$')
+            let dig=matchstr(get(s:digdict, dec, ''), '^\S\+')
+            let s:digdict[dec] = (empty(dig) ? val : dig.val)
+        endfor
+        return s:digdict
     endif
 endfu
 fu! <sid>CompareList(l1, l2) "{{{2
