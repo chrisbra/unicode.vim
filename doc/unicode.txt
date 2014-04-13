@@ -46,8 +46,8 @@ easily. It serves 3 main purposes:
        Use the |:Digraphs| command to search for a digraph with a given name
        or value (or simply display all available digraphs similar to how the
        |:digraph| command works. By default it also maps the <F4> key (in
-       |Operator-pending-mode| and |Visual| mode) to transform 2 given characters
-       into their corresponding digraph value.
+       |Operator-pending-mode| and |Visual| mode) to transform 2 given
+       characters into their corresponding digraph value.
 
 The unicode.vim Plugin uses the data available from the Unicode
 Consortium's website (http://www.unicode.org) to let you enter Unicode
@@ -141,6 +141,10 @@ given name (can be a regular expression). (Matching is done with the case
 being ignored.) If possible, digraphs chars are displayed in (), separated by
 commas and html entitities are displayed as well. Note, depending on your
 search term, this might be a little bit slow.
+							    *UnicodeTable*
+    :UnicodeTable
+
+Creates a new window with a table of all Unicode characters.
 
 ==============================================================================
 3. Completing Functions

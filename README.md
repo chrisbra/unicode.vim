@@ -35,6 +35,7 @@ Here is a short overview of the functionality provided by the plugin:
     :Digraphs      - Search for specific digraph char
     :SearchUnicode - Search for specific unicode char
     :UnicodeName   - Identify character under cursor (like ga command)
+    :UnicodeTable  - Print Unicode Table in new window
 ####Normal mode commands:
     <C-X><C-G>  - Complete Digraph char
     <C-X><C-Z>  - Complete Unicode char
