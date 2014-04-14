@@ -528,7 +528,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
     endif
-    1put =\"Char\tCodept\tDigraph\tHtml\t\tName\"
+    call append(1, "Char\tCodept\tDigraph\tHtml\t\tName")
     for [key, value] in sort(items(s:UniDict), '<sid>CompareList')
         let dig   = <sid>GetDigraphChars(value)
         let html  = <sid>GetHtmlEntity(value)
