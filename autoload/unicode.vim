@@ -535,7 +535,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
         let html  = html. repeat(' ', &ts-len(html))
         let codep = printf('U+%04X', value)
         let codep = codep. repeat(' ', &ts-len(codep))
-        call append('$', printf("%s\t%s%s\t%s\t%s\n", strtrans(nr2char(value)),
+        call append('$', printf("%s\t%s%s\t%s\t%s", strtrans(nr2char(value)),
                 \ codep, dig, html, key))
     endfor
     :noa 1
@@ -701,7 +701,14 @@ fu! <sid>Screenwidth(item) "{{{2
 endfu
 fu! <sid>GetDigraphChars(code) "{{{2
     "returns digraph for given decimal value
-    let dig = matchstr(get(<sid>GetDigraphDict(), a:code), '^\S\{2,4\}')
+
+    if !exists("s:digdict")
+        call <sid>GetDigraphDict()
+    endif
+    if !has_key(s:digdict, a:code)
+        return ''
+    endif
+    let dig = split(get(s:digdict, a:code))[0]
     return (empty(dig) ? '' : '('. join(split(dig, '..\zs'), ' '). ')')
 endfu
 fu! <sid>UnicodeDict() "{{{2
