@@ -534,9 +534,8 @@ fu! unicode#PrintUnicodeTable() "{{{2
         $put =printf(\"%s\tU+%04X\t%s\t%s\n\", strtrans(nr2char(value)), value, dig, key)
     endfor
     :noa 1
-    syn match Title /\%2l.*/
-    syn match Title /^\%>2l\S\+/
-    syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)/
+    syn match Title /^\%(\%2l.*\)\|\%(\%>2l\S\+\)/ " highlight Heading and Character
+    syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)/   " highlight possible digraph
     noa wincmd p
 endfu
 fu! <sid>AddCompleteEntries(list) "{{{2
