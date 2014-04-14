@@ -723,7 +723,7 @@ fu! <sid>UnicodeDict() "{{{2
                 endif
                 let dict[Name]   = str2nr(val[0],16)
             endfor
-            call <sid>UnicodeWrite(dict)
+            call <sid>UnicodeWriteCache(dict)
     endif
     return dict
 endfu
@@ -843,7 +843,7 @@ endfun
 fu! <sid>GetHtmlEntity(hex) "{{{2
     return get(s:html, a:hex, '')
 endfu
-fu! <sid>UnicodeWrite(data) "{{{2
+fu! <sid>UnicodeWriteCache(data) "{{{2
     " Take unicode dictionary and write it in VimL form
     " so it will be faster to load
     let list = ['" internal cache file for unicode.vim plugin',
@@ -851,7 +851,7 @@ fu! <sid>UnicodeWrite(data) "{{{2
         \ '',
         \ 'let unicode#unicode#data = {}']
     for items in items(a:data)
-        call add(list, printf("let unicode#unicode#data['%s'] = %d",
+        call add(list, printf("let unicode#unicode#data['%s'] = 0x%04X",
             \ items[0], items[1]))
     endfor
     call writefile(list, s:directory. '/UnicodeData.vim')
