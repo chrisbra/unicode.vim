@@ -531,11 +531,11 @@ fu! unicode#PrintUnicodeTable() "{{{2
     1put =\"Char\tCodepoint\tDigraph\tName\"
     for [key, value] in sort(items(s:UniDict), '<sid>CompareList')
         let dig = <sid>GetDigraphChars(value)
-        $put =printf(\"%s\tU+%06X\t%s\t%s\n\", nr2char(value), value, dig, key)
+        $put =printf(\"%s\tU+%04X\t%s\t%s\n\", strtrans(nr2char(value)), value, dig, key)
     endfor
     :noa 1
     syn match Title /\%2l.*/
-    syn match Title /^\%>2l./
+    syn match Title /^\%>2l\S\+/
     syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)/
     noa wincmd p
 endfu
