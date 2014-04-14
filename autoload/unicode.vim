@@ -528,14 +528,19 @@ fu! unicode#PrintUnicodeTable() "{{{2
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
     endif
-    1put =\"Char\tCodepoint\tDigraph\tName\"
+    1put =\"Char\tCodept\tDigraph\tHtml\t\tName\"
     for [key, value] in sort(items(s:UniDict), '<sid>CompareList')
-        let dig = <sid>GetDigraphChars(value)
-        $put =printf(\"%s\tU+%04X\t%s\t%s\n\", strtrans(nr2char(value)), value, dig, key)
+        let dig   = <sid>GetDigraphChars(value)
+        let html  = <sid>GetHtmlEntity(value)
+        let html  = html. repeat(' ', &ts-len(html))
+        let codep = printf('U+%04X', value)
+        let codep = codep. repeat(' ', &ts-len(codep))
+        $put =printf(\"%s\t%s%s\t%s\t%s\n\", strtrans(nr2char(value)),
+                \ codep, dig, html, key)
     endfor
     :noa 1
-    syn match Title /\%(^\%2l.*\)\|\%(^\%>2l\S\+\)/ " highlight Heading and Character
-    syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)/   " highlight possible digraph
+    syn match Title /\%(^\%2l.*\)\|\%(^\%>2l\S\+\)/         " highlight Heading and Character
+    syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)\|&\w*;/     " highlight html and digraph
     noa wincmd p
 endfu
 fu! <sid>AddCompleteEntries(list) "{{{2
