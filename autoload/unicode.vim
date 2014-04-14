@@ -535,8 +535,8 @@ fu! unicode#PrintUnicodeTable() "{{{2
         let html  = html. repeat(' ', &ts-len(html))
         let codep = printf('U+%04X', value)
         let codep = codep. repeat(' ', &ts-len(codep))
-        $put =printf(\"%s\t%s%s\t%s\t%s\n\", strtrans(nr2char(value)),
-                \ codep, dig, html, key)
+        call append('$', printf("%s\t%s%s\t%s\t%s\n", strtrans(nr2char(value)),
+                \ codep, dig, html, key))
     endfor
     :noa 1
     syn match Title /\%(^\%2l.*\)\|\%(^\%>2l\S\+\)/         " highlight Heading and Character
