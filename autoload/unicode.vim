@@ -323,13 +323,13 @@ fu! unicode#CompleteUnicode() "{{{2
     else
         if numeric
             let complete_list = filter(copy(s:UniDict),
-                \ 'printf("%04X", v:val) =~? "^0*".base[2:]')
+                \ 'printf("%04X", v:key) =~? "^0*".base[2:]')
         else
-            let complete_list = filter(copy(s:UniDict), 'v:key =~? base')
+            let complete_list = filter(copy(s:UniDict), 'v:val =~? base')
         endif
         echom printf('(Checking Unicode Names for "%s"... this might be slow)', base)
     endif
-    let compl = <sid>AddCompleteEntries(complete_list)
+    let compl = <sid>AddCompleteEntries(complete_list, numeric)
     call complete(start+1, compl)
     return ""
 endfu
@@ -362,11 +362,7 @@ fu! unicode#CompleteDigraph() "{{{2
         let prev_fmt="Abbrev\tGlyph\tCodepoint\tName\n%s\t%s\tU+%04X\t\t%s"
         if !empty(t)
             let format = printf("'%s' %s U+%04X",t[1], t[2], t[3])
-            let name   = ''
-            if get(g:, 'Unicode_ShowDigraphName', 0)
-                " returning the unicode name is expensive!
-                let name   = <sid>GetUnicodeName(t[3])
-            endif
+            let name   = <sid>GetUnicodeName(t[3])
             call add(tlist, {'word':nr2char(t[3]), 'abbr':format,
                 \ 'info': printf(prev_fmt, t[1],t[2],t[3],name)})
        endif
@@ -546,21 +542,21 @@ fu! unicode#PrintUnicodeTable() "{{{2
     syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)\|&\w*;/     " highlight html and digraph
     noa wincmd p
 endfu
-fu! <sid>AddCompleteEntries(list) "{{{2
+fu! <sid>AddCompleteEntries(dict, numeric) "{{{2
     let compl=[]
     let starttime = localtime()
-    for [key, value] in sort(items(a:list), "<sid>CompareList")
+    for [value, name] in sort(items(a:dict), "<sid>CompareList")
         let dg_char=<sid>GetDigraphChars(value)
         let fstring = printf("U+%04X %s%s:'%s'",
-                \ value, key, dg_char, nr2char(value))
+                \ value, name, dg_char, nr2char(value))
         if get(g:, 'Unicode_complete_name',0)
-            let dict = {'word':key, 'abbr':fstring}
+            let dict = {'word':printf("%s (U+%04X)", name, value), 'abbr':fstring}
         else
             let dict = {'word':nr2char(value), 'abbr':fstring}
         endif
         if get(g:,'Unicode_ShowPreviewWindow',0)
             call extend(dict, {'info': printf(prev_fmt, nr2char(value),value,
-                    \ substitute(dg_char, '(\(..\).*', '\1', ''), key)})
+                    \ substitute(dg_char, '(\(..\).*', '\1', ''), name)})
         endif
         call add(compl, dict)
         " break too long running search
@@ -814,7 +810,7 @@ fu! <sid>GetDigraphDict() "{{{2
     endif
 endfu
 fu! <sid>CompareList(l1, l2) "{{{2
-    return <sid>CompareByValue((a:l1[1]+0),(a:l2[1]+0))
+    return <sid>CompareByValue((a:l1[0]+0),(a:l2[0]+0))
 endfu
 fu! <sid>CompareDigraphs(d1, d2) "{{{2
     let d1=matchstr(a:d1, '\d\+$')+0
