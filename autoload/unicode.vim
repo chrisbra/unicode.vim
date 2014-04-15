@@ -700,7 +700,6 @@ fu! <sid>Screenwidth(item) "{{{2
 endfu
 fu! <sid>GetDigraphChars(code) "{{{2
     "returns digraph for given decimal value
-
     if !exists("s:digdict")
         call <sid>GetDigraphDict()
     endif
