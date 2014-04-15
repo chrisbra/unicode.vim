@@ -141,10 +141,15 @@ given name (can be a regular expression). (Matching is done with the case
 being ignored.) If possible, digraphs chars are displayed in (), separated by
 commas and html entitities are displayed as well. Note, depending on your
 search term, this might be a little bit slow.
-							    *UnicodeTable*
+							    *:UnicodeTable*
     :UnicodeTable
 
 Creates a new window with a table of all Unicode characters.
+
+							    *:DownloadUnicode*
+    :DownloadUnicode
+
+Downloads the Unicode data. Can also be used to update the local data file.
 
 ==============================================================================
 3. Completing Functions
@@ -197,7 +202,9 @@ UnicodeData.txt, enter the URL as: >
 
 To force downloading the file from that new url, enter >
 
-    :call unicode#CheckUniFile(1)
+    :DownloadUnicode
+
+You can also use this command to update your local unicode data file.
 
 If you only want to complete the Unicode Names instead of the glyphs,
 you can either set the global variable >
@@ -360,6 +367,7 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			- fix annoying new line bug, when using digraph
 			  generation in visual mode
 			- new command |:UnicodeTable|
+			- new command |:DownloadUnicode|
     0.18: Mar 27, 2014  - include mapping for easier digraph generation
                         - fix wrong display of :Digraphs 57344
 			- |:Digraphs| can also search for unicode name

@@ -32,10 +32,11 @@ Once installed, take a look at the help at `:h unicode-plugin`
 
 Here is a short overview of the functionality provided by the plugin:
 ####Ex commands:
-    :Digraphs      - Search for specific digraph char
-    :SearchUnicode - Search for specific unicode char
-    :UnicodeName   - Identify character under cursor (like ga command)
-    :UnicodeTable  - Print Unicode Table in new window
+    :Digraphs        - Search for specific digraph char
+    :SearchUnicode   - Search for specific unicode char
+    :UnicodeName     - Identify character under cursor (like ga command)
+    :UnicodeTable    - Print Unicode Table in new window
+    :DownloadUnicode - Download (or update) Unicode data
 ####Normal mode commands:
     <C-X><C-G>  - Complete Digraph char
     <C-X><C-Z>  - Complete Unicode char
