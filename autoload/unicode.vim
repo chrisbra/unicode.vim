@@ -718,7 +718,8 @@ fu! <sid>UnicodeDict() "{{{2
     if <sid>CheckDir()
         let uni_cache_file = s:directory. '/UnicodeData.vim'
         if filereadable(uni_cache_file) &&
-            \ getftime(uni_cache_file) > getftime(s:UniFile)
+            \ getftime(uni_cache_file) > getftime(s:UniFile) &&
+            \ getfsize(uni_cache_file) > 100 " Unicode Cache Dict should be a lot larger
             exe "source" uni_cache_file
             let dict=g:unicode#unicode#data
             unlet! g:unicode#unicode#data
