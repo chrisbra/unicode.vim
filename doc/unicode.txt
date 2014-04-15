@@ -230,14 +230,6 @@ CTRL-X CTRL-G           Search for the character in front of the cursor and
        CTRL-P           Use previous match. This match replaces the previous
                         one.
 
-If you want, that the digraph completion also lists the unicode names, you
-need to set the g:Unicode_ShowDigraphName variable like this: >
-
-    let g:Unicode_ShowDigraphName = 1
-
-Note, this will make completion possibly more expensive and slower. Therefore
-this is by default disabled.
-
 ==============================================================================
 4. Mappings						*unicode-mappings*
 
