@@ -461,7 +461,7 @@ fu! unicode#PrintUnicode(match) "{{{2
         let html = get(item, 'html', '')
         call <sid>ScreenOutput(i<len(uni) && i > 0, printf(format[0], item.glyph),
                 \ printf(format[1].format[2], item.dec, item.dec, item.name),
-                \ (empty(dig)  ? [] : printf(" (%s)", dig)),
+                \ (empty(dig)  ? [] : printf(" %s", dig)),
                 \ (empty(html) ? [] : printf(" %s", html)))
         let i+=1
     endfor
@@ -662,22 +662,14 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
         return
     endif
     if !empty(name)
-        let unidict = filter(copy(s:UniDict), 'v:key =~? name')
+        let unidict = filter(copy(s:UniDict), 'v:val =~? name')
     else
         " filter for decimal value
-        let unidict = filter(copy(s:UniDict), 'v:val == digit')
+        let unidict = filter(copy(s:UniDict), 'v:key == digit')
     endif
-    for [name, decimal] in items(unidict)
+    for [decimal, name] in items(unidict)
         " Try to get digraph char
-        let dchar=''
-        let dig = get(<sid>GetDigraphDict(), decimal)
-        if !empty(dig)
-            " get digraph for character
-            for val in dig
-                let dchar .= printf("%s,", val[0:1])
-            endfor
-            let dchar = printf('%s', dchar[0:-2]) " strip trailing komma
-        endif
+        let dchar=<sid>GetDigraphChars(decimal)
         " Get html entity
         let html          = <sid>GetHtmlEntity(decimal)
         let dict          = {}
@@ -787,7 +779,7 @@ fu! <sid>CheckDir() "{{{2
     return <sid>CheckUniFile(0)
 endfu
 fu! <sid>GetDigraphDict() "{{{2
-    " returns list of digraphs 
+    " returns a dict of digraphs 
     " as output by :digraphs
     if exists("s:digdict") && !empty(s:digdict)
         return s:digdict
