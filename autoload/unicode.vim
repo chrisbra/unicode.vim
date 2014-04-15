@@ -373,6 +373,10 @@ endfu
 fu! unicode#GetUniChar(...) "{{{2
     " Return Unicode Name of Character under cursor
     " :UnicodeName
+    if exists("a:1") && !empty(a:1) && (len(a:1)>1 || a:1 !~# '[a-zA-Z0-9]')
+        call <sid>WarningMsg("No valid register specified")
+        return
+    endif
     let msg        = []
     let msg_script = []
     try
@@ -392,22 +396,26 @@ fu! unicode#GetUniChar(...) "{{{2
         " Special case: no character under cursor
         if a == 'NUL'
             call add(msg, "'NUL' U+0000 NULL")
-            return
+        else
+            " Split string, in case cursor was on a combining char
+            for item in split(a, 'Octal \d\+\zs \?')
+                let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
+                let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
+                if dec == 0
+                    let dec = 10
+                endif
+                let dig   = <sid>GetDigraphChars(dec)
+                let name  = <sid>GetUnicodeName(dec)
+                let html  = <sid>GetHtmlEntity(dec)
+                call add(msg, printf("'%s' U+%04X, Dec:%d %s %s %s", glyph,
+                        \ dec, dec, name, dig, html))
+            endfor
         endif
-        " Split string, in case cursor was on a combining char
-        for item in split(a, 'Octal \d\+\zs \?')
-            let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
-            let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
-            if dec == 0
-                let dec = 10
-            endif
-            let dig   = <sid>GetDigraphChars(dec)
-            let name  = <sid>GetUnicodeName(dec)
-            let html  = <sid>GetHtmlEntity(dec)
-            call add(msg, printf("'%s' U+%04X, Dec:%d %s %s %s", glyph,
-                    \ dec, dec, name, dig, html))
-        endfor
         if exists("a:1") && !empty(a:1)
+            if len(a:1) > 1 || a:1 !~# '[a-zA-Z0-9]'
+                call <sid>WarningMsg("No valid register specified")
+                return
+            endif
             exe "let @".a:1. "=join(msg)"
         endif
     finally
