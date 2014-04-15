@@ -202,7 +202,7 @@ To force downloading the file from that new url, enter >
 If you only want to complete the Unicode Names instead of the glyphs,
 you can either set the global variable >
 
-    let g:Unicode_complete_name = 1
+    let g:Unicode_CompleteName = 1
 <
 or you can use the mapping <leader>un which swaps the completion function
 between completing the unicode name and completing the unicode glyph.

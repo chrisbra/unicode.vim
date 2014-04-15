@@ -549,7 +549,7 @@ fu! <sid>AddCompleteEntries(dict, numeric) "{{{2
         let dg_char=<sid>GetDigraphChars(value)
         let fstring = printf("U+%04X %s%s:'%s'",
                 \ value, name, dg_char, nr2char(value))
-        if get(g:, 'Unicode_complete_name',0)
+        if get(g:, 'Unicode_CompleteName',0)
             let dict = {'word':printf("%s (U+%04X)", name, value), 'abbr':fstring}
         else
             let dict = {'word':nr2char(value), 'abbr':fstring}
