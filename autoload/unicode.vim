@@ -732,9 +732,6 @@ fu! <sid>UnicodeDict() "{{{2
                 let OldName      = val[10] " Unicode_1_Name field (10)
                 if Name[0] == '<' && !empty(OldName)
                     let Name = substitute(OldName, ' ([^)]*)', '', 'g')
-                elseif Name[0] == '<' && empty(OldName)
-                    " Add hex value to character name
-                    let Name = Name.val[0]
                 endif
                 let dict[str2nr(val[0],16)]   = Name
             endfor
