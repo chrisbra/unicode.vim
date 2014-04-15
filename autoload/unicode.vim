@@ -9,6 +9,8 @@
 " GetLatestVimScripts: 2822 18 :AutoInstall: unicode.vim
 " ---------------------------------------------------------------------
 
+" TEST VERSION: Stores unicode in different format (look at new generated cache file)
+
 " initialize Variables {{{1
 let s:unicode_URL = get(g:, 'Unicode_URL',
     \ 'http://www.unicode.org/Public/UNIDATA/UnicodeData.txt')
@@ -529,14 +531,15 @@ fu! unicode#PrintUnicodeTable() "{{{2
         let s:UniDict=<sid>UnicodeDict()
     endif
     call append(1, "Char\tCodept\tDigraph\tHtml\t\tName")
-    for [key, value] in sort(items(s:UniDict), '<sid>CompareList')
+    for value in sort(keys(s:UniDict), '<sid>CompareListByDec')
+        let value += 0
         let dig   = <sid>GetDigraphChars(value)
         let html  = <sid>GetHtmlEntity(value)
         let html  = html. repeat(' ', &ts-len(html))
         let codep = printf('U+%04X', value)
         let codep = codep. repeat(' ', &ts-len(codep))
         call append('$', printf("%s\t%s%s\t%s\t%s", strtrans(nr2char(value)),
-                \ codep, dig, html, key))
+                \ codep, dig, html, s:UniDict[value]))
     endfor
     :noa 1
     syn match Title /\%(^\%2l.*\)\|\%(^\%>2l\S\+\)/         " highlight Heading and Character
@@ -733,7 +736,7 @@ fu! <sid>UnicodeDict() "{{{2
                     " Add hex value to character name
                     let Name = Name.val[0]
                 endif
-                let dict[Name]   = str2nr(val[0],16)
+                let dict[str2nr(val[0],16)]   = Name
             endfor
             call <sid>UnicodeWriteCache(dict)
     endif
@@ -821,6 +824,9 @@ fu! <sid>CompareDigraphs(d1, d2) "{{{2
     let d2=matchstr(a:d2, '\d\+$')+0
     return <sid>CompareByValue(d1,d2)
 endfu
+fu! <sid>CompareListByDec(l1, l2) "{{{2
+    return <sid>CompareByValue(a:l1+0,a:l2+0)
+endfu
 fu! <sid>CompareListsByHex(l1, l2) "{{{2
     let d1 = str2nr(a:l1["hex"], 16)
     let d2 = str2nr(a:l2["hex"], 16)
@@ -863,8 +869,8 @@ fu! <sid>UnicodeWriteCache(data) "{{{2
         \ '',
         \ 'let unicode#unicode#data = {}']
     for items in items(a:data)
-        call add(list, printf("let unicode#unicode#data['%s'] = 0x%04X",
-            \ items[0], items[1]))
+        call add(list, printf("let unicode#unicode#data['%d'] = '%s'",
+            \ items[0]+0, items[1]))
     endfor
     call writefile(list, s:directory. '/UnicodeData.vim')
     unlet! list
