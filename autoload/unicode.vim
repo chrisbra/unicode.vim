@@ -583,7 +583,7 @@ fu! <sid>DigraphsInternal(match) "{{{2
     endif
     if (len(a:match) > 1 && digit == 0)
         let name    = a:match
-        let unidict = filter(copy(s:UniDict), 'v:key =~? name')
+        let unidict = filter(copy(s:UniDict), 'v:val =~? name')
     endif
     for dig in sort(values(<sid>GetDigraphDict()), '<sid>CompareDigraphs')
         " display digraphs that match value
@@ -597,12 +597,12 @@ fu! <sid>DigraphsInternal(match) "{{{2
         " if digit matches, we only want to display digraphs matching the
         " decimal values
         if (digit > 0 && item[3] !~ '^'.digit.'$') ||
-            \ (!empty(name) &&  match(values(unidict), '^'.item[3].'$') == -1)
+            \ (!empty(name) &&  match(keys(unidict), '^'.item[3].'$') == -1)
             continue
         endif
 
         if !empty(name)
-            let tchar = filter(copy(unidict), 'v:val == item[3]')
+            let tchar = filter(copy(unidict), 'v:key == item[3]')
         endif
 
         " add trailing  space for item[2] if there isn't one
@@ -613,7 +613,7 @@ fu! <sid>DigraphsInternal(match) "{{{2
 
         let clist=[]
         if !empty(name)
-            let name = keys(tchar)[0]
+            let name = values(tchar)[0]
             let clist=filter(copy(outlist), 'v:val["name"] ==? name')
         endif
         if empty(clist)
