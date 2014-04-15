@@ -889,6 +889,8 @@ fu! <sid>GetUnicodeName(dec) "{{{2
         return "Private Use High Surrogates"
     elseif a:dec >= 0xDC00 && a:dec <= 0xDFFF
         return "Low Surrogates"
+    elseif a:dec >= 0xFFFE && a:dec <= 0xFFFD
+        return "<No Character (BOM)>"
     elseif a:dec >= 0xE000 && a:dec <= 0xF8FF
         return "Private Use Zone"
     elseif a:dec >= 0x20000 && a:dec <= 0x2A6D6
