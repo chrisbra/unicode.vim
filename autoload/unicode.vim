@@ -300,6 +300,9 @@ endfu
 fu! unicode#UnicodeName(val) "{{{2
     return <sid>GetUnicodeName(a:val)
 endfu
+fu! unicode#Download(force) "{{{2
+    call <sid>CheckUniFile(a:force)
+endfu
 " internal functions {{{1
 fu! unicode#CompleteUnicode() "{{{2
     " Completion function for Unicode characters
