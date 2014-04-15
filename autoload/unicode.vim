@@ -901,12 +901,8 @@ fu! <sid>GetUnicodeName(dec) "{{{2
     elseif a:dec >= 0x100000 && a:dec <= 0x10FFFD
         return "Character from Plane 16 for private use"
     else
-        let dict = filter(copy(s:UniDict), 'v:val ==? a:dec')
-        if empty(dict)
-            return "Character not found"
-        else
-            return keys(dict)[0]
-        endif
+        let name = get(s:UniDict, a:dec, '')
+        return empty(name) ? "Character not found" : name
     endif
 endfu
 " Modeline "{{{1
