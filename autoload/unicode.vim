@@ -551,7 +551,6 @@ fu! unicode#PrintUnicodeTable() "{{{2
     :noa 1
     syn match Title /\%(^\%2l.*\)\|\%(^\%>2l\S\+\)/         " highlight Heading and Character
     syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)\|&\w*;\|&#x\x\+;/     " highlight html and digraph
-    noa wincmd p
 endfu
 fu! <sid>AddCompleteEntries(dict, numeric) "{{{2
     let compl=[]
