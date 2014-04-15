@@ -39,7 +39,7 @@ Here is a short overview of the functionality provided by the plugin:
 ####Normal mode commands:
     <C-X><C-G>  - Complete Digraph char
     <C-X><C-Z>  - Complete Unicode char
-    <F4>	- Combine characters into digraphs
+    <F4>        - Combine characters into digraphs
 ####Scripting Functions:
     unicode#FindUnicodeBy() - Find unicode characters
     unicode#FindDigraphBy() - Find Digraph char
