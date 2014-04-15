@@ -550,7 +550,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
     endfor
     :noa 1
     syn match Title /\%(^\%2l.*\)\|\%(^\%>2l\S\+\)/         " highlight Heading and Character
-    syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)\|&\w*;/     " highlight html and digraph
+    syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)\|&\w*;\|&#x\x\+;/     " highlight html and digraph
     noa wincmd p
 endfu
 fu! <sid>AddCompleteEntries(dict, numeric) "{{{2
@@ -855,7 +855,14 @@ fu! <sid>WarningMsg(msg) "{{{2
     echohl Normal
 endfun
 fu! <sid>GetHtmlEntity(hex) "{{{2
-    return get(s:html, a:hex, '')
+    let html=get(s:html, a:hex, '')
+    if empty(html) && (a:hex > 31 ||
+        \ a:hex == 9 || a:hex == 10 || a:hex == 13) &&
+        \ (a:hex < 127 || a:hex > 159) &&
+        \ (a:hex < 55296 || a:hex > 57343)
+        let html=printf("&#x%X;", a:hex)
+    endif
+    return html
 endfu
 fu! <sid>UnicodeWriteCache(data) "{{{2
     " Take unicode dictionary and write it in VimL form
