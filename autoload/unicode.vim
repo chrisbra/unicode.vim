@@ -600,6 +600,9 @@ fu! <sid>AddDigraphCompleteEntries(list) "{{{2
             let prev_fmt="Abbrev\tGlyph\tCodepoint\tName\n%s\t%s\tU+%04X\t\t%s"
             if !empty(t)
                 let format = printf("'%s' %s U+%04X",t[1], t[2], t[3])
+                if t[3] == 0 " special case: NULL
+                    let t[3] = 10
+                endif
                 call add(list, {'word':nr2char(t[3]), 'abbr':format,
                     \ 'info': printf(prev_fmt, t[1],t[2],t[3],<sid>GetUnicodeName(t[3]))})
             endif
@@ -805,7 +808,11 @@ fu! <sid>GetDigraphDict() "{{{2
             let dlist[idx]='   '.dlist[idx]
         endif
         for val in dlist
-            let dec=matchstr(val, '\d\+$')
+            let dec=matchstr(val, '\d\+$')+0
+            if dec == 10 && val[0:1] ==? 'NU' " Decimal 10 is actually ASCII NUL (0)
+                let val = substitute(val, '10', '0', '')
+                let dec = 0
+            endif
             let dig=get(s:digdict, dec, [])
             let s:digdict[dec] = (empty(dig) ? [val] : s:digdict[dec] + [val])
         endfor
