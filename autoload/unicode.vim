@@ -410,7 +410,6 @@ fu! unicode#GetUniChar(...) "{{{2
         return
     endif
     let msg        = []
-    let msg_script = []
     try
         if !exists("s:UniDict")
             let s:UniDict=<sid>UnicodeDict()
@@ -433,9 +432,6 @@ fu! unicode#GetUniChar(...) "{{{2
             for item in split(a, 'Octal \d\+\zs \?')
                 let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
                 let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
-                if dec == 0
-                    let dec = 10
-                endif
                 let dig   = <sid>GetDigraphChars(dec)
                 let name  = <sid>GetUnicodeName(dec)
                 let html  = <sid>GetHtmlEntity(dec)
@@ -879,11 +875,8 @@ fu! <sid>UnicodeWriteCache(data, ind) "{{{2
 endfu
 fu! <sid>GetUnicodeName(dec) "{{{2
     " returns Unicodename for decimal value
-    " Check for control char (has no name)
-    if a:dec <= 0x1F || (a:dec >= 0x7F && a:dec <= 0x9F)
-        return "<Control Char>"
     " CJK Unigraphs start at U+4E00 and go until U+9FFF
-    elseif a:dec >= 0x3400 && a:dec <=0x4DB5
+    if a:dec >= 0x3400 && a:dec <=0x4DB5
         return "Ideograph Extension A"
     elseif a:dec >= 0x4E00 && a:dec <= 0x9FFF
         return "CJK Ideograph"
