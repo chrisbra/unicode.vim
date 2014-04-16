@@ -534,9 +534,9 @@ fu! unicode#PrintUnicodeTable() "{{{2
     let winname = 'UnicodeTable'
 	let win = bufwinnr('^'.winname.'$')
 	if win != -1
-		exe ":noa ". win. 'wincmd w'
+		exe win. 'wincmd w'
 	else
-        exe  'noa sp' winname
+        exe  'sp' winname
     endif
 
     " just in case, a global nomodifiable was set 
