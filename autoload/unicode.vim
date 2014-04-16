@@ -374,8 +374,8 @@ fu! unicode#CompleteDigraph() "{{{2
         let s:UniDict=<sid>UnicodeDict()
     endif
     if prevchar !~ '\s' && !empty(prevchar)
-        let filter1 =  '(v:val[0] == prevchar1 && v:val[1] == prevchar)'
-        let filter2 = 'v:val[0] == prevchar || v:val[1] == prevchar'
+        let filter1 = '(v:val[0] == prevchar1 && v:val[1] == prevchar)'
+        let filter2 = '(v:val[0] == prevchar  || v:val[1] == prevchar)'
         let dlist1  = filter(copy(dlist), filter1)
         if empty(dlist1)
             let dlist = filter(dlist, filter2)
@@ -389,7 +389,7 @@ fu! unicode#CompleteDigraph() "{{{2
         let col=col('.')
     endif
     let tlist=[]
-    for args in dlist
+    for args in sort(dlist, '<sid>CompareDigraphs')
         let t=matchlist(args, '^\(..\)\s<\?\(..\?\)>\?\s\+\(\d\+\)$')
         let prev_fmt="Abbrev\tGlyph\tCodepoint\tName\n%s\t%s\tU+%04X\t\t%s"
         if !empty(t)
