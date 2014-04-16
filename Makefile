@@ -1,9 +1,11 @@
-SCRIPT=$(wildcard plugin/*.vim)
-AUTOL =$(wildcard autoload/*.vim)
-DUMMY =$(wildcard autoload/unicode/*.vim)
-DOC=$(wildcard doc/*.txt)
-PLUGIN=$(shell basename "$$PWD")
-VERSION=$(shell sed -n '/Version:/{s/^.*\(\S\.\S\+\)$$/\1/;p}' $(SCRIPT))
+SCRIPT   = $(wildcard plugin/*.vim)
+AUTOL    = $(wildcard autoload/*.vim)
+DUMMY    = $(wildcard autoload/unicode/*.vim)
+SYNTAX   = $(wildcard syntax/*.vim)
+FTDETECT = $(wildcard ftdetect/*.vim)
+DOC      = $(wildcard doc/*.txt)
+PLUGIN   = $(shell basename "$$PWD")
+VERSION  = $(shell sed -n '/Version:/{s/^.*\(\S\.\S\+\)$$/\1/;p}' $(SCRIPT))
 
 .PHONY: $(PLUGIN).vmb
 
@@ -27,7 +29,7 @@ undo:
 
 $(PLUGIN).vmb:
 	rm -f $(PLUGIN)-$(VERSION).vmb
-	vim -N -c 'ru! vimballPlugin.vim' -c ':call append("0", [ "$(SCRIPT)", "$(AUTOL)", "$(DOC)", "$(DUMMY)"])' -c '$$d' -c ":%MkVimball $(PLUGIN)-$(VERSION)  ." -c':q!'
+	vim -N -c 'ru! vimballPlugin.vim' -c ':call append("0", [ "$(SCRIPT)", "$(AUTOL)", "$(DOC)", "$(DUMMY)", "$(SYNTAX)", "$(FTDETECT)"])' -c '$$d' -c ":%MkVimball $(PLUGIN)-$(VERSION)  ." -c':q!'
 	ln -f $(PLUGIN)-$(VERSION).vmb $(PLUGIN).vmb
      
 release: version all
