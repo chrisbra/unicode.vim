@@ -56,8 +56,7 @@ Here is a short overview of the functionality provided by the plugin:
 [easydigraph](https://github.com/Rykka/easydigraph.vim) Only supports easier digraph generation.
 
 ###License & Copyright
-The Vim License applies. See `:h license`
 
-© 2009-2014 by Christian Brabandt
+© 2009-2014 by Christian Brabandt. The Vim License applies. See `:h license`
 
 __NO WARRANTY, EXPRESS OR IMPLIED.  USE AT-YOUR-OWN-RISK__
