@@ -456,6 +456,7 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
             \ || (!empty(a:bang) && start == 0)
             let screenwidth = 0
         endif
+        let item.dig = substitute(item.dig, '^.\|.$', '', 'g')
         let screenwidth += <sid>ScreenOutput(
                 \ (start == 0 && screenwidth == 0 ? 1 : 0), item.glyph,
                 \ printf(format[1], split(item.dig)[0], item.decimal))
@@ -625,53 +626,39 @@ fu! <sid>DigraphsInternal(match) "{{{2
         let unidict = filter(copy(s:UniDict), 'v:val =~? name')
     endif
     for dig in sort(values(<sid>GetDigraphDict()), '<sid>CompareDigraphs')
-        for dig_item in dig
-            " display digraphs that match value
-            if dig_item !~# a:match && digit == 0 && empty(unidict)
-                continue
-            endif
-            " digraph: xy Z \d\+
-            " (x and y are the letters to create the digraph)
-            let item = matchlist(dig_item,
-                \ '\(..\)\s\(\%(\s\s\)\|.\{,4\}\)\s\+\(\d\+\)$')
-            " if digit matches, we only want to display digraphs matching the
-            " decimal values
-            if (digit > 0 && item[3] !~ '^'.digit.'$') ||
-                \ (!empty(name) &&  match(keys(unidict), '^'.item[3].'$') == -1)
-                continue
-            endif
+        " display digraphs that match value
+        if dig[0] !~# a:match && digit == 0 && empty(unidict)
+            continue
+        endif
+        " digraph: xy Z \d\+
+        " (x and y are the letters to create the digraph)
+        let item = matchlist(dig[0],
+            \ '\(..\)\s\(\%(\s\s\)\|.\{,4\}\)\s\+\(\d\+\)$')
+        " if digit matches, we only want to display digraphs matching the
+        " decimal values
+        if (digit > 0 && item[3] !~ '^'.digit.'$') ||
+            \ (!empty(name) &&  match(keys(unidict), '^'.item[3].'$') == -1)
+            continue
+        endif
 
-            if !empty(name)
-                let tchar = filter(copy(unidict), 'v:key == item[3]')
-            endif
+        if !empty(name)
+            let tchar = filter(copy(unidict), 'v:key == item[3]')
+        endif
 
-            " add trailing  space for item[2] if there isn't one
-            " (e.g. needed for digraph 132)
-            if item[2] !~? '\s$' || item[3] == 32
-                let item[2].= ' '
-            endif
+        " add trailing  space for item[2] if there isn't one
+        " (e.g. needed for digraph 132)
+        if item[2] !~? '\s$' || item[3] == 32
+            let item[2].= ' '
+        endif
 
-            let clist=[]
-            if !empty(name)
-                let name = values(tchar)[0]
-                let clist=filter(copy(outlist), 'v:val["name"] ==? name')
-            endif
-            if empty(clist)
-                let dict         = {}
-                " Space is different
-                let dict.glyph   = item[3] != 32 ? matchstr(item[2],'\s\?\S*\ze\s*$') : '  '
-                let dict.dig     = item[1]
-                let dict.decimal = item[3]
-                let dict.hex     = printf("0x%02X", item[3])
-                let dict.name    = name
-                call add(outlist, dict)
-            else
-                let cdict = clist[0]
-                " digraph already in list, get index and add
-                " digraph characters
-                let outlist[index(outlist, cdict)].dig.=' '.item[1]
-            endif
-        endfor
+        let dict         = {}
+        " Space is different
+        let dict.glyph   = item[3] != 32 ? matchstr(item[2],'\s\?\S*\ze\s*$') : '  '
+        let dict.dig     = <sid>GetDigraphChars(item[3])
+        let dict.decimal = item[3]
+        let dict.hex     = printf("0x%02X", item[3])
+        let dict.name    = <sid>GetUnicodeName(item[3])
+        call add(outlist, dict)
     endfor
     return outlist
 endfu
