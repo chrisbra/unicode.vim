@@ -1,6 +1,6 @@
 " unicodePlugin : A completion plugin for Unicode glyphs
 " Author: C.Brabandt <cb@256bit.org>
-" Version: 0.18
+" Version: 0.19
 " Copyright: (c) 2009 by Christian Brabandt
 "            The VIM LICENSE applies to unicode.vim, and unicode.txt
 "            (see |copyright|) except use "unicode" instead of "Vim".
@@ -8,7 +8,7 @@
 "  *** ***   Use At-Your-Own-Risk!   *** ***
 "
 " TODO: enable GLVS:
-" GetLatestVimScripts: 2822 18 :AutoInstall: unicode.vim
+" GetLatestVimScripts: 2822 19 :AutoInstall: unicode.vim
 
 " ---------------------------------------------------------------------
 "  Load Once: {{{1
