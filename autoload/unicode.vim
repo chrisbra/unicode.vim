@@ -440,10 +440,6 @@ fu! unicode#GetUniChar(...) "{{{2
             endfor
         endif
         if exists("a:1") && !empty(a:1)
-            if len(a:1) > 1 || a:1 !~# '[a-zA-Z0-9]'
-                call <sid>WarningMsg("No valid register specified")
-                return
-            endif
             exe "let @".a:1. "=join(msg)"
         endif
     finally
