@@ -301,7 +301,36 @@ fu! unicode#UnicodeName(val) "{{{2
     return <sid>GetUnicodeName(a:val)
 endfu
 fu! unicode#Download(force) "{{{2
-    call <sid>CheckUniFile(a:force)
+    if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
+        call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
+        call s:WarningMsg("Let's see, if we can download it.")
+        call s:WarningMsg("If this doesn't work, you should download ")
+        call s:WarningMsg(s:unicode_URL . " and save it as " . s:UniFile)
+        sleep 10
+        if filereadable(s:directory. '/UnicodeData.vim')
+            call delete(s:directory. '/UnicodeData.vim')
+        endif
+        if exists(":Nread")
+            sp +enew
+            " Use the default download method. You can specify a different
+            " one, using :let g:netrw_http_cmd="wget"
+            exe ":lcd " . s:directory
+            exe "0Nread " . s:unicode_URL
+            $d _
+            exe ":noa :keepalt :sil w! " . s:UniFile
+            if getfsize(s:UniFile)==0
+                call s:WarningMsg("Error fetching File from ". s:unicode_URL)
+                return 0
+            endif
+            bw
+        else
+            call s:WarningMsg("Please download " . s:unicode_URL)
+            call s:WarningMsg("and save it as " . s:UniFile)
+            call s:WarningMsg("Quitting")
+            return 0
+        endif
+    endif
+    return 1
 endfu
 " internal functions {{{1
 fu! unicode#CompleteUnicode() "{{{2
@@ -742,38 +771,6 @@ fu! <sid>UnicodeDict() "{{{2
     endif
     return dict
 endfu
-fu! <sid>CheckUniFile(force) "{{{2
-    if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
-        call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
-        call s:WarningMsg("Let's see, if we can download it.")
-        call s:WarningMsg("If this doesn't work, you should download ")
-        call s:WarningMsg(s:unicode_URL . " and save it as " . s:UniFile)
-        sleep 10
-        if filereadable(s:directory. '/UnicodeData.vim')
-            call delete(s:directory. '/UnicodeData.vim')
-        endif
-        if exists(":Nread")
-            sp +enew
-            " Use the default download method. You can specify a different
-            " one, using :let g:netrw_http_cmd="wget"
-            exe ":lcd " . s:directory
-            exe "0Nread " . s:unicode_URL
-            $d _
-            exe ":noa :keepalt :sil w! " . s:UniFile
-            if getfsize(s:UniFile)==0
-                call s:WarningMsg("Error fetching File from ". s:unicode_URL)
-                return 0
-            endif
-            bw
-        else
-            call s:WarningMsg("Please download " . s:unicode_URL)
-            call s:WarningMsg("and save it as " . s:UniFile)
-            call s:WarningMsg("Quitting")
-            return 0
-        endif
-    endif
-    return 1
-endfu
 fu! <sid>CheckDir() "{{{2
     try
         if (!isdirectory(s:directory))
@@ -783,7 +780,7 @@ fu! <sid>CheckDir() "{{{2
         call s:WarningMsg("Error creating Directory: " . s:directory)
         return 0
     endtry
-    return <sid>CheckUniFile(0)
+    return unicode#Download(0)
 endfu
 fu! <sid>GetDigraphDict() "{{{2
     " returns a dict of digraphs 
