@@ -538,7 +538,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
         let s:UniDict=<sid>UnicodeDict()
     endif
     call append(1, "Char\tCodept\tDigraph\tHtml\t\tName")
-    for value in sort(keys(s:UniDict), '<sid>CompareListByDec')
+    for value in keys(s:UniDict) " sort is done later, for performance reasons
         let value += 0
         let dig   = <sid>GetDigraphChars(value)
         let html  = <sid>GetHtmlEntity(value)
@@ -548,6 +548,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
         call append('$', printf("%s\t%s%s\t%s\t%s", strtrans(nr2char(value)),
                 \ codep, dig, html, s:UniDict[value]))
     endfor
+    3,$sort x /^.*U+/
     :noa 1
     syn match Title /\%(^\%2l.*\)\|\%(^\%>2l\S\+\)/         " highlight Heading and Character
     syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)\|&\w*;\|&#x\x\+;/     " highlight html and digraph
@@ -862,6 +863,7 @@ fu! <sid>GetHtmlEntity(hex) "{{{2
         \ a:hex == 9 || a:hex == 10 || a:hex == 13) &&
         \ (a:hex < 127 || a:hex > 159) &&
         \ (a:hex < 55296 || a:hex > 57343)
+        " Generate HTML Code only for where it is allowed (see wikipedia)
         let html=printf("&#x%X;", a:hex)
     endif
     return html
