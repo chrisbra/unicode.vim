@@ -898,18 +898,54 @@ fu! <sid>GetUnicodeName(dec) "{{{2
         return "Private Use High Surrogates"
     elseif a:dec >= 0xDC00 && a:dec <= 0xDFFF
         return "Low Surrogates"
-    elseif a:dec >= 0xFFFE && a:dec <= 0xFFFD
-        return "<No Character (BOM)>"
     elseif a:dec >= 0xE000 && a:dec <= 0xF8FF
         return "Private Use Zone"
+    elseif a:dec >= 0xFDD0 && a:dec <= 0xFDEF
+        return "<No Character>"
+    elseif a:dec == 0xFFFE
+        return "<No Character (BOM)>"
+    elseif a:dec == 0xFFFF
+        return "<No Character>"
+    elseif a:dec >= 0x1FFFE && a:dec <= 0x1FFFF
+        return "<No Character>"
     elseif a:dec >= 0x20000 && a:dec <= 0x2A6D6
         return "Ideograph Extension B"
+    elseif a:dec >= 0x2FFFE && a:dec <= 0x2FFFF
+        return "<No Character>"
     elseif a:dec >= 0x2A700 && a:dec <= 0x2B73F
         return "Ideograph Extension C"
+    elseif a:dec >= 0x3FFFE && a:dec <= 0x3FFFF
+        return "<No Character>"
+    elseif a:dec >= 0x4FFFE && a:dec <= 0x4FFFF
+        return "<No Character>"
+    elseif a:dec >= 0x5FFFE && a:dec <= 0x5FFFF
+        return "<No Character>"
+    elseif a:dec >= 0x6FFFE && a:dec <= 0x6FFFF
+        return "<No Character>"
+    elseif a:dec >= 0x7FFFE && a:dec <= 0x7FFFF
+        return "<No Character>"
+    elseif a:dec >= 0x8FFFE && a:dec <= 0x8FFFF
+        return "<No Character>"
+    elseif a:dec >= 0x9FFFE && a:dec <= 0x9FFFF
+        return "<No Character>"
+    elseif a:dec >= 0xAFFFE && a:dec <= 0xAFFFF
+        return "<No Character>"
+    elseif a:dec >= 0xBFFFE && a:dec <= 0xBFFFF
+        return "<No Character>"
+    elseif a:dec >= 0xCFFFE && a:dec <= 0xCFFFF
+        return "<No Character>"
+    elseif a:dec >= 0xDFFFE && a:dec <= 0xDFFFF
+        return "<No Character>"
+    elseif a:dec >= 0xEFFFE && a:dec <= 0xEFFFF
+        return "<No Character>"
     elseif a:dec >= 0xF0000 && a:dec <= 0xFFFFD
         return "Character from Plane 15 for private use"
+    elseif a:dec >= 0xFFFFE && a:dec <= 0xFFFFF
+        return "<No Character>"
     elseif a:dec >= 0x100000 && a:dec <= 0x10FFFD
         return "Character from Plane 16 for private use"
+    elseif a:dec >= 0x10FFFE && a:dec <= 0x10FFFF
+        return "<No Character>"
     else
         let name = get(s:UniDict, a:dec, '')
         return empty(name) ? "Character not found" : name
