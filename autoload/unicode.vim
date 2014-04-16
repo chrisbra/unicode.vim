@@ -537,18 +537,17 @@ fu! unicode#PrintUnicodeTable() "{{{2
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
     endif
-    call append(1, "Char\tCodept\tDigraph\tHtml\t\tName")
-    for value in keys(s:UniDict) " sort is done later, for performance reasons
-        let value += 0
-        let dig   = <sid>GetDigraphChars(value)
-        let html  = <sid>GetHtmlEntity(value)
-        let html  = html. repeat(' ', &ts-len(html))
-        let codep = printf('U+%04X', value)
-        let codep = codep. repeat(' ', &ts-len(codep))
-        call append('$', printf("%s\t%s%s\t%s\t%s", strtrans(nr2char(value)),
-                \ codep, dig, html, s:UniDict[value]))
+    call append(1, "Char\tCodept\tHtml\tName (Digraph)")
+    let output = []
+    for [value,name] in items(s:UniDict) " sort is done later, for performance reasons
+        let value  += 0
+        let dig     = <sid>GetDigraphChars(value)
+        let html    = printf("%-*s ", &ts+2, <sid>GetHtmlEntity(value))
+        let codep   = printf("%-*s", &ts, printf('U+%04X', value))
+        let output += [printf("%s\t%s%s%s %s", strtrans(nr2char(value)), codep, html, name, dig)]
     endfor
-    3,$sort x /^.*U+/
+    call append('$', output)
+    3,$sort x /^[^\t]*\tU+/
     :noa 1
     syn match Title /\%(^\%2l.*\)\|\%(^\%>2l\S\+\)/         " highlight Heading and Character
     syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)\|&\w*;\|&#x\x\+;/     " highlight html and digraph
