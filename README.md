@@ -14,6 +14,7 @@ Also a new custom completion for digraph chars is available. Press `Ctrl-X Ctrl-
 ####Identify Characters
 The `:UnicodeName` command can be used to identify the character under the cursor. This works similar to the builtin `ga` command (in fact, the help also states a possibility to map this command to the `ga` builtin command), but it also displays the digraph character (if it exists) and the HTML entity.
 The `:SearchUnicode` command can be used to search in the unicode character table to search for a certain unicode character with a given name or value.
+The `:UnicodeTable` can be used to generate an Unicode table, including HTML entity names and Digraph chars.
 
 ####Ease the use of Digraphs
 Use the `:Digraphs` command to search for an digraph with the given name (e.g. `:Digraphs copy` will display all digraphs that will create a character name which contains copy in its name). You can also search for the decimal value.
