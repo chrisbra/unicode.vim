@@ -374,31 +374,21 @@ fu! unicode#CompleteDigraph() "{{{2
         let s:UniDict=<sid>UnicodeDict()
     endif
     if prevchar !~ '\s' && !empty(prevchar)
-        let filter1 = '(v:val[0] == prevchar1 && v:val[1] == prevchar)'
-        let filter2 = '(v:val[0] == prevchar  || v:val[1] == prevchar)'
+        let filter1 = printf("match(v:val, '%s%s')>-1",  prevchar1, prevchar)
+        let filter2 = printf('match(v:val, ''%s\|%s'')>-1', prevchar1, prevchar)
         let dlist1  = filter(copy(dlist), filter1)
         if empty(dlist1)
             let dlist = filter(dlist, filter2)
             let col=col('.')-1
         else
             let dlist = dlist1
-            let col=col('.')-2
+            let col=col('.') - (empty(prevchar1) ? 1 : 2)
         endif
         unlet dlist1
     else
         let col=col('.')
     endif
-    let tlist=[]
-    for args in sort(dlist, '<sid>CompareDigraphs')
-        let t=matchlist(args, '^\(..\)\s<\?\(..\?\)>\?\s\+\(\d\+\)$')
-        let prev_fmt="Abbrev\tGlyph\tCodepoint\tName\n%s\t%s\tU+%04X\t\t%s"
-        if !empty(t)
-            let format = printf("'%s' %s U+%04X",t[1], t[2], t[3])
-            let name   = <sid>GetUnicodeName(t[3])
-            call add(tlist, {'word':nr2char(t[3]), 'abbr':format,
-                \ 'info': printf(prev_fmt, t[1],t[2],t[3],name)})
-       endif
-    endfor
+    let tlist=<sid>AddDigraphCompleteEntries(dlist)
     call complete(col, tlist)
     return ''
 endfu
@@ -602,6 +592,21 @@ fu! <sid>AddCompleteEntries(dict, numeric) "{{{2
     endfor
     return compl
 endfu
+fu! <sid>AddDigraphCompleteEntries(list) "{{{2
+    let list = []
+    for args in sort(a:list, '<sid>CompareDigraphs')
+        for item in args
+            let t=matchlist(item, '^\(..\)\s<\?\(..\?\)>\?\s\+\(\d\+\)$')
+            let prev_fmt="Abbrev\tGlyph\tCodepoint\tName\n%s\t%s\tU+%04X\t\t%s"
+            if !empty(t)
+                let format = printf("'%s' %s U+%04X",t[1], t[2], t[3])
+                call add(list, {'word':nr2char(t[3]), 'abbr':format,
+                    \ 'info': printf(prev_fmt, t[1],t[2],t[3],<sid>GetUnicodeName(t[3]))})
+            endif
+        endfor
+    endfor
+    return list
+endfu
 fu! <sid>DigraphsInternal(match) "{{{2
     let outlist = []
     let digit = a:match + 0
@@ -731,8 +736,8 @@ fu! <sid>GetDigraphChars(code) "{{{2
     if !has_key(s:digdict, a:code)
         return ''
     endif
-    let dig = split(get(s:digdict, a:code))[0]
-    return (empty(dig) ? '' : '('. join(split(dig, '..\zs'), ' '). ')')
+    let list=map(get(s:digdict, a:code, []), 'v:val[0:1]')
+    return (empty(list) ? '' : '('. join(list). ')')
 endfu
 fu! <sid>UnicodeDict() "{{{2
     let dict={}
@@ -799,8 +804,8 @@ fu! <sid>GetDigraphDict() "{{{2
         endif
         for val in dlist
             let dec=matchstr(val, '\d\+$')
-            let dig=matchstr(get(s:digdict, dec, ''), '^\S\+')
-            let s:digdict[dec] = (empty(dig) ? val : dig.val)
+            let dig=get(s:digdict, dec, [])
+            let s:digdict[dec] = (empty(dig) ? [val] : s:digdict[dec] + [val])
         endfor
         return s:digdict
     endif
@@ -809,8 +814,8 @@ fu! <sid>CompareList(l1, l2) "{{{2
     return <sid>CompareByValue((a:l1[0]+0),(a:l2[0]+0))
 endfu
 fu! <sid>CompareDigraphs(d1, d2) "{{{2
-    let d1=matchstr(a:d1, '\d\+$')+0
-    let d2=matchstr(a:d2, '\d\+$')+0
+    let d1=matchstr(a:d1[0], '\d\+$')+0
+    let d2=matchstr(a:d2[0], '\d\+$')+0
     return <sid>CompareByValue(d1,d2)
 endfu
 fu! <sid>CompareListByDec(l1, l2) "{{{2
