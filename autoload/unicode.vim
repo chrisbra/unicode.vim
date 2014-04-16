@@ -562,8 +562,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
     call append('$', output)
     3,$sort x /^[^\t]*\tU+/
     :noa 1
-    syn match Title /\%(^\%2l.*\)\|\%(^\%>2l\S\+\)/         " highlight Heading and Character
-    syn match Title /\%>2l(\zs\(\S\+\s*\)\+\ze)\|&\w*;\|&#x\x\+;/     " highlight html and digraph
+    call <sid>SyntaxHighlightUnicodeTable()
 endfu
 fu! <sid>AddCompleteEntries(dict, numeric) "{{{2
     let compl=[]
@@ -950,6 +949,20 @@ fu! <sid>GetUnicodeName(dec) "{{{2
         let name = get(s:UniDict, a:dec, '')
         return empty(name) ? "Character not found" : name
     endif
+endfu
+fu! <sid>SyntaxHighlightUnicodeTable() "{{{2
+    syn match UnicodeHeader /\%(^\%2l.*\)\|\%(^\%>2l\S\+\)/   " highlight Heading and Character
+    syn match UnicodeDigraph /\%>2l(\zs\(\S\+\s*\)\+\ze)/     " highlight html and digraph
+    syn match UnicodeHtmlEntity /&\w*;\|&#x\x\+;/             " highlight html
+    syn match UnicodeCodepoint /U+\x\+/                       " highlight U+FFFE
+    syn match UnicodeLink   /http:.*$/                        " highlight html link
+
+    hi def link UnicodeHeader     Title
+    hi def link UnicodeDigraph    Statement
+    hi def link UnicodeHtmlEntity Statement
+    hi def link UnicodeCodepoint  Constant
+    hi def link UnicodeLink       Underlined
+    let b:current_syntax = "UnicodeTable"
 endfu
 " Modeline "{{{1
 " vim: ts=4 sts=4 fdm=marker com+=l\:\" fdl=0 et
