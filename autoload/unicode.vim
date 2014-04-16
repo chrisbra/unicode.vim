@@ -738,7 +738,7 @@ fu! <sid>GetDigraphChars(code) "{{{2
     if !has_key(s:digdict, a:code)
         return ''
     endif
-    let list=map(get(s:digdict, a:code, []), 'v:val[0:1]')
+    let list=map(deepcopy(get(s:digdict, a:code, [])), 'v:val[0:1]')
     return (empty(list) ? '' : '('. join(list). ')')
 endfu
 fu! <sid>UnicodeDict() "{{{2
