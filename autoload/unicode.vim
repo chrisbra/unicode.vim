@@ -724,16 +724,19 @@ fu! <sid>UnicodeDict() "{{{2
             unlet! g:unicode#unicode#data
         else
             let list=readfile(s:UniFile)
+            let ind = []
             for glyph in list
                 let val          = split(glyph, ";")
                 let Name         = val[1]
                 let OldName      = val[10] " Unicode_1_Name field (10)
-                if Name[0] == '<' && !empty(OldName)
-                    let Name = substitute(OldName, ' ([^)]*)', '', 'g')
+                if Name[0] ==? '<' && OldName !=? ''
+                    let Name = split(OldName, '(')[0]
                 endif
-                let dict[str2nr(val[0],16)]   = Name
+                let dec = ('0x'.val[0])+0 " faster than str2nr()
+                let dict[dec]   = Name
+                let ind += [dec] " faster than add
             endfor
-            call <sid>UnicodeWriteCache(dict)
+            call <sid>UnicodeWriteCache(dict, ind)
     endif
     return dict
 endfu
@@ -863,14 +866,14 @@ fu! <sid>GetHtmlEntity(hex) "{{{2
     endif
     return html
 endfu
-fu! <sid>UnicodeWriteCache(data) "{{{2
+fu! <sid>UnicodeWriteCache(data, ind) "{{{2
     " Take unicode dictionary and write it in VimL form
     " so it will be faster to load
     let list = ['" internal cache file for unicode.vim plugin',
         \ '" this file can safely be removed, it will be recreated if needed',
         \ '',
         \ 'let unicode#unicode#data = {}']
-    let list += map(keys(a:data), '"let unicode#unicode#data[".v:val."] = ''".a:data[v:val]."''"')
+    let list += map(copy(a:ind), '"let unicode#unicode#data[".v:val."] = ''".a:data[v:val]."''"')
     call writefile(list, s:directory. '/UnicodeData.vim')
     unlet! list
 endfu
