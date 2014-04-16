@@ -537,14 +537,16 @@ fu! unicode#PrintUnicodeTable() "{{{2
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
     endif
-    call append(1, "Char\tCodept\tHtml\tName (Digraph)")
+    call append(1, printf("%-6s\t%-8s%-10s%-57s%s",
+            \ "Char","Codept","Html", "Name (Digraph)", "Link"))
     let output = []
     for [value,name] in items(s:UniDict) " sort is done later, for performance reasons
         let value  += 0
         let dig     = <sid>GetDigraphChars(value)
-        let html    = printf("%-*s ", &ts+2, <sid>GetHtmlEntity(value))
-        let codep   = printf("%-*s", &ts, printf('U+%04X', value))
-        let output += [printf("%s\t%s%s%s %s", strtrans(nr2char(value)), codep, html, name, dig)]
+        let html    = <sid>GetHtmlEntity(value)
+        let codep   = printf('U+%04X', value)
+        let output += [printf("%-6s\t%-8s%-10s%-57shttp://unicode-table.com/en/%04X/",
+                    \ strtrans(nr2char(value)), codep, html, name.dig, value)]
     endfor
     call append('$', output)
     3,$sort x /^[^\t]*\tU+/
