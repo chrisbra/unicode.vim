@@ -545,7 +545,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
     " Just in case
     silent %d _
     " Set up some options 
-    setl noswapfile buftype=nofile foldcolumn=0 nobuflisted bufhidden=wipe
+    setl noswapfile buftype=nofile foldcolumn=0 nobuflisted bufhidden=wipe nowrap
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
     endif
