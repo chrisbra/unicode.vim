@@ -471,7 +471,7 @@ fu! unicode#PrintUnicode(match) "{{{2
         " patch 7.3.713 introduced the %S modifier for printf
         let format[0] = substitute(format[0], 'S', 's', '')
     endif
-    for item in sort(uni, '<sid>CompareListsByHex')
+    for item in uni
         let dig  = get(item, 'dig' , '')
         let html = get(item, 'html', '')
         call <sid>ScreenOutput(i<len(uni) && i > 0, printf(format[0], item.glyph),
@@ -691,13 +691,13 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
         " filter for decimal value
         let unidict = filter(copy(s:UniDict), 'v:key == digit')
     endif
-    for [decimal, name] in items(unidict)
+    for decimal in sort(keys(unidict), '<sid>CompareListByDec')
         " Try to get digraph char
         let dchar=<sid>GetDigraphChars(decimal)
         " Get html entity
         let html          = <sid>GetHtmlEntity(decimal)
         let dict          = {}
-        let dict.name     = name
+        let dict.name     = s:UniDict[decimal]
         let dict.glyph    = nr2char(decimal)
         let dict.dec      = decimal
         let dict.hex      = printf("0x%02X", decimal)
@@ -818,11 +818,6 @@ fu! <sid>CompareDigraphs(d1, d2) "{{{2
 endfu
 fu! <sid>CompareListByDec(l1, l2) "{{{2
     return <sid>CompareByValue(a:l1+0,a:l2+0)
-endfu
-fu! <sid>CompareListsByHex(l1, l2) "{{{2
-    let d1 = str2nr(a:l1["hex"], 16)
-    let d2 = str2nr(a:l2["hex"], 16)
-    return <sid>CompareByValue(d1,d2)
 endfu
 fu! <sid>CompareByValue(v1, v2) "{{{2
     return (a:v1 == a:v2 ? 0 : (a:v1 > a:v2 ? 1 : -1))
