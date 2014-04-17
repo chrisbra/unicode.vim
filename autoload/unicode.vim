@@ -567,10 +567,11 @@ endfu
 fu! <sid>AddCompleteEntries(dict, numeric) "{{{2
     let compl=[]
     let starttime = localtime()
-    for [value, name] in sort(items(a:dict), "<sid>CompareList")
+    for value in sort(keys(a:dict), '<sid>CompareListByDec')
         if value==0
             continue
         endif
+        let name = a:dict[value]
         let dg_char=<sid>GetDigraphChars(value)
         let fstring = printf("U+%04X %s%s:'%s'",
                 \ value, name, dg_char, nr2char(value))
