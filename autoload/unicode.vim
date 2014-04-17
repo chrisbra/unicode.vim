@@ -568,6 +568,9 @@ fu! <sid>AddCompleteEntries(dict, numeric) "{{{2
     let compl=[]
     let starttime = localtime()
     for [value, name] in sort(items(a:dict), "<sid>CompareList")
+        if value==0
+            continue
+        endif
         let dg_char=<sid>GetDigraphChars(value)
         let fstring = printf("U+%04X %s%s:'%s'",
                 \ value, name, dg_char, nr2char(value))
@@ -582,7 +585,7 @@ fu! <sid>AddCompleteEntries(dict, numeric) "{{{2
         endif
         call add(compl, dict)
         " break too long running search
-        if localtime() - starttime > 2
+        if localtime() - starttime > 5
             echohl WarningMsg
             echom "Completing takes too long, stopping now..."
             echohl Normal
