@@ -597,7 +597,7 @@ fu! <sid>AddCompleteEntries(dict, numeric) "{{{2
 endfu
 fu! <sid>AddDigraphCompleteEntries(list) "{{{2
     let list = []
-    for args in sort(a:list, '<sid>CompareDigraphs')
+    for args in a:list
         for item in args
             let t=matchlist(item, '^\(..\)\s<\?\(..\?\)>\?\s\+\(\d\+\)$')
             let prev_fmt="Abbrev\tGlyph\tCodepoint\tName\n%s\t%s\tU+%04X\t\t%s"
@@ -606,12 +606,13 @@ fu! <sid>AddDigraphCompleteEntries(list) "{{{2
                 if t[3] == 0 " special case: NULL
                     let t[3] = 10
                 endif
-                call add(list, {'word':nr2char(t[3]), 'abbr':format,
+                " Decimal key will be ignored by complete() function
+                call add(list, {'word':nr2char(t[3]), 'abbr':format, 'decimal': t[3],
                     \ 'info': printf(prev_fmt, t[1],t[2],t[3],<sid>GetUnicodeName(t[3]))})
             endif
         endfor
     endfor
-    return list
+    return sort(list, '<sid>CompareByDecimalKey')
 endfu
 fu! <sid>DigraphsInternal(match) "{{{2
     let outlist = []
@@ -629,7 +630,7 @@ fu! <sid>DigraphsInternal(match) "{{{2
         let name    = a:match
         let unidict = filter(copy(s:UniDict), 'v:val =~? name')
     endif
-    for dig in sort(values(<sid>GetDigraphDict()), '<sid>CompareDigraphs')
+    for dig in values(<sid>GetDigraphDict())
         " display digraphs that match value
         if dig[0] !~# a:match && digit == 0 && empty(unidict)
             continue
@@ -664,7 +665,7 @@ fu! <sid>DigraphsInternal(match) "{{{2
         let dict.name    = <sid>GetUnicodeName(item[3])
         call add(outlist, dict)
     endfor
-    return outlist
+    return sort(outlist, '<sid>CompareByDecimalKey')
 endfu
 fu! <sid>FindUnicodeByInternal(match) "{{{2
     let digit = a:match + 0
@@ -811,10 +812,8 @@ endfu
 fu! <sid>CompareList(l1, l2) "{{{2
     return <sid>CompareByValue((a:l1[0]+0),(a:l2[0]+0))
 endfu
-fu! <sid>CompareDigraphs(d1, d2) "{{{2
-    let d1=matchstr(a:d1[0], '\d\+$')+0
-    let d2=matchstr(a:d2[0], '\d\+$')+0
-    return <sid>CompareByValue(d1,d2)
+fu! <sid>CompareByDecimalKey(d1, d2) "{{{2
+    return <sid>CompareByValue(a:d1['decimal']+0, a:d2['decimal']+0)
 endfu
 fu! <sid>CompareListByDec(l1, l2) "{{{2
     return <sid>CompareByValue(a:l1+0,a:l2+0)
