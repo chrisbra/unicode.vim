@@ -361,7 +361,7 @@ fu! unicode#CompleteUnicode() "{{{2
         endif
         echom printf('(Checking Unicode Names for "%s"... this might be slow)', base)
     endif
-    let compl = <sid>AddCompleteEntries(complete_list, numeric)
+    let compl = <sid>AddCompleteEntries(complete_list)
     call complete(start+1, compl)
     return ""
 endfu
@@ -564,7 +564,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
     3,$sort x /^[^\t]*\tU+/
     :noa 1
 endfu
-fu! <sid>AddCompleteEntries(dict, numeric) "{{{2
+fu! <sid>AddCompleteEntries(dict) "{{{2
     let compl=[]
     let starttime = localtime()
     for value in sort(keys(a:dict), '<sid>CompareListByDec')
