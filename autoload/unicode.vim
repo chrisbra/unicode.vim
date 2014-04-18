@@ -564,10 +564,11 @@ fu! unicode#PrintUnicodeTable() "{{{2
 endfu
 fu! <sid>AddCompleteEntries(dict) "{{{2
     let compl=[]
+    let prev_fmt="Glyph\tCodepoint\tName\n%s\tU+%04X\t\t%s"
     let starttime = localtime()
     for value in sort(keys(a:dict), '<sid>CompareListByDec')
         if value==0
-            continue
+            continue " Skip NULLs, does not display correctly
         endif
         let name = a:dict[value]
         let dg_char=<sid>GetDigraphChars(value)
@@ -579,8 +580,7 @@ fu! <sid>AddCompleteEntries(dict) "{{{2
             let dict = {'word':nr2char(value), 'abbr':fstring}
         endif
         if get(g:,'Unicode_ShowPreviewWindow',0)
-            call extend(dict, {'info': printf(prev_fmt, nr2char(value),value,
-                    \ substitute(dg_char, '(\(..\).*', '\1', ''), name)})
+            call extend(dict, {'info': printf(prev_fmt, nr2char(value),value,name)})
         endif
         call add(compl, dict)
         " break too long running search
