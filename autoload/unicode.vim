@@ -600,13 +600,14 @@ fu! <sid>AddDigraphCompleteEntries(list) "{{{2
             let t=matchlist(item, '^\(..\)\s<\?\(..\?\)>\?\s\+\(\d\+\)$')
             let prev_fmt="Abbrev\tGlyph\tCodepoint\tName\n%s\t%s\tU+%04X\t\t%s"
             if !empty(t)
-                let format = printf("'%s' %s U+%04X",t[1], t[2], t[3])
+                let name   = <sid>GetUnicodeName(t[3])
+                let format = printf("'%s' %s U+%04X %s",t[1], t[2], t[3],name)
                 if t[3] == 0 " special case: NULL
                     let t[3] = 10
                 endif
                 " Dec key will be ignored by complete() function
                 call add(list, {'word':nr2char(t[3]), 'abbr':format, 'dec': t[3],
-                    \ 'info': printf(prev_fmt, t[1],t[2],t[3],<sid>GetUnicodeName(t[3]))})
+                    \ 'info': printf(prev_fmt, t[1],t[2],t[3],name)})
             endif
         endfor
     endfor
