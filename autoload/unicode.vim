@@ -9,8 +9,6 @@
 " GetLatestVimScripts: 2822 19 :AutoInstall: unicode.vim
 " ---------------------------------------------------------------------
 
-" TEST VERSION: Stores unicode in different format (look at new generated cache file)
-
 " initialize Variables {{{1
 let s:unicode_URL = get(g:, 'Unicode_URL',
     \ 'http://www.unicode.org/Public/UNIDATA/UnicodeData.txt')
@@ -808,9 +806,6 @@ fu! <sid>GetDigraphDict() "{{{2
         endfor
         return s:digdict
     endif
-endfu
-fu! <sid>CompareList(l1, l2) "{{{2
-    return <sid>CompareByValue((a:l1[0]+0),(a:l2[0]+0))
 endfu
 fu! <sid>CompareByDecimalKey(d1, d2) "{{{2
     return <sid>CompareByValue(a:d1['dec']+0, a:d2['dec']+0)
