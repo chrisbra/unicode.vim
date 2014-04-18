@@ -465,7 +465,7 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
 endfu
 fu! unicode#PrintUnicode(match) "{{{2
     let uni    = <sid>FindUnicodeByInternal(a:match)
-    let format = ["% 4S\t", "Dec:%06d, Hex:%06X\t", ' %s']
+    let format = ["% 4S\t", "U+%04X Dec:%06d\t", ' %s']
     let i      = 0
     if (v:version == 703 && !has("patch713")) || v:version < 703
         " patch 7.3.713 introduced the %S modifier for printf
