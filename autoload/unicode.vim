@@ -684,7 +684,7 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
     endif
     if (digit == 0 && empty(name))
         echoerr "No argument was specified!"
-        return
+        return []
     endif
     if !empty(name)
         let unidict = filter(copy(s:UniDict), 'v:val =~? name')
