@@ -448,7 +448,7 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
     let start = 1
 
     for item in digraphs
-        let output = printf(format[0].format[1], split(item.dig)[0], item.glyph, item.decimal)
+        let output = printf(format[0].format[1], split(item.dig)[0], item.glyph, item.dec)
         " if the output is too wide, echo a linebreak
         if screenwidth + <sid>Screenwidth(output) >= &columns
             \ || (!empty(a:bang) && start == 0)
@@ -457,7 +457,7 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
         let item.dig = substitute(item.dig, '^.\|.$', '', 'g')
         let screenwidth += <sid>ScreenOutput(
                 \ (start == 0 && screenwidth == 0 ? 1 : 0), item.glyph,
-                \ printf(format[1], split(item.dig)[0], item.decimal))
+                \ printf(format[1], split(item.dig)[0], item.dec))
         let start = 0
     endfor
 endfu
