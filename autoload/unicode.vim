@@ -606,8 +606,8 @@ fu! <sid>AddDigraphCompleteEntries(list) "{{{2
                 if t[3] == 0 " special case: NULL
                     let t[3] = 10
                 endif
-                " Decimal key will be ignored by complete() function
-                call add(list, {'word':nr2char(t[3]), 'abbr':format, 'decimal': t[3],
+                " Dec key will be ignored by complete() function
+                call add(list, {'word':nr2char(t[3]), 'abbr':format, 'dec': t[3],
                     \ 'info': printf(prev_fmt, t[1],t[2],t[3],<sid>GetUnicodeName(t[3]))})
             endif
         endfor
@@ -656,13 +656,13 @@ fu! <sid>DigraphsInternal(match) "{{{2
             let item[2].= ' '
         endif
 
-        let dict         = {}
+        let dict       = {}
         " Space is different
-        let dict.glyph   = item[3] != 32 ? matchstr(item[2],'\s\?\S*\ze\s*$') : '  '
-        let dict.dig     = <sid>GetDigraphChars(item[3])
-        let dict.decimal = item[3]
-        let dict.hex     = printf("0x%02X", item[3])
-        let dict.name    = <sid>GetUnicodeName(item[3])
+        let dict.glyph = item[3] != 32 ? matchstr(item[2],'\s\?\S*\ze\s*$') : '  '
+        let dict.dig   = <sid>GetDigraphChars(item[3])
+        let dict.dec   = item[3]
+        let dict.hex   = printf("0x%02X", item[3])
+        let dict.name  = <sid>GetUnicodeName(item[3])
         call add(outlist, dict)
     endfor
     return sort(outlist, '<sid>CompareByDecimalKey')
@@ -692,7 +692,7 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
         " filter for decimal value
         let unidict = filter(copy(s:UniDict), 'v:key == digit')
     endif
-    for decimal in sort(keys(unidict), '<sid>CompareListByDec')
+    for decimal in keys(unidict)
         " Try to get digraph char
         let dchar=<sid>GetDigraphChars(decimal)
         " Get html entity
@@ -710,7 +710,7 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
         endif
         call add(output, dict)
     endfor
-    return output
+    return sort(output, '<sid>CompareByDecimalKey')
 endfu
 fu! <sid>Screenwidth(item) "{{{2
     " Takes string arguments and calculates the width
@@ -813,7 +813,7 @@ fu! <sid>CompareList(l1, l2) "{{{2
     return <sid>CompareByValue((a:l1[0]+0),(a:l2[0]+0))
 endfu
 fu! <sid>CompareByDecimalKey(d1, d2) "{{{2
-    return <sid>CompareByValue(a:d1['decimal']+0, a:d2['decimal']+0)
+    return <sid>CompareByValue(a:d1['dec']+0, a:d2['dec']+0)
 endfu
 fu! <sid>CompareListByDec(l1, l2) "{{{2
     return <sid>CompareByValue(a:l1+0,a:l2+0)
