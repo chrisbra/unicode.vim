@@ -619,13 +619,11 @@ fu! <sid>DigraphsInternal(match) "{{{2
     let name = ''
     let unidict = {}
     let tchar = {}
-    if (len(a:match > 1 && digit == 0) || print_out == 0)
+    if (len(a:match > 1 && digit == 0))
         " try to match digest name from unicode name
         if !exists("s:UniDict")
             let s:UniDict = <sid>UnicodeDict()
         endif
-    endif
-    if (len(a:match) > 1 && digit == 0)
         let name    = a:match
         let unidict = filter(copy(s:UniDict), 'v:val =~? name')
     endif
