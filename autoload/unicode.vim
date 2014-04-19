@@ -10,10 +10,12 @@
 " ---------------------------------------------------------------------
 
 " initialize Variables {{{1
-let s:unicode_URL = get(g:, 'Unicode_URL',
-    \ 'http://www.unicode.org/Public/UNIDATA/UnicodeData.txt')
-let s:directory   = expand("<sfile>:p:h")."/unicode"
-let s:UniFile     = s:directory . '/UnicodeData.txt'
+let s:unicode_URL  = get(g:, 'Unicode_URL',
+        \ 'http://www.unicode.org/Public/UNIDATA/UnicodeData.txt')
+let s:directory    = expand("<sfile>:p:h")."/unicode"
+let s:UniFile      = s:directory . '/UnicodeData.txt'
+" patch 7.3.713 introduced the %S modifier for printf
+let s:printf_S_mod = (v:version == 703 && !has("patch713")) || v:version < 703
 
 " HTML entitities {{{2
 let s:html = {}
@@ -465,8 +467,7 @@ fu! unicode#PrintUnicode(match) "{{{2
     let uni    = <sid>FindUnicodeByInternal(a:match)
     let format = ["% 4S\t", "U+%04X Dec:%06d\t", ' %s']
     let i      = 0
-    if (v:version == 703 && !has("patch713")) || v:version < 703
-        " patch 7.3.713 introduced the %S modifier for printf
+    if s:printf_S_mod
         let format[0] = substitute(format[0], 'S', 's', '')
     endif
     for item in uni
@@ -547,7 +548,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
     endif
-    call append(1, printf("%-6s%-8s%-10s%-57s%s",
+    call append(1, printf("%-7s%-8s%-10s%-57s%s",
             \ "Char","Codept","Html", "Name (Digraph)", "Link"))
     let output = []
     for [value,name] in items(s:UniDict) " sort is done later, for performance reasons
@@ -555,7 +556,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
         let dig     = <sid>GetDigraphChars(value)
         let html    = <sid>GetHtmlEntity(value)
         let codep   = printf('U+%04X', value)
-        let output += [printf("%-6s%-8s%-10s%-57shttp://unicode-table.com/en/%04X/",
+        let output += [printf("%-7s%-8s%-10s%-57shttp://unicode-table.com/en/%04X/",
                     \ strtrans(nr2char(value)), codep, html, name.dig, value)]
     endfor
     call append('$', output)
