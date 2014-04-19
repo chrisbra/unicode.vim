@@ -9,3 +9,5 @@ vim_passfile
 *.vmb
 # ignore .orig files
 *.orig
+# unicode data
+autoload/unicode/*
