@@ -856,7 +856,8 @@ fu! <sid>UnicodeWriteCache(data, ind) "{{{2
         \ '" this file can safely be removed, it will be recreated if needed',
         \ '',
         \ 'let unicode#unicode#data = {}']
-    let list += map(copy(a:ind), '"let unicode#unicode#data[".v:val."] = ''".a:data[v:val]."''"')
+    let format = "let unicode#unicode#data[0x%04X] = '%s'"
+    let list += map(copy(a:ind), 'printf(format, v:val, a:data[v:val])')
     call writefile(list, s:directory. '/UnicodeData.vim')
     unlet! list
 endfu
