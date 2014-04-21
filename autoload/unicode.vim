@@ -459,7 +459,7 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
         let item.dig = substitute(item.dig, '^.\|.$', '', 'g')
         let screenwidth += <sid>ScreenOutput(
                 \ (start == 0 && screenwidth == 0 ? 1 : 0), item.glyph,
-                \ printf(format[1], split(item.dig)[0], item.dec))
+                \ printf(format[1], item.dig, item.dec))
         let start = 0
     endfor
 endfu
