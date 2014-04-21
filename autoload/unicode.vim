@@ -434,9 +434,12 @@ fu! unicode#GetUniChar(...) "{{{2
         endif
     finally
         let start      = 1
+        let s:output_width=1
         for val in msg
             let l=split(val)
-            call <sid>ScreenOutput((start ? 0 : 1), l[0], ' '.join(l[1:]))
+            call <sid>ScreenOutput(l[0], ' '.join(l[1:]))
+            " force linebreak
+            let s:output_width=&columns
             let start = 0
         endfor
     endtry
@@ -445,39 +448,33 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
     " outputs only first digraph that exists for char
     " makes a difference for e.g. Euro which has (=e Eu)
     let digraphs = <sid>DigraphsInternal(a:match)
-    let screenwidth = 0
-    let format = ['%s',' %s %s ']
-    let start = 1
+    let s:output_width=1
 
     for item in digraphs
-        let output = printf(format[0].format[1], split(item.dig)[0], item.glyph, item.dec)
-        " if the output is too wide, echo a linebreak
-        if screenwidth + <sid>Screenwidth(output) >= &columns
-            \ || (!empty(a:bang) && start == 0)
-            let screenwidth = 0
-        endif
+        " remove paranthesis
         let item.dig = substitute(item.dig, '^.\|.$', '', 'g')
-        let screenwidth += <sid>ScreenOutput(
-                \ (start == 0 && screenwidth == 0 ? 1 : 0), item.glyph,
-                \ printf(format[1], item.dig, item.dec))
-        let start = 0
+        call <sid>ScreenOutput(item.glyph, printf(' %s %s ', item.dig, item.dec))
+        if !empty(a:bang)
+            " force linebreak
+            let s:output_width=&columns
+        endif
     endfor
 endfu
 fu! unicode#PrintUnicode(match) "{{{2
     let uni    = <sid>FindUnicodeByInternal(a:match)
     let format = ["% 4S\t", "U+%04X Dec:%06d\t", ' %s']
-    let i      = 0
     if s:printf_S_mod
         let format[0] = substitute(format[0], 'S', 's', '')
     endif
+    let s:output_width = 1
     for item in uni
         let dig  = get(item, 'dig' , '')
         let html = get(item, 'html', '')
-        call <sid>ScreenOutput(i<len(uni) && i > 0, printf(format[0], item.glyph),
+        call <sid>ScreenOutput(printf(format[0], item.glyph),
                 \ printf(format[1].format[2], item.dec, item.dec, item.name),
                 \ (empty(dig)  ? [] : printf(" %s", dig)),
                 \ (empty(html) ? [] : printf(" %s", html)))
-        let i+=1
+        let s:output_width = &columns
     endfor
 endfu
 fu! unicode#GetDigraph(type, ...) "{{{2
@@ -817,17 +814,20 @@ fu! <sid>CompareByValue(v1, v2) "{{{2
     return (a:v1 == a:v2 ? 0 : (a:v1 > a:v2 ? 1 : -1))
 endfu
 fu! <sid>ScreenOutput(...) "{{{2
-    if a:1 "first argument indicates whether we need a linebreak
-        echon "\n"
-    endif
-    let list=filter(a:000[1:], '!empty(v:val)')
+    let list=filter(copy(a:000), '!empty(v:val)')
     let i=0
+    let width = eval(join(map(copy(list), '<sid>Screenwidth(v:val)'), '+'))
+    if s:output_width + width >= &columns
+        echon "\n"
+        let s:output_width = width+1
+    else
+        let s:output_width += width
+    endif
     for value in list
         exe "echohl ". (i ? "Normal" : "Title")
         echon value
-        let i+=<sid>Screenwidth(value)
+        let i+=1
     endfor
-    return i
 endfu
 fu! <sid>WarningMsg(msg) "{{{2
     echohl WarningMsg
