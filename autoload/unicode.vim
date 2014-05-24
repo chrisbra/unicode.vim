@@ -284,18 +284,21 @@ endfu
 fu! unicode#FindUnicodeBy(match) "{{{2
     return <sid>FindUnicodeByInternal(a:match)
 endfu
-fu! unicode#Digraph(char1, char2) "{{{2
-    if empty(a:char1) || empty(a:char2)
+fu! unicode#Digraph(char) "{{{2
+    let c=split(a:char, '\zs')
+    if len(c) > 2 || len(c) < 2
+        call <sid>WarningMsg('Need exactly 2 chars for returning digraphs!')
         return ''
     endif
-    let s=''
+    let s:digraph=''
     " How about a digrpah() function?
     " already sent a patch to Bram
-    exe "sil! norm! :let s.='\<c-k>".a:char1.a:char2."'\<cr>"
-    if s == a:char1
+    " exe "sil! norm! :let s.='\<c-k>".a:char1.a:char2."'\<cr>"
+    exe 'norm!' ":\<C-k>".c[0].c[1]."\<c-\>eextend(s:, {'digraph': getcmdline()}).digraph\n"
+    if s:digraph ==? c[0] || s:digraph ==? c[1]
         return ''
     endif
-    return (s ==# a:char1 ? '' : s)
+    return s:digraph
 endfu
 fu! unicode#UnicodeName(val) "{{{2
     return <sid>GetUnicodeName(a:val)
@@ -515,7 +518,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
         if exists("char0") && exists("char1")
             " How about a digraph() function?
             " e.g. :let s.=digraph(char[0], char[1])
-            let s.=unicode#Digraph(char0, char1)
+            let s.=unicode#Digraph(char0.char1)
         endif
         unlet! char0 char1
     endw
