@@ -332,14 +332,16 @@ unicode#FindDigraphBy({match})			   *unicode#FindDigraphBy()*
 	particular hex value. If {match} is an expression, it will be matched
 	against the charactername (and case will be ignored).
 
-unicode#Digraph({char1},{char2})		   *unicode#Digraph()*
-	returns the digraph of {char1} and {char2}. If it is not valid,
+unicode#Digraph({string})			   *unicode#Digraph()*
+        {string} needs to be a exactly 2 chars long.
+	Returns the digraph of {string}. If it is not valid,
 	returns en empty string.
 
 unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 	returns the unicode name of the character with the decimal value {val}
 ==============================================================================
 6. unicode History                                    *unicode-plugin-history*
+    0.20 (unreleased)   - |unicode#Digraph| expects a 2 char string
     0.19: Apr 16, 2014  - |:UnicodeName| shows all digraphs per character
 			- |:UnicodeName| shows decimal value for glyph
 			- |:SearchUnicode| search unicode character by name or
