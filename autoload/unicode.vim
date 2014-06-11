@@ -561,6 +561,11 @@ fu! unicode#PrintUnicodeTable() "{{{2
     endfor
     call append('$', output)
     3,$sort x /^.\{,8}U+/
+    setl nomodified
+    augroup UnicodeTable
+        au!
+        au QuitPre <buffer> :q!
+    augroup end
     :noa 1
 endfu
 fu! <sid>AddCompleteEntries(dict) "{{{2

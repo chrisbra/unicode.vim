@@ -342,6 +342,7 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 ==============================================================================
 6. unicode History                                    *unicode-plugin-history*
     0.20 (unreleased)   - |unicode#Digraph| expects a 2 char string
+			- Install a |QuitPre| autocommand for |:UnicodeTable|
     0.19: Apr 16, 2014  - |:UnicodeName| shows all digraphs per character
 			- |:UnicodeName| shows decimal value for glyph
 			- |:SearchUnicode| search unicode character by name or
