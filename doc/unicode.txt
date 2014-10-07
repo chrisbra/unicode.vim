@@ -110,10 +110,11 @@ register.
     :Digraphs
 
 Outputs the digraph list in an easier way to read with coloring of the
-digraphs.
+digraphs. If a character has several digraphs, all will be shown, separated by
+space.
 
 If you want to display a list with a line break after each digraph, use the
-bang attribute >
+bang attribute (Note, this output also contains the name in paranthesis). >
 
     :Digraphs!
 
@@ -343,6 +344,7 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 6. unicode History                                    *unicode-plugin-history*
     0.20 (unreleased)   - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
+			- Make |:Digraphs!| output the digraph name
     0.19: Apr 16, 2014  - |:UnicodeName| shows all digraphs per character
 			- |:UnicodeName| shows decimal value for glyph
 			- |:SearchUnicode| search unicode character by name or

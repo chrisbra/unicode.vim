@@ -459,6 +459,7 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
         call <sid>ScreenOutput(item.glyph, printf(' %s %s ', item.dig, item.dec))
         if !empty(a:bang)
             " force linebreak
+            call <sid>ScreenOutput(printf(' (%s)', item.name))
             let s:output_width=&columns
         endif
     endfor
