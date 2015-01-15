@@ -1,7 +1,7 @@
 *unicode.txt* Useful functions for use with unicode
 
 Author:  Christian Brabandt <cb@256bit.org>
-Version: 0.19 Wed, 16 Apr 2014 23:36:38 +0200
+Version: 0.20 Thu, 15 Jan 2015 20:47:07 +0100
                                                         *unicode-copyright*
 Copyright: (c) 2009 - 2014 by Christian Brabandt
            The VIM LICENSE applies to unicode.vim and unicode.txt
@@ -342,7 +342,7 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 	returns the unicode name of the character with the decimal value {val}
 ==============================================================================
 6. unicode History                                    *unicode-plugin-history*
-    0.20 (unreleased)   - |unicode#Digraph| expects a 2 char string
+    0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name
     0.19: Apr 16, 2014  - |:UnicodeName| shows all digraphs per character
