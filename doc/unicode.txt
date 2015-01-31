@@ -342,6 +342,10 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 	returns the unicode name of the character with the decimal value {val}
 ==============================================================================
 6. unicode History                                    *unicode-plugin-history*
+    0.21: (unreleased)  - escape ' properly for |digraph-completion| (reported
+			  by Konfekt in
+			  https://github.com/chrisbra/unicode.vim/issues/4
+			  thanks!)
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name

@@ -370,8 +370,14 @@ fu! unicode#CompleteUnicode() "{{{2
 endfu
 fu! unicode#CompleteDigraph() "{{{2
     " Completion function for digraphs
-    let prevchar=getline('.')[col('.')-2]
-    let prevchar1=getline('.')[col('.')-3]
+    let prevchar  = getline('.')[col('.')-2]
+    let prevchar1 = getline('.')[col('.')-3]
+    if prevchar is? "'"
+        let prevchar = "''"
+    endif
+    if prevchar1 is? "'"
+        let prevchar1 = "''"
+    endif
     let dlist=values(<sid>GetDigraphDict())
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
