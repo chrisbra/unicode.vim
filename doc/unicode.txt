@@ -269,7 +269,7 @@ corresponding digraph, leaving chars, that don't form a digraph alone (the
 
 If you like to change the default map, put a line like this into your |.vimrc|
 >
-    nnoremap <f2> <Plug>(MakeDigraph)
+    nmap <f2> <Plug>(MakeDigraph)
 <
 Now, the <f2> can be used to generate digraphs from their pairs. This is
 done using an 'opfunc'-mapping (see |:map-operator|).
@@ -278,7 +278,7 @@ done using an 'opfunc'-mapping (see |:map-operator|).
 The unicode plugin can be used to make the |ga| command more useful. If you
 like to do this, then simply map the ga command like this in your |.vimrc| >
 
-    nnoremap ga <Plug>(UnicodeGA)
+    nmap ga <Plug>(UnicodeGA)
 
 This will invoke the |:UnicodeName| command whenever the ga command is used.
 
