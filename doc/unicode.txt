@@ -346,6 +346,9 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			  by Konfekt in
 			  https://github.com/chrisbra/unicode.vim/issues/4
 			  thanks!)
+			- documentation update by Marco Hinz, thanks!
+			- remove QuitPre autocommand, that might quit your Vim
+			  unintentionally
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name
