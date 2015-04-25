@@ -277,6 +277,10 @@ let s:html[0x2660] = "&spades;"
 let s:html[0x2663] = "&clubs;"
 let s:html[0x2665] = "&hearts;"
 let s:html[0x2666] = "&diams;" "}}}2
+" Additional Information {{{2
+" some additional information for certain characters
+let s:info = {}
+let s:info[0xfeff] = "(Byte Order Mark: BOM)" "}}}2
 " public functions {{{1
 fu! unicode#FindDigraphBy(match) "{{{2
     return <sid>DigraphsInternal(a:match)
@@ -434,8 +438,9 @@ fu! unicode#GetUniChar(...) "{{{2
                 let dig   = <sid>GetDigraphChars(dec)
                 let name  = <sid>GetUnicodeName(dec)
                 let html  = <sid>GetHtmlEntity(dec)
-                call add(msg, printf("'%s' U+%04X Dec:%d %s %s %s", glyph,
-                        \ dec, dec, name, dig, html))
+                let info  = get(s:info, dec, '')
+                call add(msg, printf("'%s' U+%04X Dec:%d %s %s %s %s", glyph,
+                        \ dec, dec, name, dig, html, info))
             endfor
         endif
         if exists("a:1") && !empty(a:1)
@@ -483,7 +488,8 @@ fu! unicode#PrintUnicode(match) "{{{2
         call <sid>ScreenOutput(printf(format[0], item.glyph),
                 \ printf(format[1].format[2], item.dec, item.dec, item.name),
                 \ (empty(dig)  ? [] : printf(" %s", dig)),
-                \ (empty(html) ? [] : printf(" %s", html)))
+                \ (empty(html) ? [] : printf(" %s", html)),
+                \ (empty(item.info) ? [] : printf(" %s", item.info)))
         let s:output_width = &columns
     endfor
 endfu
@@ -708,6 +714,7 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
         let dict.glyph    = nr2char(decimal)
         let dict.dec      = decimal
         let dict.hex      = printf("0x%02X", decimal)
+        let dict.info     = get(s:info, decimal, '')
         if !empty(dchar)
             let dict.dig  = dchar
         endif
