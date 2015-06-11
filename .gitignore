@@ -11,3 +11,4 @@ vim_passfile
 *.orig
 # unicode data
 autoload/unicode/*
+doc/tags
