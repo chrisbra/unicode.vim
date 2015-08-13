@@ -23,7 +23,7 @@ Use the `:Digraphs` command to search for an digraph with the given name (e.g. `
 This plugin also maps the key `<F4>` that will allow to transform 2 given normal chars into their digraph char.
 
 See also the following screencast, that shows several features available:
-![screencast of the plugin](http://chrisbra.github.io/unicode.vim/screencast.gif "Screencast")
+![screencast of the plugin](https://chrisbra.github.io/vim-screencasts/unicode-screencast.gif "Screencast")
 
 ###Installation
 Use the plugin manager of your choice. Or download the [stable][] version of the plugin, edit it with Vim (`vim unicode-XXX.vmb`) and simply source it (`:so %`). Restart and take a look at the help (`:h unicode-plugin`)
