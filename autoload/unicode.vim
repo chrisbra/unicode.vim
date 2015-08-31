@@ -501,7 +501,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
     " äëöü¹ß×
     let sel_save = &selection
     let &selection = "inclusive"
-    let _a = [getreg("a"), getregtype("a")]
+    let _a = ['a', getreg("a"), getregtype("a")]
 
     if a:0  " Invoked from Visual mode, use '< and '> marks.
         silent exe "norm! `<" . a:type . '`>"ay'
@@ -514,6 +514,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
     endif
  
     let s = ''
+    let t = ''
     while !empty(@a)
         " need to check the next 2 characters
         for i in range(2)
@@ -531,9 +532,16 @@ fu! unicode#GetDigraph(type, ...) "{{{2
         if exists("char0") && exists("char1")
             " How about a digraph() function?
             " e.g. :let s.=digraph(char[0], char[1])
-            let s.=unicode#Digraph(char0.char1)
+            let t=unicode#Digraph(char0.char1)
+            let nr=char2nr(t)
+            if exists("g:Unicode_ConvertDigraphSubset") &&
+            \  index(g:Unicode_ConvertDigraphSubset, nr) == -1
+                    let s.=char0.char1
+            else
+                let s.=t
+            endif
         endif
-        unlet! char0 char1
+        unlet! char0 char1 t
     endw
 
     if s != @a
@@ -541,7 +549,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
         exe "norm! gv\"ap"
     endif
     let &selection = sel_save
-    call call("setreg", ["a"]+_a)
+    call call("setreg", _a)
 endfu
 fu! unicode#PrintUnicodeTable() "{{{2
     let winname = 'UnicodeTable'

@@ -225,6 +225,21 @@ window, set the variable >
 <
 in your |.vimrc|.
 
+If you want the digraph generation to be restricted to certain digraphs only,
+set the variable to the decimal codes of those digraphs. E.g. to only allow
+generation of the € sign and umlauts, you would add to your |.vimrc| : >
+
+    let g:Unicode_ConvertDigraphSubset = [ 
+	\ char2nr("€"),
+	\ char2nr("ä"),
+	\ char2nr("Ä"),
+	\ char2nr("ö"),
+	\ char2nr("Ö"),
+	\ char2nr("ü"),
+	\ char2nr("Ü"),
+	\ char2nr("ß") ]
+<
+
                                         *i_CTRL-X_CTRL-G* *digraph-completion*
 3.2 Completing Digraphs
 -----------------------
@@ -268,7 +283,11 @@ look like this: >
 
 Note, that all pairs of base characters have been converted to their
 corresponding digraph, leaving chars, that don't form a digraph alone (the
-'ß')
+'ß').
+
+If you like to specify, which characters are allowed to be converted to a
+digraph, you can define this using the variable Unicode_ConvertDigraphSubset
+(see above).
 
 If you like to change the default map, put a line like this into your |.vimrc|
 >
@@ -353,6 +372,12 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			- remove QuitPre autocommand, that might quit your Vim
 			  unintentionally
 			- Add BOM for Byte Order Mark
+			- Allow specify, which digraphs are being replaced
+			  by the g:Unicode_ConvertDigraphSubset variable
+			  and some performance improvements for |:Digraphs|
+			  (reported by stepk in 
+			  https://github.com/chrisbra/unicode.vim/issues/8
+			  thanks!)
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name
