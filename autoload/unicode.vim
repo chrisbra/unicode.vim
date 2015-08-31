@@ -667,7 +667,10 @@ fu! <sid>DigraphsInternal(match) "{{{2
             let did_verbose=1
         endif
         " display digraphs that match value
-        if dig[0] !~# a:match && digit == 0 && empty(unidict)
+        " could be a list of 1 or 2 matchings chars,
+        " e.g.
+        " {'8364': ['=e € 8364','Eu € 8364']}
+        if match(dig, a:match) == -1  && digit == 0 && empty(unidict)
             continue
         endif
         " digraph: xy Z \d\+
@@ -677,7 +680,7 @@ fu! <sid>DigraphsInternal(match) "{{{2
         " if digit matches, we only want to display digraphs matching the
         " decimal values
         if (digit > 0 && (item[3]+0) != digit) ||
-            \ (!empty(name) &&  index(keys(unidict), item[3]) == -1)
+            \ (!empty(name) && !empty(unidict) && index(keys(unidict), item[3]) == -1)
             continue
         endif
 
