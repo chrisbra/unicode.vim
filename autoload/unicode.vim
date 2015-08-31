@@ -547,7 +547,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
     if s != @a
         " when setting the register, set it to the correct type,
         " do not use ':let @a=s' (this might set it to linewise mode)
-        call call("setreg", ['a', s, a:type])
+        call call("setreg", ['a', s, a:type[0]])
         exe "norm! gv\"ap"
     endif
     let &selection = sel_save
