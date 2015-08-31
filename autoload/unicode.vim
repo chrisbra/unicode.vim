@@ -638,7 +638,6 @@ fu! <sid>DigraphsInternal(match) "{{{2
     let digit = a:match + 0
     let name = ''
     let unidict = {}
-    let tchar = {}
     let cnt = 0
     let did_verbose = 0
     if (len(a:match > 1 && digit == 0))
@@ -669,18 +668,14 @@ fu! <sid>DigraphsInternal(match) "{{{2
             \ '\(..\)\s\(\%(\s\s\)\|.\{,4\}\)\s\+\(\d\+\)$')
         " if digit matches, we only want to display digraphs matching the
         " decimal values
-        if (digit > 0 && item[3] !~ '^'.digit.'$') ||
-            \ (!empty(name) &&  match(keys(unidict), '^'.item[3].'$') == -1)
+        if (digit > 0 && (item[3]+0) != digit) ||
+            \ (!empty(name) &&  index(keys(unidict), item[3]) == -1)
             continue
-        endif
-
-        if !empty(name)
-            let tchar = filter(copy(unidict), 'v:key == item[3]')
         endif
 
         " add trailing  space for item[2] if there isn't one
         " (e.g. needed for digraph 132)
-        if item[2] !~? '\s$' || item[3] == 32
+        if item[2][:-1] !=# ' ' || item[3] == 32
             let item[2].= ' '
         endif
 
