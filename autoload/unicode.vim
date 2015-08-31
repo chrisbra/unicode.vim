@@ -628,12 +628,19 @@ fu! <sid>AddDigraphCompleteEntries(list) "{{{2
     endfor
     return sort(list, '<sid>CompareByDecimalKey')
 endfu
+fu! <sid>Print(fmt, ...) "{{{2
+    if &verbose
+        echomsg call('printf', [a:fmt] + a:000)
+    endif
+endfu
 fu! <sid>DigraphsInternal(match) "{{{2
     let outlist = []
     let digit = a:match + 0
     let name = ''
     let unidict = {}
     let tchar = {}
+    let cnt = 0
+    let did_verbose = 0
     if (len(a:match > 1 && digit == 0))
         " try to match digest name from unicode name
         if !exists("s:UniDict")
@@ -642,7 +649,16 @@ fu! <sid>DigraphsInternal(match) "{{{2
         let name    = a:match
         let unidict = filter(copy(s:UniDict), 'v:val =~? name')
     endif
-    for dig in values(<sid>GetDigraphDict())
+    let res = <sid>GetDigraphDict()
+    if &verbose
+        call <sid>Print("Processing %0d digraphs", len(values(res)))
+    endif
+    for dig in values(res)
+        let cnt += 1
+        if (cnt%100 == 0 && &verbose)
+            call <sid>Print("Processing item %*d", len(printf("%s", len(res))), cnt)
+            let did_verbose=1
+        endif
         " display digraphs that match value
         if dig[0] !~# a:match && digit == 0 && empty(unidict)
             continue
@@ -677,6 +693,9 @@ fu! <sid>DigraphsInternal(match) "{{{2
         let dict.name  = <sid>GetUnicodeName(item[3])
         call add(outlist, dict)
     endfor
+    if did_verbose
+        echomsg ""
+    endif
     return sort(outlist, '<sid>CompareByDecimalKey')
 endfu
 fu! <sid>FindUnicodeByInternal(match) "{{{2

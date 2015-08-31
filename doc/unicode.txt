@@ -125,6 +125,9 @@ an argument to the command: >
 
 displays all digraphs, that match 'A' (e.g. all that can be created with the
 letter A or whose digraph matches the letter 'A'.)
+Note: This is a silly example, that can take some time. You should always be
+able to abort that by pressing |CTRL-C|. To output progress information, call
+the command with the |:verbose| command modifier.
 
 If you know the name, you can also search for the unicode name:
 
