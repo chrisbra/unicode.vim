@@ -470,14 +470,17 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
         call <sid>ScreenOutput(item.glyph, printf(' %s %s ', item.dig, item.dec))
         if !empty(a:bang)
             " force linebreak
+            let s:color_pattern = a:match.'\c'
             call <sid>ScreenOutput(printf(' (%s)', item.name))
             let s:output_width=&columns
         endif
     endfor
+    unlet! s:color_pattern
 endfu
 fu! unicode#PrintUnicode(match) "{{{2
     let uni    = <sid>FindUnicodeByInternal(a:match)
     let format = ["% 4S\t", "U+%04X Dec:%06d\t", ' %s']
+    let s:color_pattern = a:match.'\c'
     if s:printf_S_mod
         let format[0] = substitute(format[0], 'S', 's', '')
     endif
@@ -492,6 +495,7 @@ fu! unicode#PrintUnicode(match) "{{{2
                 \ (empty(item.info) ? [] : printf(" %s", item.info)))
         let s:output_width = &columns
     endfor
+    unlet! s:color_pattern
 endfu
 fu! unicode#GetDigraph(type, ...) "{{{2
     " turns a movement or selection into digraphs, each pair of chars
@@ -870,7 +874,17 @@ fu! <sid>ScreenOutput(...) "{{{2
     endif
     for value in list
         exe "echohl ". (i ? "Normal" : "Title")
-        echon value
+        if exists("s:color_pattern")
+            let start = match(value, s:color_pattern)
+            let end   = matchend(value, s:color_pattern)
+            echon strpart(value, 0, start)
+            echohl WarningMsg
+            echon strpart(value, start, end-start)
+            exe "echohl ". (i ? "Normal" : "Title")
+            echon strpart(value, end)
+        else
+            echon value
+        endif
         let i+=1
     endfor
 endfu

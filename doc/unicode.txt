@@ -378,6 +378,10 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			  (reported by stepk in 
 			  https://github.com/chrisbra/unicode.vim/issues/8
 			  thanks!)
+			- Fix some small bugs, regarding digraph generation
+			  |<Plug>(MakeDigraph)|
+			- When searching for a digraph or unicode character
+			  highlight the search pattern
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name
