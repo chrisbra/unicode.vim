@@ -520,7 +520,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
         for i in range(2)
             let char{i} = matchstr(@a, '^.')
             if char2nr(char{i}) > 126 || char2nr(char{i}) < 20 || char2nr(char{i}) == 0x20
-                let s.=char0. (exists("char1") ? "char1" : "")
+                let s.=char0. (exists("char1") ? char1 : "")
                 let @a=substitute(@a, '^.', '', '')
                 break
             endif
@@ -545,7 +545,9 @@ fu! unicode#GetDigraph(type, ...) "{{{2
     endw
 
     if s != @a
-        let @a = s
+        " when setting the register, set it to the correct type,
+        " do not use ':let @a=s' (this might set it to linewise mode)
+        call call("setreg", ['a', s, a:type])
         exe "norm! gv\"ap"
     endif
     let &selection = sel_save
