@@ -519,18 +519,14 @@ fu! unicode#GetDigraph(type, ...) "{{{2
  
     let s = ''
     let t = ''
-    while !empty(@a)
+    let chars=split(@a, '\zs')
+    while !empty(chars)
         " need to check the next 2 characters
         for i in range(2)
-            let char{i} = matchstr(@a, '^.')
+            let char{i} = remove(chars, 0)
             if char2nr(char{i}) > 126 || char2nr(char{i}) < 20
                 let s.=char0. (exists("char1") ? char1 : "")
-                let @a=substitute(@a, '^.', '', '')
                 unlet! char0 char1
-                break
-            endif
-            let @a=substitute(@a, '^.', '', '')
-            if empty(@a)
                 break
             endif
         endfor
@@ -542,7 +538,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
             if nr == 0
                 " no digraph with char0 and char1 available
                 " try again with the next char
-                let @a=char1.@a
+                call insert(chars, char1, 0)
                 let s.=char0
                 unlet! char0 char1 t
                 continue
