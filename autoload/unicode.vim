@@ -526,6 +526,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
             if char2nr(char{i}) > 126 || char2nr(char{i}) < 20
                 let s.=char0. (exists("char1") ? char1 : "")
                 let @a=substitute(@a, '^.', '', '')
+                unlet! char0 char1
                 break
             endif
             let @a=substitute(@a, '^.', '', '')
@@ -538,6 +539,14 @@ fu! unicode#GetDigraph(type, ...) "{{{2
             " e.g. :let s.=digraph(char[0], char[1])
             let t=unicode#Digraph(char0.char1)
             let nr=char2nr(t)
+            if nr == 0
+                " no digraph with char0 and char1 available
+                " try again with the next char
+                let @a=char1.@a
+                let s.=char0
+                unlet! char0 char1 t
+                continue
+            endif
             if exists("g:Unicode_ConvertDigraphSubset") &&
             \  index(g:Unicode_ConvertDigraphSubset, nr) == -1
                     let s.=char0.char1
