@@ -523,7 +523,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
         " need to check the next 2 characters
         for i in range(2)
             let char{i} = matchstr(@a, '^.')
-            if char2nr(char{i}) > 126 || char2nr(char{i}) < 20 || char2nr(char{i}) == 0x20
+            if char2nr(char{i}) > 126 || char2nr(char{i}) < 20
                 let s.=char0. (exists("char1") ? char1 : "")
                 let @a=substitute(@a, '^.', '', '')
                 break
