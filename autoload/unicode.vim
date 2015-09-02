@@ -521,10 +521,12 @@ fu! unicode#GetDigraph(type, ...) "{{{2
     let t = ''
     let chars=split(@a, '\zs')
     while !empty(chars)
+        unlet! char0 char1 t
         " need to check the next 2 characters
         for i in range(2)
             let char{i} = remove(chars, 0)
-            if char2nr(char{i}) > 126 || char2nr(char{i}) < 20
+            " ignore space as digraph char
+            if char2nr(char{i}) > 126 || char2nr(char{i}) < 20 || char{i} is# ' '
                 let s.=char0. (exists("char1") ? char1 : "")
                 unlet! char0 char1
                 break
@@ -540,7 +542,6 @@ fu! unicode#GetDigraph(type, ...) "{{{2
                 " try again with the next char
                 call insert(chars, char1, 0)
                 let s.=char0
-                unlet! char0 char1 t
                 continue
             endif
             if exists("g:Unicode_ConvertDigraphSubset") &&
@@ -550,7 +551,6 @@ fu! unicode#GetDigraph(type, ...) "{{{2
                 let s.=t
             endif
         endif
-        unlet! char0 char1 t
     endw
 
     if s != @a
