@@ -526,7 +526,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
         for i in range(2)
             let char{i} = remove(chars, 0)
             " ignore space as digraph char
-            if char2nr(char{i}) > 126 || char2nr(char{i}) < 20 || char{i} is# ' ' || empty(chars)
+            if char2nr(char{i}) > 126 || char2nr(char{i}) < 20 || char{i} is# ' ' || (empty(chars) && i == 0)
                 let s.=char0. (exists("char1") ? char1 : "")
                 unlet! char0 char1
                 break
