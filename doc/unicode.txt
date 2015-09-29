@@ -382,6 +382,8 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			  |<Plug>(MakeDigraph)|
 			- When searching for a digraph or unicode character
 			  highlight the search pattern
+			- when calling |:UnicodeName| make sure, to use the
+			  english language (makes parsing ga work correctly)
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name

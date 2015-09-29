@@ -423,6 +423,11 @@ fu! unicode#GetUniChar(...) "{{{2
                 return
             endif
         endif
+        " set local to english
+        let lang=v:lang
+        if lang isnot# 'C'
+            sil lang mess C
+        endif
         " Get char at Cursor, need to use redir, cause we also want
         " to capture combining chars
         redir => a | exe "silent norm! ga" | redir end 
@@ -449,6 +454,9 @@ fu! unicode#GetUniChar(...) "{{{2
     finally
         let start      = 1
         let s:output_width=1
+        if lang != 'C'
+            exe "sil lang mess" lang
+        endif
         for val in msg
             let l=split(val)
             call <sid>ScreenOutput(l[0], ' '.join(l[1:]))
