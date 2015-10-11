@@ -454,7 +454,7 @@ fu! unicode#GetUniChar(...) "{{{2
     finally
         let start      = 1
         let s:output_width=1
-        if lang != 'C'
+        if lang !=# 'C'
             exe "sil lang mess" lang
         endif
         for val in msg
