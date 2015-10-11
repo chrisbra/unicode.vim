@@ -437,15 +437,24 @@ fu! unicode#GetUniChar(...) "{{{2
             call add(msg, "'NUL' U+0000 NULL")
         else
             " Split string, in case cursor was on a combining char
+            let charlen = len(split(a, 'Octal \d\+\zs \?'))
+            let i       = 0
             for item in split(a, 'Octal \d\+\zs \?')
+                let i    += 1
                 let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
                 let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
                 let dig   = <sid>GetDigraphChars(dec)
                 let name  = <sid>GetUnicodeName(dec)
                 let html  = <sid>GetHtmlEntity(dec)
+                let hexl  = strlen(printf("%X", dec))
+                let pat   = dec <= 0xFFFF ? printf('/\%%u%*x', hexl, dec):
+                        \printf('/\%%U*8x', hexl, dec)
+                if charlen > 1 && i < charlen
+                    let pat .= '\Z'
+                endif
                 let info  = get(s:info, dec, '')
-                call add(msg, printf("'%s' U+%04X Dec:%d %s %s %s %s", glyph,
-                        \ dec, dec, name, dig, html, info))
+                call add(msg, printf("'%s' U+%04X Dec:%d %s %s %s %s %s", glyph,
+                        \ dec, dec, name, dig, html, info, pat))
             endfor
         endif
         if exists("a:1") && !empty(a:1)
