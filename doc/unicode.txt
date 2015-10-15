@@ -95,7 +95,7 @@ your report.
 Suppose, you want to know, what the Unicode Name for the Character under the
 cursor is. You simply enter the ex command: >
 
-    :UnicodeName [reg]
+    :UnicodeName [reg [type]]
 
 The plugin will then output the character, the character's hexadecimal value,
 the official Unicode name and the search pattern to search for that character.
@@ -116,8 +116,11 @@ value of the character, followed by the official Unicode Name. After the name,
 the different digraphs are put in paranthesis, followed by the html entity
 name followed by the regular expression atom, to search for this character.
 
-If you specify a register name, the message will also be saved into that
+If you specify a register name [reg], the message will also be saved into that
+register. If you optionally specify a type [type] (either one of digraph,
+html, name, regex or value) only that part of the output will be stored in the
 register.
+
 								*:Digraphs*
     :Digraphs
 
@@ -397,6 +400,9 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			- when calling |:UnicodeName| make sure, to use the
 			  english language (makes parsing ga work correctly)
 			- Make |:UnicodeName| output the search string
+			- Make |:UnicodeName| optionally output only part of
+			  the character output (e.g. digraph, html, name,
+			  regex or value)
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name

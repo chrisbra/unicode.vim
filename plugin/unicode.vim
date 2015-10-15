@@ -24,8 +24,16 @@ fu! <sid>ToggleUnicodeCompletion() "{{{2
     let g:Unicode_complete_name = (get(g:, 'Unicode_complete_name') == '' ? 1 : !g:Unicode_complete_name)
     echo "Unicode Completion Names " .(g:Unicode_complete_name?'ON':'OFF')
 endfu
+fu! <sid>UNCompleteList(A,C,P) "{{{2
+    if len(split(a:C)) < 2
+        return split("abcdefghijklmnopqrstuvwxyz0123456789", '\zs')
+    else
+        return filter(['digraph','regex','name','html','value'],
+            \  'v:val=~#a:A')
+    endif
+endfu
 " Public Interface: {{{1
-com! -nargs=?       UnicodeName	    call unicode#GetUniChar(<q-args>)
+com! -nargs=* -complete=customlist,<sid>UNCompleteList      UnicodeName	    call unicode#GetUniChar(<f-args>)
 com! -nargs=? -bang Digraphs	    call unicode#PrintDigraphs(<q-args>, <q-bang>)
 com! -nargs=1       SearchUnicode   call unicode#PrintUnicode(<q-args>)
 com!		    UnicodeTable    call unicode#PrintUnicodeTable()

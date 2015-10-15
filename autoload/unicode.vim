@@ -412,6 +412,19 @@ fu! unicode#GetUniChar(...) "{{{2
         call <sid>WarningMsg("No valid register specified")
         return
     endif
+    let type=''
+    if exists("a:2") && !empty(a:2) && a:2 !~? 'd\%[igraph]\|r\%[egex]\|n\%[ame]\|h\%[tml]\|v\%[alue]'
+        call <sid>WarningMsg("No item (digraph/html/name/regex/value) specified")
+        return
+    else
+        let type=a:2[0]
+        let typelist = []
+    endif
+    if exists("a:3")
+        call <sid>WarningMsg("Too many arguments")
+        return
+    endif
+
     let msg        = []
     try
         if !exists("s:UniDict")
@@ -423,7 +436,7 @@ fu! unicode#GetUniChar(...) "{{{2
                 return
             endif
         endif
-        " set local to english
+        " set locale to english
         let lang=v:lang
         if lang isnot# 'C'
             sil lang mess C
@@ -455,10 +468,27 @@ fu! unicode#GetUniChar(...) "{{{2
                 let info  = get(s:info, dec, '')
                 call add(msg, printf("'%s' U+%04X Dec:%d %s %s %s %s %s", glyph,
                         \ dec, dec, name, dig, html, info, pat))
+                if !empty(type)
+                    if type==?'v'
+                        call add(typelist, dec)
+                    elseif type==?'d'
+                        " remove () around the digraphs
+                        call add(typelist, substitute(dig, '[()]', '', 'g'))
+                    elseif type==?'r'
+                        call add(typelist, pat[1:])
+                    elseif type==?'h'
+                        call add(typelist, html)
+                    else
+                        call add(typelist, name)
+                    endif
+                endif
             endfor
         endif
         if exists("a:1") && !empty(a:1)
             exe "let @".a:1. "=join(msg)"
+        endif
+        if exists("a:2") && !empty(a:2)
+            exe "let @".a:1. "=join(typelist)"
         endif
     finally
         let start      = 1
