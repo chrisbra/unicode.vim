@@ -583,9 +583,9 @@ fu! unicode#PrintUnicodeTable() "{{{2
     let winname = 'UnicodeTable'
 	let win = bufwinnr('^'.winname.'$')
 	if win != -1
-		exe win. 'wincmd w'
+		exe 'noa ' .win. 'wincmd w'
 	else
-        exe  'sp' winname
+        exe  'noa sp' winname
     endif
 
     " just in case, a global nomodifiable was set 
@@ -597,7 +597,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
     endif
-    call append(1, printf("%-7s%-8s%-10s%-57s%s",
+    call append(0, printf("%-7s%-8s%-10s%-57s%s",
             \ "Char","Codept","Html", "Name (Digraph)", "Link"))
     let output = []
     for [value,name] in items(s:UniDict) " sort is done later, for performance reasons
@@ -608,10 +608,12 @@ fu! unicode#PrintUnicodeTable() "{{{2
         let output += [printf("%-7s%-8s%-10s%-57shttp://unicode-table.com/en/%04X/",
                     \ strtrans(nr2char(value)), codep, html, name.dig, value)]
     endfor
-    call append('$', output)
-    3,$sort x /^.\{,8}U+/
+    call append(1, output)
+    2,$-sort x /^.\{,8}U+/
+    $d _
     setl nomodified
-    :noa 1
+    ru syntax/unicode.vim
+    noa 1
 endfu
 fu! <sid>AddCompleteEntries(dict) "{{{2
     let compl=[]

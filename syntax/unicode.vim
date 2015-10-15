@@ -10,8 +10,8 @@ elseif exists("b:current_syntax")
     finish
 endif
 
-syn match UnicodeHeader /\%(^\%2l.*\)\|\%(^\%>2l\S\+\)/   " highlight Heading and Character
-syn match UnicodeDigraph /\%>2l(\zs\(\S\+\s*\)\+\ze)/     " highlight html and digraph
+syn match UnicodeHeader /\%(^\%1l.*\)\|\%(^\%>2l\S\+\)/   " highlight Heading and Character
+syn match UnicodeDigraph /\%>1l(\zs\(\S\+\s*\)\+\ze)/     " highlight html and digraph
 syn match UnicodeHtmlEntity /&\w*;\|&#x\x\+;/             " highlight html
 syn match UnicodeCodepoint /U+\x\+/                       " highlight U+FFFE
 syn match UnicodeLink   /http:.*$/                        " highlight html link
