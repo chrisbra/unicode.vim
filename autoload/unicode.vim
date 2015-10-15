@@ -824,6 +824,9 @@ fu! <sid>UnicodeDict() "{{{2
                 if Name[0] ==? '<' && OldName !=? ''
                     let Name = split(OldName, '(')[0]
                 endif
+                if Name[-1:] ==# ' '
+                    let Name = substitute(Name, ' *$', '', '')
+                endif
                 let dec = ('0x'.val[0])+0 " faster than str2nr()
                 let dict[dec]   = Name
                 let ind += [dec] " faster than add
