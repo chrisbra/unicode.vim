@@ -605,6 +605,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
         let dig     = <sid>GetDigraphChars(value)
         let html    = <sid>GetHtmlEntity(value)
         let codep   = printf('U+%04X', value)
+        let name   .= (name[-1:]==?' ' ? '' : ' ') " add trailing whitespace
         let output += [printf("%-7s%-8s%-10s%-57shttp://unicode-table.com/en/%04X/",
                     \ strtrans(nr2char(value)), codep, html, name.dig, value)]
     endfor
