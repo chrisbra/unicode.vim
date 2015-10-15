@@ -448,7 +448,7 @@ fu! unicode#GetUniChar(...) "{{{2
                 let html  = <sid>GetHtmlEntity(dec)
                 let hexl  = strlen(printf("%X", dec))
                 let pat   = dec <= 0xFFFF ? printf('/\%%u%*x', hexl, dec):
-                        \printf('/\%%U*8x', hexl, dec)
+                        \printf('/\%%U%*x', hexl, dec)
                 if charlen > 1 && i < charlen
                     let pat .= '\Z'
                 endif
