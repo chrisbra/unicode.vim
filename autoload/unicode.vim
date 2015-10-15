@@ -467,8 +467,8 @@ fu! unicode#GetUniChar(...) "{{{2
             exe "sil lang mess" lang
         endif
         for val in msg
-            let l=split(val)
-            call <sid>ScreenOutput(l[0], ' '.join(l[1:]))
+            let list = matchlist(val, '^\(' . "'[^']*'". '\)\(.*\)')
+            call <sid>ScreenOutput(list[1], list[2])
             " force linebreak
             let s:output_width=&columns
             let start = 0
