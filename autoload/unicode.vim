@@ -416,7 +416,7 @@ fu! unicode#GetUniChar(...) "{{{2
     if exists("a:2") && !empty(a:2) && a:2 !~? 'd\%[igraph]\|r\%[egex]\|n\%[ame]\|h\%[tml]\|v\%[alue]'
         call <sid>WarningMsg("No item (digraph/html/name/regex/value) specified")
         return
-    else
+    elseif exists("a:2")
         let type=a:2[0]
         let typelist = []
     endif
