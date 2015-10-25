@@ -466,7 +466,13 @@ fu! unicode#GetUniChar(...) "{{{2
                     let pat .= '\Z'
                 endif
                 let info  = get(s:info, dec, '')
-                call add(msg, printf("'%s' U+%04X Dec:%d %s %s %s %s %s", glyph,
+
+                let name  .= (empty(name) ? '' : ' ')
+                let dig   .= (empty(dig)  ? '' : ' ')
+                let html  .= (empty(html) ? '' : ' ')
+                let info  .= (empty(info) ? '' : ' ')
+                let pat   .= (empty(pat)  ? '' : ' ')
+                call add(msg, printf("'%s' U+%04X Dec:%d %s%s%s%s%s", glyph,
                         \ dec, dec, name, dig, html, info, pat))
                 if !empty(type)
                     if type==?'v'
