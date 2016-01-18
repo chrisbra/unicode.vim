@@ -387,8 +387,8 @@ fu! unicode#CompleteDigraph() "{{{2
         let s:UniDict=<sid>UnicodeDict()
     endif
     if prevchar !~ '\s' && !empty(prevchar)
-        let filter1 = printf("match(v:val, '%s%s')>-1",  prevchar1, prevchar)
-        let filter2 = printf('match(v:val, ''%s\|%s'')>-1', prevchar1, prevchar)
+        let filter1 = printf("match(v:val, '\\C%s%s')>-1",  prevchar1, prevchar)
+        let filter2 = printf('match(v:val, ''\\C%s\|%s'')>-1', prevchar1, prevchar)
         let dlist1  = filter(copy(dlist), filter1)
         if empty(dlist1)
             let dlist = filter(dlist, filter2)
