@@ -1056,16 +1056,6 @@ fu! <sid>GetUnicodeName(dec) "{{{2
 endfu
 fu! <sid>AirlineStatusline() "{{{2
 	if exists(":AirlineRefresh")
-        if !exists("*UnicodeStatusline")
-            function UnicodeStatusline(...)
-                if bufname('') ==# 'UnicodeTable'
-                    let w:airline_section_a = 'UnicodeTable'
-                    let w:airline_section_b = ''
-                    let w:airline_section_c = ''
-                endif
-            endfu
-            call airline#add_statusline_func('UnicodeStatusline')
-        endif
         AirlineRefresh
 	endif
 endfunction
