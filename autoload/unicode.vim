@@ -651,6 +651,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
     setl nomodified
     ru syntax/unicode.vim
     noa 1
+    call <sid>AirlineStatusline()
 endfu
 fu! <sid>AddCompleteEntries(dict) "{{{2
     let compl=[]
@@ -1053,5 +1054,20 @@ fu! <sid>GetUnicodeName(dec) "{{{2
         return empty(name) ? "Character not found" : name
     endif
 endfu
+fu! <sid>AirlineStatusline() "{{{2
+	if exists(":AirlineRefresh")
+        if !exists("*UnicodeStatusline")
+            function UnicodeStatusline(...)
+                if bufname('') ==# 'UnicodeTable'
+                    let w:airline_section_a = 'UnicodeTable'
+                    let w:airline_section_b = ''
+                    let w:airline_section_c = ''
+                endif
+            endfu
+            call airline#add_statusline_func('UnicodeStatusline')
+        endif
+        AirlineRefresh
+	endif
+endfunction
 " Modeline "{{{1
 " vim: ts=4 sts=4 fdm=marker com+=l\:\" fdl=0 et

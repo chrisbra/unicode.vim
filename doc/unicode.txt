@@ -411,6 +411,7 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			  digraphs (reported by jnd-au in
 			  https://github.com/chrisbra/unicode.vim/issues/10
 			  thanks!)
+			- AirlineIntegration of the |:UnicodeTable| command
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name
