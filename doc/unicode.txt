@@ -13,7 +13,7 @@ Copyright: (c) 2009 - 2014 by Christian Brabandt
 
         1.  Functionality...........................: |unicode-plugin|
 	2.  Commands................................: |unicode-commands|
-        3.  Completions.............................: |unicode-plugin-usage|
+        3.  Completions.............................: |unicode-completion|
         4.  Mappings................................: |unicode-mappings|
         5.  Public functions........................: |unicode-functions|
         6.  Changelog...............................: |unicode-plugin-history|
@@ -171,7 +171,7 @@ Creates a new window with a table of all Unicode characters.
 Downloads the Unicode data. Can also be used to update the local data file.
 
 ==============================================================================
-3. Completing Functions
+3. Completions
                                         *i_CTRL-X_CTRL-Z* *unicode-completion*
 3.1 Completing Unicode Characters
 ---------------------------------
