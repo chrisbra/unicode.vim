@@ -35,9 +35,13 @@ endfu
 " Public Interface: {{{1
 com! -nargs=* -complete=customlist,<sid>UNCompleteList      UnicodeName	    call unicode#GetUniChar(<f-args>)
 com! -nargs=? -bang Digraphs	    call unicode#PrintDigraphs(<q-args>, <q-bang>)
+" deprecated
 com! -nargs=1       SearchUnicode   call unicode#PrintUnicode(<q-args>)
+com! -nargs=1       UnicodeSearch   call unicode#PrintUnicode(<q-args>)
 com!		    UnicodeTable    call unicode#PrintUnicodeTable()
+" deprecated
 com!		    DownloadUnicode call unicode#Download(1)
+com!		    UnicodeDownload call unicode#Download(1)
 
 " Setup Mappings
 nnoremap <unique><script><silent> <Plug>(MakeDigraph)	    :set opfunc=unicode#GetDigraph<CR>g@

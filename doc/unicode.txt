@@ -39,7 +39,7 @@ easily. It serves 3 main purposes:
     2) Identify Characters
        This plugin provides the |:UnicodeName| function to identify the
        character under the cursor similar to the builtin command |ga|. The
-       |:SearchUnicode| command can be used to search for a unicode character
+       |:UnicodeSearch| command can be used to search for a unicode character
        with a given name or value.
 
     3) Ease the use of digraphs
@@ -151,8 +151,8 @@ If you know the name, you can also search for the unicode name:
 will display all Digraphs, where their unicode name contains the word "copy"
 (e.g. copyright symbol). Case is ignored. Note, you need at least to enter 2
 characters.
-							    *:SearchUnicode*
-    :SearchUnicode [name|nr]
+							    *:UnicodeSearch*
+    :UnicodeSearch [name|nr]
 
 Outputs a list of unicode characters whose decimal value equals <nr> (use U+
 or 0x prefix to search using hexadecimal values) or whose name matches the
@@ -165,8 +165,8 @@ search term, this might be a little bit slow.
 
 Creates a new window with a table of all Unicode characters.
 
-							    *:DownloadUnicode*
-    :DownloadUnicode
+							    *:UnicodeDownload*
+    :UnicodeDownload
 
 Downloads the Unicode data. Can also be used to update the local data file.
 
@@ -221,7 +221,7 @@ UnicodeData.txt, enter the URL as: >
 
 To force downloading the file from that new url, enter >
 
-    :DownloadUnicode
+    :UnicodeDownload
 
 You can also use this command to update your local unicode data file.
 
@@ -412,6 +412,10 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			  https://github.com/chrisbra/unicode.vim/issues/10
 			  thanks!)
 			- AirlineIntegration of the |:UnicodeTable| command
+			- call public unicode function always with :Unicode
+			  prefix (e.g. rename :SearchUnicode to
+			  |:UnicodeSearch| and :DownloadUnicode to
+			  |:UnicodeDownload|
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name
