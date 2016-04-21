@@ -309,11 +309,17 @@ fu! unicode#UnicodeName(val) "{{{2
 endfu
 fu! unicode#Download(force) "{{{2
     if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
-        call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
+        if !a:force
+            call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
+        else
+            call s:WarningMsg("Updating ". s:UniFile)
+        endif
         call s:WarningMsg("Let's see, if we can download it.")
         call s:WarningMsg("If this doesn't work, you should download ")
         call s:WarningMsg(s:unicode_URL . " and save it as " . s:UniFile)
-        sleep 10
+        sleep 5
+        " remove cache file
+        " (will be re-created later)
         if filereadable(s:directory. '/UnicodeData.vim')
             call delete(s:directory. '/UnicodeData.vim')
         endif
