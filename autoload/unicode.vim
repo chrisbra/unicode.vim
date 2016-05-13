@@ -361,7 +361,7 @@ fu! unicode#CompleteUnicode() "{{{2
     if line[start] =~# 'U' && line[start+1] == '+' && col('.')-1 >=start+2
         let numeric=1
     endif
-    let base = line[start : (col('.')-1)]
+    let base = substitute(line[start : (col('.')-1)], '\s\+$', '', '')
     if empty(base)
         let complete_list = s:UniDict
         echom '(Checking all Unicode Names... this might be slow)'
