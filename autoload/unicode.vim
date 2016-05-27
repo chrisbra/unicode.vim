@@ -623,10 +623,10 @@ fu! unicode#GetDigraph(type, ...) "{{{2
 endfu
 fu! unicode#PrintUnicodeTable() "{{{2
     let winname = 'UnicodeTable'
-	let win = bufwinnr('^'.winname.'$')
-	if win != -1
-		exe 'noa ' .win. 'wincmd w'
-	else
+    let win = bufwinnr('^'.winname.'$')
+    if win != -1
+        exe 'noa ' .win. 'wincmd w'
+    else
         exe  'noa sp' winname
     endif
 
@@ -1113,9 +1113,9 @@ fu! <sid>GetUnicodeName(dec) "{{{2
     endif
 endfu
 fu! <sid>AirlineStatusline() "{{{2
-	if exists(":AirlineRefresh")
+    if exists(":AirlineRefresh")
         AirlineRefresh
-	endif
+    endif
 endfunction
 " Modeline "{{{1
 " vim: ts=4 sts=4 fdm=marker com+=l\:\" fdl=0 et
