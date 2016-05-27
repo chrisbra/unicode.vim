@@ -659,6 +659,58 @@ fu! unicode#PrintUnicodeTable() "{{{2
     noa 1
     call <sid>AirlineStatusline()
 endfu
+fu! unicode#MkDigraphNew(arg) "{{{2
+    let args = matchlist(a:arg, '^\(\S\S\)\s\+\(.\+\S\)\s*$')
+    if empty(args)
+        echoerr "Usage: DigraphNew {char1}{char2} {Unicode name}"
+        return
+    endif
+    let [ chars, charname ] = args[1:2]
+    if charname =~ '^[[:xdigit:]]\+$' && charname+0 < 0xF0000 && charname !~ '^0$'
+        " only allow up to private use area
+        let value = '0x'. charname
+        exe printf(":dig %s %d", chars, value)
+        let unichars = unicode#FindUnicodeBy(value)
+        if len(unichars) == 1
+            let u = unichars[0]
+            echo printf('Digraph %s == %s U+%04X %s', chars, u['glyph'], u['dec'], u['name'])
+            " unlet s:digdict, so next time :UnicodeName is called, the
+            " digraph will be found
+            unlet! s:digdict
+            return
+        endif
+    else
+        let names = []
+        " test for a perl-style short charname
+        let short = matchlist(charname, '^\(\S.\{-}\S\)\s*:\s*\(\S.*\S\@<=\)\s*$')
+        if empty(short)
+            let names = [charname]
+        else
+            let [thescript, thename] = short[1:2]
+            let thecase = thename =~ '\u' ? 'capital' : 'small'
+            call add(names, printf('%s %s letter %s', thescript, thecase, thename))
+            call add(names, printf('%s letter %s', thescript, thename))
+        endif
+        call map(names, "substitute(v:val, '\\s\\+', ' ', 'g')")
+        for name in names
+            let regex = '^' . name . '$'
+            let unichars = unicode#FindUnicodeBy(regex)
+            if len(unichars) == 1
+                let u = unichars[0]
+                exe printf(":dig %s %d", chars, u['dec'])
+                echo printf('Digraph %s == %s U+%04X %s', chars, u['glyph'], u['dec'], u['name'])
+                " unlet s:digdict, so next time :UnicodeName is called, the
+                " digraph will be found
+                unlet! s:digdict
+                return
+            elseif len(unichars) > 1
+                echoerr "Unicode name ambiguous: " . charname
+                return
+            endif
+        endfor
+        echoerr "Unicode name not found: " . charname
+    endif
+endfu
 fu! <sid>AddCompleteEntries(dict) "{{{2
     let compl=[]
     let prev_fmt="Glyph\tCodepoint\tName\n%s\tU+%04X\t\t%s"

@@ -144,7 +144,7 @@ Note: This is a silly example, that can take some time. You should always be
 able to abort that by pressing |CTRL-C|. To output progress information, call
 the command with the |:verbose| command modifier.
 
-If you know the name, you can also search for the unicode name:
+If you know the name, you can also search for the unicode name: >
 
     :Digraphs copy
 
@@ -152,6 +152,7 @@ will display all Digraphs, where their unicode name contains the word "copy"
 (e.g. copyright symbol). Case is ignored. Note, you need at least to enter 2
 characters.
 							    *:UnicodeSearch*
+>
     :UnicodeSearch [name|nr]
 
 Outputs a list of unicode characters whose decimal value equals <nr> (use U+
@@ -161,14 +162,30 @@ being ignored.) If possible, digraphs chars are displayed in (), separated by
 commas and html entitities are displayed as well. Note, depending on your
 search term, this might be a little bit slow.
 							    *:UnicodeTable*
+>
     :UnicodeTable
 
 Creates a new window with a table of all Unicode characters.
 
 							    *:UnicodeDownload*
+>
     :UnicodeDownload
 
 Downloads the Unicode data. Can also be used to update the local data file.
+
+							    *:DigraphNew*
+>
+    :DigraphNew {char1}{char2}  {pattern}
+
+can be used to create a new digraph whose unicode name matches {pattern}. 
+
+If {pattern} is a hexadecimal pattern, create a digraph for the mentioned
+character.
+
+Example: >
+    DigraphNew bh latin small.*b with stroke
+    DigraphNew DH d0
+
 
 ==============================================================================
 3. Completions
@@ -333,7 +350,7 @@ These functions are available:
 
 unicode#FindUnicodeBy({match}])			*unicode#FindUnicodeBy()*
 	Searches the unicode data for {match} and returns a list of dicts,
-	each dict representing one dict. The dict can have the following
+	each dict representing one match. The dict can have the following
 	keys:
 		"name"	Unicode name
 		"glyph"	Unicode Codepoint
@@ -416,9 +433,13 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			  prefix (e.g. rename :SearchUnicode to
 			  |:UnicodeSearch| and :DownloadUnicode to
 			  |:UnicodeDownload|
-			- fix |:UnicodeSearch|expected a string > 1 char
+			- fix |:UnicodeSearch| expected a string > 1 char
 			  (reported by hseg in
 			  https://github.com/chrisbra/unicode.vim/issues/15,
+			  thanks!)
+			- new command |:DigraphNew| to define a new digraph
+			  (suggested by bpj in
+			  https://github.com/chrisbra/unicode.vim/issues/14
 			  thanks!)
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
