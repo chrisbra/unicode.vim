@@ -896,6 +896,9 @@ fu! <sid>GetDigraphChars(code) "{{{2
         return ''
     endif
     let list=map(deepcopy(get(s:digdict, a:code, [])), 'v:val[0:1]')
+    if exists("*uniq") && !empty(list)
+        let list=uniq(list)
+    endif
     return (empty(list) ? '' : '('. join(list). ')')
 endfu
 fu! <sid>UnicodeDict() "{{{2
