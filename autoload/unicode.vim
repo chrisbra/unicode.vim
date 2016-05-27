@@ -789,11 +789,11 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
     if !exists("s:UniDict")
         let s:UniDict = <sid>UnicodeDict()
     endif
-    if len(a:match) > 1 && digit == 0
+    if len(a:match) >= 1 && digit == 0 && match(a:match, '^0$') == -1
         " try to match digest name from unicode name
         let name = a:match
     endif
-    if (digit == 0 && empty(name))
+    if (digit == 0 && empty(name) && match(a:match, '^0$') == -1)
         echoerr "No argument was specified!"
         return []
     endif

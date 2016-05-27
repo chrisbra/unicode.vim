@@ -416,6 +416,10 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			  prefix (e.g. rename :SearchUnicode to
 			  |:UnicodeSearch| and :DownloadUnicode to
 			  |:UnicodeDownload|
+			- fix |:UnicodeSearch|expected a string > 1 char
+			  (reported by hseg in
+			  https://github.com/chrisbra/unicode.vim/issues/15,
+			  thanks!)
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name
