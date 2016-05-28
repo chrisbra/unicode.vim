@@ -830,6 +830,11 @@ fu! <sid>DigraphsInternal(match) "{{{2
     endif
     return sort(outlist, '<sid>CompareByDecimalKey')
 endfu
+
+" Match is assumed nonempty.
+" If match matches '\d\+', returns the codepoint with that decimal value.
+" If match matches 'U+\x\', returns the codepoint with that hex value.
+" Otherwise, case-insensitively searches for match in the codepoint name.
 fu! <sid>FindUnicodeByInternal(match) "{{{2
     let digit = a:match + 0
     if a:match[0:1] == 'U+'
