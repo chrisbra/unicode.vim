@@ -840,12 +840,7 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
         echoerr "Argument is empty or unspecified"
         return []
     endif
-    let digit = a:match + 0
-    if a:match[0:1] == 'U+'
-        let digit = str2nr(a:match[2:], 16)
-    endif
     let unidict = {}
-    let name = ''
     let output = []
     if !exists("s:UniDict")
         let s:UniDict = <sid>UnicodeDict()
@@ -856,6 +851,11 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
         let name = a:match
         let unidict = filter(copy(s:UniDict), 'v:val =~? name')
     else
+        if a:match[0:1] == 'U+'
+            let digit = str2nr(a:match[2:], 16)
+        else
+            let digit = str2nr(a:match, 10)
+        endif
         " filter for decimal value
         let unidict = filter(copy(s:UniDict), 'v:key == digit')
     endif
