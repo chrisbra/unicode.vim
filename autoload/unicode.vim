@@ -836,6 +836,10 @@ endfu
 " If match matches 'U+\x\', returns the codepoint with that hex value.
 " Otherwise, case-insensitively searches for match in the codepoint name.
 fu! <sid>FindUnicodeByInternal(match) "{{{2
+    if len(a:match) == 0
+        echoerr "Argument is empty or unspecified"
+        return []
+    endif
     let digit = a:match + 0
     if a:match[0:1] == 'U+'
         let digit = str2nr(a:match[2:], 16)
@@ -849,10 +853,6 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
     if len(a:match) >= 1 && digit == 0 && match(a:match, '^0$') == -1
         " try to match digest name from unicode name
         let name = a:match
-    endif
-    if (digit == 0 && empty(name) && match(a:match, '^0$') == -1)
-        echoerr "No argument was specified!"
-        return []
     endif
     if !empty(name)
         let unidict = filter(copy(s:UniDict), 'v:val =~? name')
