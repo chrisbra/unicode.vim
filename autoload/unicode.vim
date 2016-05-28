@@ -850,11 +850,10 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
     if !exists("s:UniDict")
         let s:UniDict = <sid>UnicodeDict()
     endif
-    if len(a:match) >= 1 && digit == 0 && match(a:match, '^0$') == -1
+    " If the input is not a literal codepoint
+    if match(a:match, '^\(\d\+\|U+\x\+\)$') == -1
         " try to match digest name from unicode name
         let name = a:match
-    endif
-    if !empty(name)
         let unidict = filter(copy(s:UniDict), 'v:val =~? name')
     else
         " filter for decimal value
