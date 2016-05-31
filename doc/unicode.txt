@@ -186,6 +186,41 @@ Example: >
     DigraphNew bh latin small.*b with stroke
     DigraphNew DH d0
 
+This command supports shortcut letter names in the style of Perl's
+"charnames" pragma: if {pattern} has the form {scriptname}:{charname},
+then it is looked up as a letter {charname} inside a script
+{scriptname}: the standard Unicode names are searched for the names
+>
+      {scriptname} CAPITAL LETTER {charname}
+      {scriptname} SMALL LETTER {charname}
+      {scriptname} LETTER {charname}
+
+in that order. If {charname} does not contain any uppercase letters,
+then the CAPITAL variant is ignored, otherwise the SMALL variant is
+ignored. The first character found which corresponds to one of these
+names is assigned to the digraph. For example
+
+>
+    Short                   Full
+    -----------------------------------------------------------------
+    Greek: Sigma            GREEK CAPITAL LETTER SIGMA
+    greek: siGma            GREEK CAPITAL LETTER SIGMA
+    Greek: sigma            GREEK SMALL LETTER SIGMA
+    Greek: final sigma      GREEK SMALL LETTER FINAL SIGMA
+    Greek: final Sigma      {Error, there is no capital final sigma!}
+    ֑Hebrew: shin            HEBREW LETTER SHIN
+    ֑Hebrew: sheva           {Error, not a letter but a mark!}
+                            ("hebr.*sheva" will work, however!)
+
+Unlike in Perl both {scriptname} and {charname} can be patterns:
+"imp.*ar.*:al.*" will match IMPERIAL ARAMAIC LETTER ALEPH!
+
+Note that while this feature can save tedious repetetive typing
+it uses ordinary pattern matching and can NOT resolve nonexistent
+letters like capital final sigma above or funny lowercase/uppercase
+name pairs like U+0195 LATIN SMALL LETTER HV and 
+U+01F6 LATIN CAPITAL LETTER HWAIR!
+
 
 ==============================================================================
 3. Completions
