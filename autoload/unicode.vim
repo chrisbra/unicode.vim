@@ -327,7 +327,9 @@ fu! unicode#Download(force) "{{{2
             sp +enew
             " Use the default download method. You can specify a different
             " one, using :let g:netrw_http_cmd="wget"
-            exe ":lcd " . s:directory
+            if isdirectory(s:directory)
+                exe ":lcd " . s:directory
+            endif
             exe "0Nread " . s:unicode_URL
             $d _
             exe ":noa :keepalt :sil w! " . s:UniFile
