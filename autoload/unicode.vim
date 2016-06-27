@@ -735,7 +735,7 @@ fu! <sid>AddCompleteEntries(dict) "{{{2
         endif
         call add(compl, dict)
         " break too long running search
-        if localtime() - starttime > 5
+        if localtime() - starttime > 2
             echohl WarningMsg
             echom "Completing takes too long, stopping now..."
             echohl Normal
@@ -1076,6 +1076,8 @@ fu! <sid>GetUnicodeName(dec) "{{{2
         return "<No Character (BOM)>"
     elseif a:dec == 0xFFFF
         return "<No Character>"
+    elseif a:dec >= 0x17000 && a:dec <= 0x187EC
+        return "Tangut Ideograph",
     elseif a:dec >= 0x1FFFE && a:dec <= 0x1FFFF
         return "<No Character>"
     elseif a:dec >= 0x20000 && a:dec <= 0x2A6D6
