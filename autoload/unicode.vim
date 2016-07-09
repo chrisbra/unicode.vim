@@ -16,8 +16,8 @@ let s:directory    = expand("<sfile>:p:h")."/unicode"
 let s:UniFile      = s:directory . '/UnicodeData.txt'
 " patch 7.3.713 introduced the %S modifier for printf
 let s:printf_S_mod = (v:version == 703 && !has("patch713")) || v:version < 703
-" patch 7.4.2000 introduced evalcmd function
-let s:evalcmd = exists("*evalcmd")
+" patch 7.4.2008 introduced evalcmd function
+let s:execute = exists("*execute")
 
 " HTML entitities {{{2
 let s:html = {}
@@ -453,8 +453,8 @@ fu! unicode#GetUniChar(...) "{{{2
         endif
         " Get char at Cursor, need to use redir, cause we also want
         " to capture combining chars
-        if s:evalcmd
-            let a=evalcmd(':norm! ga')
+        if s:execute
+            let a=execute(':norm! ga')
         else
             redir => a | exe "silent norm! ga" | redir end
         endif
@@ -962,8 +962,8 @@ fu! <sid>GetDigraphDict() "{{{2
     if exists("s:digdict") && !empty(s:digdict)
         return s:digdict
     else
-        if s:evalcmd
-            let digraphs = evalcmd('digraphs')
+        if s:execute
+            let digraphs = execute('digraphs')
         else
             redir => digraphs
                 silent digraphs
