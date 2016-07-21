@@ -528,7 +528,8 @@ endfun
 fu! unicode#PrintDigraphs(match, bang) "{{{2
     " outputs only first digraph that exists for char
     " makes a difference for e.g. Euro which has (=e Eu)
-    let digraphs = <sid>DigraphsInternal(a:match)
+    let match    = '\V'.escape(a:match, '\\')
+    let digraphs = <sid>DigraphsInternal(match)
     let s:output_width=1
 
     for item in digraphs
