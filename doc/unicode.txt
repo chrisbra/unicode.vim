@@ -476,6 +476,8 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			  (suggested by bpj in
 			  https://github.com/chrisbra/unicode.vim/issues/14
 			  thanks!)
+			- only map keys, if not already mapped to (suggested
+			  in https://github.com/chrisbra/unicode.vim/issues/17)
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name
