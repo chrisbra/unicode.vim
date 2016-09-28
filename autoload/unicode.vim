@@ -943,6 +943,7 @@ fu! <sid>UnicodeDict() "{{{2
                 let ind += [dec] " faster than add
             endfor
             call <sid>UnicodeWriteCache(dict, ind)
+        endif
     endif
     return dict
 endfu
