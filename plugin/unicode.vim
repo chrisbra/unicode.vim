@@ -26,7 +26,7 @@ fu! <sid>ToggleUnicodeCompletion() "{{{2
 endfu
 fu! <sid>UNCompleteList(A,C,P) "{{{2
     if len(split(a:C)) < 2
-        return split("abcdefghijklmnopqrstuvwxyz0123456789", '\zs')
+        return split("abcdefghijklmnopqrstuvwxyz0123456789\\+*", '\zs')
     else
         return filter(['digraph','regex','name','html','value'],
             \  'v:val=~#a:A')

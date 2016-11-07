@@ -418,7 +418,7 @@ endfu
 fu! unicode#GetUniChar(...) "{{{2
     " Return Unicode Name of Character under cursor
     " :UnicodeName
-    if exists("a:1") && !empty(a:1) && (len(a:1)>1 || a:1 !~# '[a-zA-Z0-9]')
+    if exists("a:1") && !empty(a:1) && (len(a:1)>1 || a:1 !~# '[a-zA-Z0-9+*/]')
         call <sid>WarningMsg("No valid register specified")
         return
     endif
