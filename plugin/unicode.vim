@@ -52,23 +52,23 @@ inoremap <unique><script><silent> <Plug>(DigraphComplete)   <C-R>=unicode#Comple
 inoremap <unique><script><silent> <Plug>(UnicodeComplete)   <C-R>=unicode#CompleteUnicode()<CR>
 nnoremap <unique><script><silent> <Plug>(UnicodeSwapCompleteName) :<C-U>call <sid>ToggleUnicodeCompletion()<CR>
 
-if !hasmapto('<Plug>(MakeDigraph)', 'n') || maparg('<f4>', 'n') ==# ''
+if !hasmapto('<Plug>(MakeDigraph)', 'n') && maparg('<f4>', 'n') ==# ''
     nmap <F4> <Plug>(MakeDigraph)
 endif
 
-if !hasmapto('<Plug>(MakeDigraph)', 'v') || maparg('<f4>', 'v') ==# ''
+if !hasmapto('<Plug>(MakeDigraph)', 'v') && maparg('<f4>', 'v') ==# ''
     vmap <F4> <Plug>(MakeDigraph)
 endif
 
-if !hasmapto('<Plug>(DigraphComplete)', 'i') || maparg('<c-x><c-g>', 'i') ==# ''
+if !hasmapto('<Plug>(DigraphComplete)', 'i') && maparg('<c-x><c-g>', 'i') ==# ''
     imap <C-X><C-G> <Plug>(DigraphComplete)
 endif
 
-if !hasmapto('<Plug>(UnicodeComplete)', 'i') || maparg('<c-x><c-z>', 'i') ==# ''
+if !hasmapto('<Plug>(UnicodeComplete)', 'i') && maparg('<c-x><c-z>', 'i') ==# ''
     imap <C-X><C-Z> <Plug>(UnicodeComplete)
 endif
 
-if !hasmapto('<Plug>(UnicodeSwapCompleteName))', 'n') || maparg('<leader>un', 'n') ==# ''
+if !hasmapto('<Plug>(UnicodeSwapCompleteName))', 'n') && maparg('<leader>un', 'n') ==# ''
     nmap <leader>un <Plug>(UnicodeSwapCompleteName)
 endif
 
