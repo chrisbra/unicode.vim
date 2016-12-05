@@ -13,6 +13,7 @@ all: uninstall dummy vimball install rm_dummy
 vimball: $(PLUGIN).vmb
 
 dummy:
+	mkdir -p autoload/unicode
 	printf ' " This space intentionally left blank\n'> autoload/unicode/UnicodeData.vim
 
 rm_dummy:
