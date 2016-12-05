@@ -423,7 +423,7 @@ fu! unicode#GetUniChar(...) "{{{2
         return
     endif
     let type=''
-    if exists("a:2") && !empty(a:2) && a:2 !~? 'd\%[igraph]\|r\%[egex]\|n\%[ame]\|h\%[tml]\|v\%[alue]'
+    if exists("a:2") && !empty(a:2) && a:2 !~? '^\(d\%[igraph]\|r\%[egex]\|n\%[ame]\|h\%[tml]\|v\%[alue]\)$'
         call <sid>WarningMsg("No item (digraph/html/name/regex/value) specified")
         return
     elseif exists("a:2")
