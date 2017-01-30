@@ -161,6 +161,9 @@ given name (can be a regular expression). (Matching is done with the case
 being ignored.) If possible, digraphs chars are displayed in (), separated by
 commas and html entitities are displayed as well. Note, depending on your
 search term, this might be a little bit slow.
+
+You can use the bang "!" attribute, it will prompt you, which item to insert
+at the current cursor position (only when your buffer is writable).
 							    *:UnicodeTable*
 >
     :UnicodeTable

@@ -545,7 +545,7 @@ fu! unicode#PrintDigraphs(match, bang) "{{{2
     endfor
     unlet! s:color_pattern
 endfu
-fu! unicode#PrintUnicode(match) "{{{2
+fu! unicode#PrintUnicode(match, bang) abort "{{{2
     let uni    = <sid>FindUnicodeByInternal(a:match)
     let format = ["% 4S\t", "U+%04X Dec:%06d\t", ' %s']
     let s:color_pattern = a:match.'\c'
@@ -553,17 +553,31 @@ fu! unicode#PrintUnicode(match) "{{{2
         let format[0] = substitute(format[0], 'S', 's', '')
     endif
     let s:output_width = 1
+    let cnt = 1
     for item in uni
         let dig  = get(item, 'dig' , '')
         let html = get(item, 'html', '')
-        call <sid>ScreenOutput(printf(format[0], item.glyph),
+            let width=strlen(len(uni))
+            call <sid>ScreenOutput( (a:bang ? printf("%*i", width, cnt) : ''),
+                \ printf(format[0], item.glyph),
                 \ printf(format[1].format[2], item.dec, item.dec, item.name),
                 \ (empty(dig)  ? [] : printf(" %s", dig)),
                 \ (empty(html) ? [] : printf(" %s", html)),
                 \ (empty(item.info) ? [] : printf(" %s", item.info)))
         let s:output_width = &columns
+        let cnt+=1
     endfor
     unlet! s:color_pattern
+    if !&l:ro && &l:ma && a:bang
+        let input=input('Enter number of char to insert: ')
+        if empty(input)
+            return
+        elseif input !~? '^\d\+' || input > len(uni)
+            echo "\ninvalid number selected, aborting..."
+        else
+            exe "norm! a". (uni[input-1].glyph). "\<esc>"
+        endif
+    endif
 endfu
 fu! unicode#GetDigraph(type, ...) "{{{2
     " turns a movement or selection into digraphs, each pair of chars
