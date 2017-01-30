@@ -36,8 +36,8 @@ endfu
 com! -nargs=* -complete=customlist,<sid>UNCompleteList      UnicodeName	    call unicode#GetUniChar(<f-args>)
 com! -nargs=? -bang Digraphs	    call unicode#PrintDigraphs(<q-args>, <q-bang>)
 " deprecated
-com! -nargs=1       SearchUnicode   call unicode#PrintUnicode(<q-args>)
-com! -nargs=1       UnicodeSearch   call unicode#PrintUnicode(<q-args>)
+com! -nargs=1       SearchUnicode   call unicode#PrintUnicode(<q-args>, '')
+com! -nargs=1 -bang UnicodeSearch   call unicode#PrintUnicode(<q-args>, <q-bang>=='!')
 com!		    UnicodeTable    call unicode#PrintUnicodeTable()
 com! -nargs=1       DigraphNew	    call unicode#MkDigraphNew(<f-args>)
 " deprecated

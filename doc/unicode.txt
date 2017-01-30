@@ -482,6 +482,8 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			- only map keys, if not already mapped to (suggested
 			  in https://github.com/chrisbra/unicode.vim/issues/17)
 			- Allow register "+", "*" and "/" for |:UnicodeName|
+			- Allow to include glyph directly from
+			  |:UnicodeSearch|
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name
