@@ -484,6 +484,10 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 			- Allow register "+", "*" and "/" for |:UnicodeName|
 			- Allow to include glyph directly from
 			  |:UnicodeSearch|
+                        - Prevent flickering of Window when opening
+                          |:UnicodeTable|
+                        - Update html character entities to those defined by
+                          HTML5
     0.20: Jan 15, 2015  - |unicode#Digraph| expects a 2 char string
 			- Install a |QuitPre| autocommand for |:UnicodeTable|
 			- Make |:Digraphs!| output the digraph name
