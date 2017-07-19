@@ -645,6 +645,20 @@ fu! unicode#GetDigraph(type, ...) "{{{2
     call call("setreg", _a)
 endfu
 fu! unicode#PrintUnicodeTable() "{{{2
+    if !exists("s:UniDict")
+        let s:UniDict=<sid>UnicodeDict()
+    endif
+    let output = [printf("%-7s%-8s%-10s%-57s%s", "Char","Codept","Html", "Name (Digraph)", "Link")]
+    for [value,name] in items(s:UniDict) " sort is done later, for performance reasons
+        let value  += 0
+        let dig     = <sid>GetDigraphChars(value)
+        let html    = <sid>GetHtmlEntity(value)
+        let codep   = printf('U+%04X', value)
+        let name   .= (name[-1:]==?' ' ? '' : ' ') " add trailing whitespace
+        let output  += [printf("%-7s%-8s%-10s%-57shttp://unicode-table.com/en/%04X/",
+                    \ strtrans(nr2char(value)), codep, html, name.dig, value)]
+    endfor
+    " Find Window or create a new window
     let winname = 'UnicodeTable'
     let win = bufwinnr('^'.winname.'$')
     if win != -1
@@ -652,35 +666,16 @@ fu! unicode#PrintUnicodeTable() "{{{2
     else
         exe  'noa sp' winname
     endif
-
-    " just in case, a global nomodifiable was set 
-    setl ma
+    " Set up some options 
+    setl ma noswapfile buftype=nofile foldcolumn=0 nobuflisted bufhidden=wipe nowrap
     " Just in case
     silent %d _
-    " Set up some options 
-    setl noswapfile buftype=nofile foldcolumn=0 nobuflisted bufhidden=wipe nowrap
-    if !exists("s:UniDict")
-        let s:UniDict=<sid>UnicodeDict()
-    endif
-    call append(0, printf("%-7s%-8s%-10s%-57s%s",
-            \ "Char","Codept","Html", "Name (Digraph)", "Link"))
-    let output = []
-    for [value,name] in items(s:UniDict) " sort is done later, for performance reasons
-        let value  += 0
-        let dig     = <sid>GetDigraphChars(value)
-        let html    = <sid>GetHtmlEntity(value)
-        let codep   = printf('U+%04X', value)
-        let name   .= (name[-1:]==?' ' ? '' : ' ') " add trailing whitespace
-        let output += [printf("%-7s%-8s%-10s%-57shttp://unicode-table.com/en/%04X/",
-                    \ strtrans(nr2char(value)), codep, html, name.dig, value)]
-    endfor
-    call append(1, output)
-    2,$-sort x /^.\{,8}U+/
-    $d _
+    call setline(1, output)
+    2,$sort x /^.\{,8}U+/
     setl nomodified
     ru syntax/unicode.vim
-    noa 1
     call <sid>AirlineStatusline()
+    call cursor(1,1)
 endfu
 fu! unicode#MkDigraphNew(arg) "{{{2
     let args = matchlist(a:arg, '^\(\S\S\)\s\+\(.\+\S\)\s*$')
