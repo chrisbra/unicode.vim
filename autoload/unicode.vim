@@ -83,6 +83,7 @@ fu! unicode#Download(force) "{{{2
             endif
             bw
         else
+            call s:WarningMsg("NetRw not loaded; cannot download file")
             call s:WarningMsg("Please download " . s:unicode_URL)
             call s:WarningMsg("and save it as " . s:UniFile)
             call s:WarningMsg("Quitting")
@@ -255,15 +256,17 @@ fu! unicode#GetUniChar(...) "{{{2
     finally
         let start      = 1
         let s:output_width=1
-        if lang !=# 'C'
+        if exists('lang') && lang !=# 'C'
             exe "sil lang mess" lang
         endif
         for val in msg
             let list = matchlist(val, '^\(' . "'[^']*'". '\)\(.*\)')
-            call <sid>ScreenOutput(list[1], list[2])
-            " force linebreak
-            let s:output_width=&columns
-            let start = 0
+            if len(list) > 3
+                call <sid>ScreenOutput(list[1], list[2])
+                " force linebreak
+                let s:output_width=&columns
+                let start = 0
+            endif
         endfor
     endtry
 endfun
