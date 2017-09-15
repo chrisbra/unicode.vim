@@ -68,7 +68,7 @@ if !hasmapto('<Plug>(UnicodeComplete)', 'i') && maparg('<c-x><c-z>', 'i') ==# ''
     imap <C-X><C-Z> <Plug>(UnicodeComplete)
 endif
 
-if !hasmapto('<Plug>(UnicodeSwapCompleteName))', 'n') && maparg('<leader>un', 'n') ==# ''
+if !hasmapto('<Plug>(UnicodeSwapCompleteName)', 'n') && maparg('<leader>un', 'n') ==# ''
     nmap <leader>un <Plug>(UnicodeSwapCompleteName)
 endif
 
