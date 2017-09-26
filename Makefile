@@ -35,7 +35,7 @@ undo:
 
 $(PLUGIN).vmb:
 	rm -f $(PLUGIN)-$(VERSION).vmb
-	vim -N -c 'ru! vimballPlugin.vim' -c ':call append("0", [ "$(SCRIPT)", "$(AUTOL)", "$(DOC)", "autoload/unicode/UnicodeData.vim", "$(SYNTAX)", "$(FTDETECT)"])' -c '$$d' -c ":%MkVimball $(PLUGIN)-$(VERSION)  ." -c':q!'
+	vim -N -c 'ru! vimballPlugin.vim' -c ':call append("0", [ "$(SCRIPT)", "$(AUTOL)", "$(DOC)", "autoload/unicode/html.vim", "autoload/unicode/UnicodeData.vim", "$(SYNTAX)", "$(FTDETECT)"])' -c '$$d' -c ":%MkVimball $(PLUGIN)-$(VERSION)  ." -c':q!'
 	ln -f $(PLUGIN)-$(VERSION).vmb $(PLUGIN).vmb
      
 release: version all
