@@ -14,8 +14,6 @@ let s:unicode_URL  = get(g:, 'Unicode_URL',
         \ 'http://www.unicode.org/Public/UNIDATA/UnicodeData.txt')
 let s:directory    = expand("<sfile>:p:h")."/unicode"
 let s:UniFile      = s:directory . '/UnicodeData.txt'
-" patch 7.3.713 introduced the %S modifier for printf
-let s:printf_S_mod = (v:version == 703 && !has("patch713")) || v:version < 703
 " patch 7.4.2008 introduced evalcmd function
 let s:execute = exists("*execute")
 
@@ -294,9 +292,6 @@ fu! unicode#PrintUnicode(match, bang) abort "{{{2
     let uni    = <sid>FindUnicodeByInternal(a:match)
     let format = ["% 4S\t", "U+%04X Dec:%06d\t", ' %s']
     let s:color_pattern = a:match.'\c'
-    if s:printf_S_mod
-        let format[0] = substitute(format[0], 'S', 's', '')
-    endif
     let s:output_width = 1
     let cnt = 1
     for item in uni
