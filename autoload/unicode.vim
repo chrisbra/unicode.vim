@@ -797,8 +797,8 @@ fu! <sid>WarningMsg(msg) "{{{2
     echohl Normal
 endfun
 fu! <sid>GetHtmlEntity(hex, all) "{{{2
-    let html = get(s:html, a:hex, [])
-    let html = a:all ? join(html, ' ') : get(html, 0, '')
+    let list = get(s:html, a:hex, [])
+    let html = a:all ? join(list, ' ') : get(list, 0, '')
     if empty(html) && (a:hex > 31 ||
         \ a:hex == 9 || a:hex == 10 || a:hex == 13) &&
         \ (a:hex < 127 || a:hex > 159) &&
