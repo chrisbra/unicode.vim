@@ -28,7 +28,7 @@ easily. It serves 3 main purposes:
     1) Complete Characters
        This plugin provides a custom completion function to complete unicode
        characters using their name or Codepoint value. If a digraph exists for
-       that character, it will be displayed in paranthesis. This is (by
+       that character, it will be displayed in parentheses. This is (by
        default) activated by pressing Ctrl-X Ctrl-Z (|i_CTRL-X_CTRL-Z|) in
        insert mode.
 
@@ -56,8 +56,8 @@ characters using a completion function.
 By default, the plugin creates a directory unicode below the path autoload
 where this plugin is located. Within this directory it will store  the file
 UnicodeData.txt from http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
-which it will try to download using |netrw| . If this is unsuccessfull, or
-you do not have |netrw| enabled, dowload the file manually and save it in the
+which it will try to download using |netrw| . If this is unsuccessful, or
+you do not have |netrw| enabled, download the file manually and save it in the
 unicode directory below the autoload directory in which unicode.vim is
 located.
                                                      *unicode-plugin-error*
@@ -82,10 +82,10 @@ recreated the next time this plugin is used) and should look like this:
 0028;LEFT PARENTHESIS;Ps;0;ON;;;;;Y;OPENING PARENTHESIS;;;;
 0029;RIGHT PARENTHESIS;Pe;0;ON;;;;;Y;CLOSING PARENTHESIS;;;;
 [...]
-(several thounsand lines following)
+(several thousand lines following)
 
 If the file looks correct, and the plugin is still not working correctly
-contact the maintainer. You'll find my email-adress in the third line of this
+contact the maintainer. You'll find my email address in the third line of this
 document. Please be patient, it might take a while, until I can take care of
 your report.
 
@@ -101,7 +101,7 @@ The plugin will then output the character, the character's hexadecimal value,
 the official Unicode name and the search pattern to search for that character.
 
 Additionally, if there exists a digraph for that character, it will also be
-shown in paranthesis (in case of several digraphs for that character, all
+shown in parentheses (in case of several digraphs for that character, all
 will be shown, separated by comma).
 
 The search pattern is always the last item, it starts with a "/"
@@ -113,7 +113,7 @@ An example might look like this: >
 You can see, this was issued on the Euro sign. The first value is the
 character, the second item is the Unicode Codepoint followed by the decimal
 value of the character, followed by the official Unicode Name. After the name,
-the different digraphs are put in paranthesis, followed by the html entity
+the different digraphs are put in parentheses, followed by the html entity
 name followed by the regular expression atom, to search for this character.
 
 If you specify a register name [reg], the message will also be saved into that
@@ -129,7 +129,7 @@ digraphs. If a character has several digraphs, all will be shown, separated by
 space.
 
 If you want to display a list with a line break after each digraph, use the
-bang attribute (Note, this output also contains the name in paranthesis). >
+bang attribute (Note, this output also contains the name in parentheses). >
 
     :Digraphs!
 
@@ -159,7 +159,7 @@ Outputs a list of unicode characters whose decimal value equals <nr> (use U+
 or 0x prefix to search using hexadecimal values) or whose name matches the
 given name (can be a regular expression). (Matching is done with the case
 being ignored.) If possible, digraphs chars are displayed in (), separated by
-commas and html entitities are displayed as well. Note, depending on your
+commas and html entities are displayed as well. Note, depending on your
 search term, this might be a little bit slow.
 
 You can use the bang "!" attribute, it will prompt you, which item to insert
@@ -218,7 +218,7 @@ names is assigned to the digraph. For example
 Unlike in Perl both {scriptname} and {charname} can be patterns:
 "imp.*ar.*:al.*" will match IMPERIAL ARAMAIC LETTER ALEPH!
 
-Note that while this feature can save tedious repetetive typing
+Note that while this feature can save tedious repetitive typing
 it uses ordinary pattern matching and can NOT resolve nonexistent
 letters like capital final sigma above or funny lowercase/uppercase
 name pairs like U+0195 LATIN SMALL LETTER HV and 
@@ -245,22 +245,22 @@ CTRL-X CTRL-Z           Search for the character in front of the cursor and
                         one.
 
 There are 2 possibilities to use the plugin. You can either enter the Unicode
-Character name, or enter the Unicode-Codeposition.
+Character name, or enter the Unicode-Codepoint.
 
 For example, you would like to enter Æ, so you enter AE and press |<C-X><C-Z>|
 while in insert mode. Alternatively you can enter the Unicode-Codepoint: U+C6
 and press |<C-X><C-Z>| and the popup menu will show you all characters, that
 have a codepoint like C6 with leading zeros, eg. U+00C6 and U+0C66
 
-A popup menu will appear, showing you the Unicode-Codeposition value, the
+A popup menu will appear, showing you the Unicode-Codepoint value, the
 Unicode Character Name and the Unicode Character (and if you have enabled it,
 it can also show you the digraph characters needed to create this character in
-paranthesis, see |unicode-plugin-config|). You can scroll down in the menu by
+parentheses, see |unicode-plugin-config|). You can scroll down in the menu by
 pressing <C-N> and up by pressing <C-P>.
 
 A |preview-window| can be opened, if your Vim was compiled with the
 quickfix-feature that displays the hexadecimal Unicode Codepoint, the name,
-the digraph characters in parenthesis (if they exist) followed by the glyph
+the digraph characters in parentheses (if they exist) followed by the glyph
 itself by setting the variable g:Unicode_ShowPreviewWindow (see below). By
 default, this feature is off.
 
@@ -274,7 +274,7 @@ UnicodeData.txt, enter the URL as: >
 
     :let g:Unicode_URL='http:....'
 
-To force downloading the file from that new url, enter >
+To force downloading the file from that new URL, enter >
 
     :UnicodeDownload
 
@@ -404,7 +404,7 @@ unicode#FindUnicodeBy({match}])			*unicode#FindUnicodeBy()*
 	which case the unicode characters will be searched for their
 	decimal/hex values). Use the prefix "0x" or "U+" to force searching
 	for that particular hex value. If {match} is an expression, it will
-	be matched against the charactername (and case will be ignored).
+	be matched against the character name (and case will be ignored).
 			    
 unicode#FindDigraphBy({match})			   *unicode#FindDigraphBy()*
 	Searches the digraphs for {match} and returns a list of dicts for
@@ -423,7 +423,7 @@ unicode#FindDigraphBy({match})			   *unicode#FindDigraphBy()*
 	which case the unicode characters will be searched for their
 	decimal/hex values). Use the prefix "0x" to force searching for that
 	particular hex value. If {match} is an expression, it will be matched
-	against the charactername (and case will be ignored).
+	against the character name (and case will be ignored).
 
 unicode#Digraph({string})			   *unicode#Digraph()*
         {string} needs to be a exactly 2 chars long.
