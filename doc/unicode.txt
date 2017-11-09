@@ -435,6 +435,6 @@ unicode#UnicodeName({val})			 *unicode#UnicodeName()*
 ==============================================================================
 6. unicode History                                    *unicode-plugin-history*
 
-See CHANGELOG.md
+See https://github.com/chrisbra/unicode.vim/blob/master/CHANGELOG.md
 ==============================================================================
 vim:tw=78:ts=8:ft=help
