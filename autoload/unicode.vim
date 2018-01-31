@@ -11,7 +11,7 @@
 
 " initialize Variables {{{1
 let s:unicode_URL  = get(g:, 'Unicode_URL',
-        \ 'http://www.unicode.org/Public/UNIDATA/UnicodeData.txt')
+        \ 'ftp://ftp.unicode.org/Public/UNIDATA/UnicodeData.txt')
 let s:directory    = expand("<sfile>:p:h")."/unicode"
 let s:UniFile      = s:directory . '/UnicodeData.txt'
 " patch 7.4.2008 introduced evalcmd function
