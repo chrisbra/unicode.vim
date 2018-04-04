@@ -205,9 +205,10 @@ fu! unicode#GetUniChar(...) "{{{2
             call add(msg, "'NUL' U+0000 NULL")
         else
             " Split string, in case cursor was on a combining char
-            let charlen = len(split(a, 'Octal \d\+\zs \?'))
+            let pat = 'Oct\(al\)\? \d\+\(, Digr ..\)\?\zs \?'
+            let charlen = len(split(a, pat))
             let i       = 0
-            for item in split(a, 'Octal \d\+\zs \?')
+            for item in split(a, pat)
                 let i    += 1
                 let glyph = substitute(item, '^<\(<\?[^>]*>\?\)>.*', '\1', '')
                 let dec   = substitute(item, '.*>\?> \+\(\d\+\),.*', '\1', '')
