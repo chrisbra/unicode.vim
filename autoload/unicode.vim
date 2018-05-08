@@ -216,8 +216,10 @@ fu! unicode#GetUniChar(...) "{{{2
                 let name  = <sid>GetUnicodeName(dec)
                 let html  = <sid>GetHtmlEntity(dec, 1)
                 let hexl  = strlen(printf("%X", dec))
-                let pat   = dec <= 0xFFFF ? printf('/\%%u%*x', hexl, dec):
-                        \printf('/\%%U%*x', hexl, dec)
+                let pat   = dec <= 0xFFFF ? printf('/\%%u%*x', hexl, dec) :
+                            \ printf('/\%%U%*x', hexl, dec)
+                let str   = dec <= 0xFFFF ? printf('"\u%04x"', dec) :
+                            \ printf('"\U%*x"', hexl, dec)
                 if charlen > 1 && i < charlen
                     let pat .= '\Z'
                 endif
@@ -228,8 +230,9 @@ fu! unicode#GetUniChar(...) "{{{2
                 let html  .= (empty(html) ? '' : ' ')
                 let info  .= (empty(info) ? '' : ' ')
                 let pat   .= (empty(pat)  ? '' : ' ')
-                call add(msg, printf("'%s' U+%04X Dec:%d %s%s%s%s%s", glyph,
-                        \ dec, dec, name, dig, html, info, pat))
+                let str   .= (empty(str)  ? '' : ' ')
+                call add(msg, printf("'%s' U+%04X Dec:%d %s%s%s%s%s%s", glyph,
+                        \ dec, dec, name, dig, html, info, pat, str))
                 if !empty(type)
                     if type==?'v'
                         call add(typelist, dec)

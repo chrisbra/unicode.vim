@@ -38,6 +38,7 @@ This is the Changelog for the [unicode.vim] plugin
 - Prevent flickering of Window when opening [:UnicodeTable]
 - Update html character entities to those defined by HTML5
 - needs vim version 7.4
+- [:UnicodeName] also outputs the character to be used in VimScript
 
 ## [0.20] - 2015-01-15
 - [unicode#Digraph] expects a 2 char string

@@ -111,13 +111,15 @@ The search pattern is always the last item, it starts with a "/"
 
 An example might look like this: >
 
-    '€' U+20AC Dec:8364 EURO SIGN (=e Eu) &euro; /\%u20ac
+    '€' U+20AC Dec:8364 EURO SIGN (=e Eu) &euro; /\%u20ac "\u20ac"
 <
 You can see, this was issued on the Euro sign. The first value is the
 character, the second item is the Unicode Codepoint followed by the decimal
 value of the character, followed by the official Unicode Name. After the name,
 the different digraphs are put in parentheses, followed by the html entity
-name followed by the regular expression atom, to search for this character.
+name followed by the regular expression atom, to search for this character
+followed by the VimScript |expr-string| that can be used to enter that
+quaracter (as you see, it is actually quite similar to the search pattern).
 
 If you specify a register name [reg], the message will also be saved into that
 register. If you optionally specify a type [type] (either one of digraph,
