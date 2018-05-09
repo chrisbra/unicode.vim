@@ -574,7 +574,7 @@ fu! <sid>DigraphsInternal(match) "{{{2
         " if digit matches, we only want to display digraphs matching the
         " decimal values
         if (digit > 0 && (item[3]+0) != digit) ||
-            \ (!empty(name) && !empty(unidict) && index(keys(unidict), item[3]) == -1)
+            \ (!empty(name) && !empty(unidict) && !has_key(unidict, item[3]))
             continue
         endif
 
@@ -830,6 +830,10 @@ fu! <sid>UnicodeWriteCache(data, ind) "{{{2
 endfu
 fu! <sid>GetUnicodeName(dec) "{{{2
     " returns Unicodename for decimal value
+    let name = get(s:UniDict, a:dec, '')
+    if !empty(name)
+        return name
+    endif
     " CJK Unigraphs start at U+4E00 and go until U+9FFF
     if a:dec >= 0x3400 && a:dec <=0x4DB5
         return "Ideograph Extension A"
@@ -894,8 +898,7 @@ fu! <sid>GetUnicodeName(dec) "{{{2
     elseif a:dec >= 0x10FFFE && a:dec <= 0x10FFFF
         return "<No Character>"
     else
-        let name = get(s:UniDict, a:dec, '')
-        return empty(name) ? "Character not found" : name
+        return "Character not found"
     endif
 endfu
 fu! <sid>AirlineStatusline() "{{{2
