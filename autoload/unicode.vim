@@ -15,6 +15,7 @@ let s:unicode_URL  = get(g:, 'Unicode_URL',
 let s:directory    = expand("<sfile>:p:h")."/unicode"
 let s:UniFile      = s:directory . '/UnicodeData.txt'
 " patch 7.4.2008 introduced evalcmd function
+" TODO: Remove Once Vim 8.1 has been released
 let s:execute = exists("*execute")
 
 " HTML entitities {{{2
@@ -422,6 +423,8 @@ fu! unicode#PrintUnicodeTable() "{{{2
     call cursor(1,1)
 endfu
 fu! unicode#MkDigraphNew(arg) "{{{2
+    " :DigraphNew {char1}{char2}  {pattern}
+    " can be used to create a new digraph whose unicode name matches {pattern}.
     let args = matchlist(a:arg, '^\(\S\S\)\s\+\(.\+\S\)\s*$')
     if empty(args)
         echoerr "Usage: DigraphNew {char1}{char2} {Unicode name}"
@@ -474,6 +477,7 @@ fu! unicode#MkDigraphNew(arg) "{{{2
     endif
 endfu
 fu! <sid>AddCompleteEntries(dict) "{{{2
+    " Set Matches for Insert Mode completion of Unicode Characters
     let compl=[]
     let prev_fmt="Glyph\tCodepoint\tName\n%s\tU+%04X\t\t%s"
     let starttime = localtime()
@@ -505,6 +509,7 @@ fu! <sid>AddCompleteEntries(dict) "{{{2
     return compl
 endfu
 fu! <sid>AddDigraphCompleteEntries(list) "{{{2
+    " Set Matches for Insert Mode completion of Digraphs
     let list = []
     for args in a:list
         for item in args
@@ -530,6 +535,7 @@ fu! <sid>Print(fmt, ...) "{{{2
     endif
 endfu
 fu! <sid>DigraphsInternal(match) "{{{2
+    " Returns a list of digraphs matching a:match
     let outlist = []
     let digit = a:match + 0
     let name = ''
@@ -592,12 +598,12 @@ fu! <sid>DigraphsInternal(match) "{{{2
     endif
     return sort(outlist, '<sid>CompareByDecimalKey')
 endfu
-
-" Match is assumed nonempty.
-" If match matches '\d\+', returns the codepoint with that decimal value.
-" If match matches 'U+\x\', returns the codepoint with that hex value.
-" Otherwise, case-insensitively searches for match in the codepoint name.
 fu! <sid>FindUnicodeByInternal(match) "{{{2
+    " Returns a list of Unicode Characters matching a:match
+    " Match is assumed nonempty.
+    " If match matches '\d\+', returns the codepoint with that decimal value.
+    " If match matches 'U+\x\', returns the codepoint with that hex value.
+    " Otherwise, case-insensitively searches for match in the codepoint name.
     if len(a:match) == 0
         echoerr "Argument is empty or unspecified"
         return []
@@ -647,14 +653,15 @@ fu! <sid>Screenwidth(item) "{{{2
     if exists("*strdisplaywidth")
         return strdisplaywidth(a:item)
     else
-        " old vims doen't have strdisplaywidth function
+        " older vim doesn't have strdisplaywidth function
         " return number of chars (which might be wrong 
         " for double width chars...)
+        " TODO: Remove once Vim 8.1 has been released
         return len(split(a:item, '\zs'))
     endif
 endfu
 fu! <sid>GetDigraphChars(code) "{{{2
-    "returns digraph for given decimal value
+    " Return digraph for given decimal value
     if !exists("s:digdict")
         call <sid>GetDigraphDict()
     endif
@@ -662,6 +669,7 @@ fu! <sid>GetDigraphChars(code) "{{{2
         return ''
     endif
     let list=map(deepcopy(get(s:digdict, a:code, [])), 'v:val[0:1]')
+    " TODO: remove exists("*uniq") check, once Vim 8.1 has been released
     if exists("*uniq") && !empty(list)
         let list=uniq(list)
     endif
@@ -733,7 +741,6 @@ fu! <sid>GetDigraphDict() "{{{2
             \ '..\s<\?.\{1,2\}>\?\s\+\d\{1,5\}\zs'),
             \ 'substitute(v:val, "^\\s\\+", "", "")')
         " special case: digraph 57344: starts with 2 spaces
-        "return filter(dlist, 'v:val =~ "57344$"')
         let idx=match(dlist, '57344$')
         if idx > -1
             let dlist[idx]='   '.dlist[idx]
@@ -751,9 +758,11 @@ fu! <sid>GetDigraphDict() "{{{2
     endif
 endfu
 fu! <sid>CompareByDecimalKey(d1, d2) "{{{2
+    " Sort function, Sorts dics d1 and d2 by 'dec' key
     return <sid>CompareByValue(a:d1['dec']+0, a:d2['dec']+0)
 endfu
 fu! <sid>CompareListByDec(l1, l2) "{{{2
+    " Sort function, Sorts l1 and ls by its numeric values
     return <sid>CompareByValue(a:l1+0,a:l2+0)
 endfu
 fu! <sid>CompareByValue(v1, v2) "{{{2
