@@ -458,7 +458,7 @@ fu! unicode#MkDigraphNew(arg) "{{{2
         endif
         call map(names, "substitute(v:val, '\\s\\+', ' ', 'g')")
         for name in names
-            let regex = '^' . name . '$'
+            let regex = '^' . name
             let unichars = unicode#FindUnicodeBy(regex)
             if len(unichars) == 1
                 let u = unichars[0]
@@ -469,7 +469,7 @@ fu! unicode#MkDigraphNew(arg) "{{{2
                 unlet! s:digdict
                 return
             elseif len(unichars) > 1
-                echoerr "Unicode name ambiguous: " . charname
+                echoerr "Unicode name ambiguous: " . charname. " matches ".join(map(unichars[:], 'string(v:val["name"])'),',')
                 return
             endif
         endfor
