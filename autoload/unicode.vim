@@ -8,15 +8,11 @@
 "  *** ***   Use At-Your-Own-Risk!   *** ***
 " GetLatestVimScripts: 2822 21 :AutoInstall: unicode.vim
 " ---------------------------------------------------------------------
-
 " initialize Variables {{{1
 let s:unicode_URL  = get(g:, 'Unicode_URL',
         \ 'http://www.unicode.org/Public/UNIDATA/UnicodeData.txt')
 let s:directory    = expand("<sfile>:p:h")."/unicode"
 let s:UniFile      = s:directory . '/UnicodeData.txt'
-" patch 7.4.2008 introduced evalcmd function
-" TODO: Remove Once Vim 8.1 has been released
-let s:execute = exists("*execute")
 
 " HTML entitities {{{2
 let s:html = unicode#html#get_html_entities()
@@ -195,11 +191,7 @@ fu! unicode#GetUniChar(...) "{{{2
         endif
         " Get char at Cursor, need to use redir, cause we also want
         " to capture combining chars
-        if s:execute
-            let a=execute(':norm! ga')
-        else
-            redir => a | exe "silent norm! ga" | redir end
-        endif
+        let a=execute(':norm! ga')
         let a = substitute(a, '\n', '', 'g')
         " Special case: no character under cursor
         if a == 'NUL'
@@ -725,13 +717,7 @@ fu! <sid>GetDigraphDict() "{{{2
     if exists("s:digdict") && !empty(s:digdict)
         return s:digdict
     else
-        if s:execute
-            let digraphs = execute('digraphs')
-        else
-            redir => digraphs
-                silent digraphs
-            redir END
-        endif
+        let digraphs = execute('digraphs')
         " Because of the redir, the next message might not be
         " displayed correctly. So force a redraw now.
         redraw!
