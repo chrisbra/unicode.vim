@@ -830,6 +830,9 @@ fu! <sid>UnicodeWriteCache(data, ind) "{{{2
 endfu
 fu! <sid>GetUnicodeName(dec) "{{{2
     " returns Unicodename for decimal value
+    if !exists("s:UniDict")
+        let s:UniDict=<sid>UnicodeDict()
+    endif
     let name = get(s:UniDict, a:dec, '')
     if !empty(name)
         return name
