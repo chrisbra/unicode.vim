@@ -41,6 +41,7 @@ Here is a short overview of the functionality provided by the plugin:
     :UnicodeName     - Identify character under cursor (like ga command)
     :UnicodeTable    - Print Unicode Table in new window
     :DownloadUnicode - Download (or update) Unicode data
+    :UnicodeCache    - Create cache file
     
 #### Normal mode commands:
     <C-X><C-G>  - Complete Digraph char

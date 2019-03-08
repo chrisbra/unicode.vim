@@ -4,6 +4,9 @@ This is the Changelog for the [unicode.vim] plugin
 
 ## [Unreleased]
 
+- new command :UnicodeCache to create the cache file for UnicodeData.txt
+  manually
+
 ## [0.21] - 2017-09-27
 
 - escape ' properly for [digraph-completion] reported by Konfekt in #4, thanks!

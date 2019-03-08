@@ -87,6 +87,23 @@ fu! unicode#Download(force) "{{{2
     endif
     return 1
 endfu
+fu! unicode#MkCache() "{{{2
+    " Create the cache for existing Unicode Data file
+    let cache_file = s:directory. '/UnicodeData.vim'
+    if !filereadable(cache_file)
+        call <sid>UnicodeDict()
+    else
+        call <sid>WarningMsg("Cache already exists")
+        return
+    endif
+    if !filereadable(cache_file) ||
+        \ getftime(cache_file) < getftime(s:UniFile) ||
+        \ getfsize(cache_file) < 100 " Unicode Cache Dict should be a lot larger
+        call <sid>WarningMsg("Something went wrong when trying to create the cache file")
+    else
+        call <sid>WarningMsg("Cache successfully created")
+    endif
+endfu
 " internal functions {{{1
 fu! unicode#CompleteUnicode() "{{{2
     " Completion function for Unicode characters
@@ -673,7 +690,7 @@ fu! <sid>UnicodeDict() "{{{2
     if <sid>CheckDir()
         let uni_cache_file = s:directory. '/UnicodeData.vim'
         if filereadable(uni_cache_file) &&
-            \ getftime(uni_cache_file) > getftime(s:UniFile) &&
+            \ getftime(uni_cache_file) >= getftime(s:UniFile) &&
             \ getfsize(uni_cache_file) > 100 " Unicode Cache Dict should be a lot larger
             exe "source" uni_cache_file
             let dict=g:unicode#unicode#data

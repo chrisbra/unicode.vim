@@ -40,6 +40,7 @@ com! -nargs=1       SearchUnicode   call unicode#PrintUnicode(<q-args>, '')
 com! -nargs=1 -bang UnicodeSearch   call unicode#PrintUnicode(<q-args>, <q-bang>=='!')
 com!		    UnicodeTable    call unicode#PrintUnicodeTable()
 com! -nargs=1       DigraphNew	    call unicode#MkDigraphNew(<f-args>)
+com!                UnicodeCache    call unicode#MkCache()
 " deprecated
 com!		    DownloadUnicode call unicode#Download(1)
 com!		    UnicodeDownload call unicode#Download(1)

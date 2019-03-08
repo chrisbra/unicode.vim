@@ -70,9 +70,9 @@ It should be located below the autoload/unicode.vim script in a directory
 called unicode. So if you have installed unicode.vim into
 /home/user/.vim, UnicodeData.txt should be located at:
 /home/user/.vim/autoload/unicode/UnicodeData.txt (after the plugin has been
-first used, it automatically creates a cache file of that data in the same
-directory called UnicodeData.vim, which can be safely removed, it will be
-recreated the next time this plugin is used) and should look like this:
+first used, it automatically creates a cache file |:UnicodeCache| of that data
+in the same directory called UnicodeData.vim, which can be safely removed, it
+will be recreated the next time this plugin is used) and should look like this:
 
 0020;SPACE;Zs;0;WS;;;;;N;;;;;
 0021;EXCLAMATION MARK;Po;0;ON;;;;;N;;;;;
@@ -229,6 +229,14 @@ letters like capital final sigma above or funny lowercase/uppercase
 name pairs like U+0195 LATIN SMALL LETTER HV and 
 U+01F6 LATIN CAPITAL LETTER HWAIR!
 
+							    *:UnicodeCache*
+>
+    :UnicodeCache
+
+Manually re-creates the cache file from the UnicodeData.txt file. Should
+normally not be needed to be executed manually, as the plugin does this for
+you. Might be necessary if you want to distribute the plugin on a read-only
+filesystem to set up everything before first using it.
 
 ==============================================================================
 3. Completions
