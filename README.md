@@ -1,4 +1,4 @@
-# Unicode plugin
+# Unicode plugin [![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/chrisbra)
 > A Vim plugin for handling unicode and digraphs characters
 
 This plugin aims to make the handling of unicode and digraphs chars in Vim easier. It serves 3 purposes:
