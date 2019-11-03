@@ -21,13 +21,13 @@ let s:html = unicode#html#get_html_entities()
 let s:info = {}
 let s:info[0xfeff] = "(Byte Order Mark: BOM)" "}}}2
 " public functions {{{1
-fu! unicode#FindDigraphBy(match) "{{{2
+fu! unicode#FindDigraphBy(match) abort "{{{2
     return <sid>DigraphsInternal(a:match)
 endfu
-fu! unicode#FindUnicodeBy(match) "{{{2
+fu! unicode#FindUnicodeBy(match) abort "{{{2
     return <sid>FindUnicodeByInternal(a:match)
 endfu
-fu! unicode#Search(match) "{{{2
+fu! unicode#Search(match) abort "{{{2
     let uni    = <sid>FindUnicodeByInternal(a:match)
     let format = ["% 4S\t", "U+%04X Dec:%06d\t", ' %s']
     let s:color_pattern = a:match.'\c'
@@ -63,7 +63,7 @@ fu! unicode#Search(match) "{{{2
         return uni[0].dec
     endif
 endfu
-fu! unicode#Digraph(char) "{{{2
+fu! unicode#Digraph(char) abort "{{{2
     let c=split(a:char, '\zs')
     if len(c) > 2 || len(c) < 2
         call <sid>WarningMsg('Need exactly 2 chars for returning digraphs!')
@@ -79,11 +79,10 @@ fu! unicode#Digraph(char) "{{{2
     endif
     return s:digraph
 endfu
-fu! unicode#UnicodeName(val) "{{{2
+fu! unicode#UnicodeName(val) abort "{{{2
     return <sid>GetUnicodeName(a:val)
 endfu
-
-fu! unicode#Regex(val) "{{{2
+fu! unicode#Regex(val) abort "{{{2
     if empty(a:val)
         return ''
     endif
@@ -93,7 +92,7 @@ fu! unicode#Regex(val) "{{{2
         \ printf('\%%U%*x', hexl, a:val)
     return val
 endfu
-fu! unicode#Download(force) "{{{2
+fu! unicode#Download(force) abort "{{{2
     if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
         if !a:force
             call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
@@ -134,7 +133,7 @@ fu! unicode#Download(force) "{{{2
     endif
     return 1
 endfu
-fu! unicode#MkCache() "{{{2
+fu! unicode#MkCache() abort "{{{2
     " Create the cache for existing Unicode Data file
     let cache_file = s:directory. '/UnicodeData.vim'
     if !filereadable(cache_file)
@@ -152,7 +151,7 @@ fu! unicode#MkCache() "{{{2
     endif
 endfu
 " internal functions {{{1
-fu! unicode#CompleteUnicode() "{{{2
+fu! unicode#CompleteUnicode() abort "{{{2
     " Completion function for Unicode characters
     let numeric=0
     if !exists("s:UniDict")
@@ -184,7 +183,7 @@ fu! unicode#CompleteUnicode() "{{{2
     call complete(start+1, compl)
     return ""
 endfu
-fu! unicode#CompleteDigraph() "{{{2
+fu! unicode#CompleteDigraph() abort "{{{2
     " Completion function for digraphs
     let prevchar  = getline('.')[col('.')-2]
     let prevchar1 = getline('.')[col('.')-3]
@@ -217,7 +216,7 @@ fu! unicode#CompleteDigraph() "{{{2
     call complete(col, tlist)
     return ''
 endfu
-fu! unicode#GetUniChar(...) "{{{2
+fu! unicode#GetUniChar(...) abort "{{{2
     " Return Unicode Name of Character under cursor
     " :UnicodeName
     if exists("a:1") && !empty(a:1) && (len(a:1)>1 || a:1 !~# '[a-zA-Z0-9+*/]')
@@ -332,7 +331,7 @@ fu! unicode#GetUniChar(...) "{{{2
         endfor
     endtry
 endfun
-fu! unicode#PrintDigraphs(match, bang) "{{{2
+fu! unicode#PrintDigraphs(match, bang) abort "{{{2
     " outputs only first digraph that exists for char
     " makes a difference for e.g. Euro which has (=e Eu)
     let match    = '\V'.escape(a:match, '\\')
@@ -383,7 +382,7 @@ fu! unicode#PrintUnicode(match, bang) abort "{{{2
         endif
     endif
 endfu
-fu! unicode#GetDigraph(type, ...) "{{{2
+fu! unicode#GetDigraph(type, ...) abort "{{{2
     " turns a movement or selection into digraphs, each pair of chars
     " will be converted into the belonging digraph, e.g: This line:
     " a:e:o:u:1Sß/\
@@ -448,7 +447,7 @@ fu! unicode#GetDigraph(type, ...) "{{{2
     let &selection = sel_save
     call call("setreg", _a)
 endfu
-fu! unicode#PrintUnicodeTable() "{{{2
+fu! unicode#PrintUnicodeTable() abort "{{{2
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
     endif
@@ -481,7 +480,7 @@ fu! unicode#PrintUnicodeTable() "{{{2
     call <sid>AirlineStatusline()
     call cursor(1,1)
 endfu
-fu! unicode#MkDigraphNew(arg) "{{{2
+fu! unicode#MkDigraphNew(arg) abort "{{{2
     " :DigraphNew {char1}{char2}  {pattern}
     " can be used to create a new digraph whose unicode name matches {pattern}.
     let args = matchlist(a:arg, '^\(\S\S\)\s\+\(.\+\S\)\s*$')
@@ -535,7 +534,7 @@ fu! unicode#MkDigraphNew(arg) "{{{2
         echoerr "Unicode name not found: " . charname
     endif
 endfu
-fu! <sid>AddCompleteEntries(dict) "{{{2
+fu! <sid>AddCompleteEntries(dict) abort "{{{2
     " Set Matches for Insert Mode completion of Unicode Characters
     let compl=[]
     let prev_fmt="Glyph\tCodepoint\tName\n%s\tU+%04X\t\t%s"
@@ -567,7 +566,7 @@ fu! <sid>AddCompleteEntries(dict) "{{{2
     endfor
     return compl
 endfu
-fu! <sid>AddDigraphCompleteEntries(list) "{{{2
+fu! <sid>AddDigraphCompleteEntries(list) abort "{{{2
     " Set Matches for Insert Mode completion of Digraphs
     let list = []
     for args in a:list
@@ -588,12 +587,12 @@ fu! <sid>AddDigraphCompleteEntries(list) "{{{2
     endfor
     return sort(list, '<sid>CompareByDecimalKey')
 endfu
-fu! <sid>Print(fmt, ...) "{{{2
+fu! <sid>Print(fmt, ...) abort "{{{2
     if &verbose
         echomsg call('printf', [a:fmt] + a:000)
     endif
 endfu
-fu! <sid>DigraphsInternal(match) "{{{2
+fu! <sid>DigraphsInternal(match) abort "{{{2
     " Returns a list of digraphs matching a:match
     let outlist = []
     let digit = a:match + 0
@@ -657,7 +656,7 @@ fu! <sid>DigraphsInternal(match) "{{{2
     endif
     return sort(outlist, '<sid>CompareByDecimalKey')
 endfu
-fu! <sid>FindUnicodeByInternal(match) "{{{2
+fu! <sid>FindUnicodeByInternal(match) abort "{{{2
     " Returns a list of Unicode Characters matching a:match
     " Match is assumed nonempty.
     " If match matches '\d\+', returns the codepoint with that decimal value.
@@ -707,7 +706,7 @@ fu! <sid>FindUnicodeByInternal(match) "{{{2
     endfor
     return sort(output, '<sid>CompareByDecimalKey')
 endfu
-fu! <sid>Screenwidth(item) "{{{2
+fu! <sid>Screenwidth(item) abort "{{{2
     " Takes string arguments and calculates the width
     if exists("*strdisplaywidth")
         return strdisplaywidth(a:item)
@@ -719,7 +718,7 @@ fu! <sid>Screenwidth(item) "{{{2
         return len(split(a:item, '\zs'))
     endif
 endfu
-fu! <sid>GetDigraphChars(code) "{{{2
+fu! <sid>GetDigraphChars(code) abort "{{{2
     " Return digraph for given decimal value
     if !exists("s:digdict")
         call <sid>GetDigraphDict()
@@ -734,7 +733,7 @@ fu! <sid>GetDigraphChars(code) "{{{2
     endif
     return (empty(list) ? '' : '('. join(list). ')')
 endfu
-fu! <sid>UnicodeDict() "{{{2
+fu! <sid>UnicodeDict() abort "{{{2
     let dict={}
     " make sure unicodedata.txt is found
     if <sid>CheckDir()
@@ -767,7 +766,7 @@ fu! <sid>UnicodeDict() "{{{2
     endif
     return dict
 endfu
-fu! <sid>CheckDir() "{{{2
+fu! <sid>CheckDir() abort "{{{2
     try
         if (!isdirectory(s:directory))
             call mkdir(s:directory)
@@ -778,7 +777,7 @@ fu! <sid>CheckDir() "{{{2
     endtry
     return unicode#Download(0)
 endfu
-fu! <sid>GetDigraphDict() "{{{2
+fu! <sid>GetDigraphDict() abort "{{{2
     " returns a dict of digraphs 
     " as output by :digraphs
     if exists("s:digdict") && !empty(s:digdict)
@@ -810,18 +809,18 @@ fu! <sid>GetDigraphDict() "{{{2
         return s:digdict
     endif
 endfu
-fu! <sid>CompareByDecimalKey(d1, d2) "{{{2
+fu! <sid>CompareByDecimalKey(d1, d2) abort "{{{2
     " Sort function, Sorts dics d1 and d2 by 'dec' key
     return <sid>CompareByValue(a:d1['dec']+0, a:d2['dec']+0)
 endfu
-fu! <sid>CompareListByDec(l1, l2) "{{{2
+fu! <sid>CompareListByDec(l1, l2) abort "{{{2
     " Sort function, Sorts l1 and ls by its numeric values
     return <sid>CompareByValue(a:l1+0,a:l2+0)
 endfu
-fu! <sid>CompareByValue(v1, v2) "{{{2
+fu! <sid>CompareByValue(v1, v2) abort "{{{2
     return (a:v1 == a:v2 ? 0 : (a:v1 > a:v2 ? 1 : -1))
 endfu
-fu! <sid>ScreenOutput(...) "{{{2
+fu! <sid>ScreenOutput(...) abort "{{{2
     let list=filter(copy(a:000), '!empty(v:val)')
     let i=0
     let width = eval(join(map(copy(list), '<sid>Screenwidth(v:val)'), '+'))
@@ -847,7 +846,7 @@ fu! <sid>ScreenOutput(...) "{{{2
         let i+=1
     endfor
 endfu
-fu! <sid>WarningMsg(msg) "{{{2
+fu! <sid>WarningMsg(msg) abort "{{{2
     echohl WarningMsg
     let msg = "UnicodePlugin: " . a:msg
     if exists(":unsilent") == 2
@@ -857,7 +856,7 @@ fu! <sid>WarningMsg(msg) "{{{2
     endif
     echohl Normal
 endfun
-fu! <sid>GetHtmlEntity(hex, all) "{{{2
+fu! <sid>GetHtmlEntity(hex, all) abort "{{{2
     let list = get(s:html, a:hex, [])
     let html = a:all ? join(list, ' ') : get(list, 0, '')
     if empty(html) && (a:hex > 31 ||
@@ -869,7 +868,7 @@ fu! <sid>GetHtmlEntity(hex, all) "{{{2
     endif
     return html
 endfu
-fu! <sid>UnicodeWriteCache(data, ind) "{{{2
+fu! <sid>UnicodeWriteCache(data, ind) abort "{{{2
     " Take unicode dictionary and write it in VimL form
     " so it will be faster to load
     let list = ['" internal cache file for unicode.vim plugin',
@@ -881,7 +880,7 @@ fu! <sid>UnicodeWriteCache(data, ind) "{{{2
     call writefile(list, s:directory. '/UnicodeData.vim')
     unlet! list
 endfu
-fu! <sid>GetUnicodeName(dec) "{{{2
+fu! <sid>GetUnicodeName(dec) abort "{{{2
     " returns Unicodename for decimal value
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
@@ -957,7 +956,7 @@ fu! <sid>GetUnicodeName(dec) "{{{2
         return "Character not found"
     endif
 endfu
-fu! <sid>AirlineStatusline() "{{{2
+fu! <sid>AirlineStatusline() abort "{{{2
     if exists(":AirlineRefresh")
         AirlineRefresh
     endif
