@@ -27,6 +27,42 @@ endfu
 fu! unicode#FindUnicodeBy(match) "{{{2
     return <sid>FindUnicodeByInternal(a:match)
 endfu
+fu! unicode#Search(match) "{{{2
+    let uni    = <sid>FindUnicodeByInternal(a:match)
+    let format = ["% 4S\t", "U+%04X Dec:%06d\t", ' %s']
+    let s:color_pattern = a:match.'\c'
+    let cnt = 1
+    let s:output_width = 1
+    if len(uni) > 1
+        echon "\n"
+        for item in uni
+            let dig  = get(item, 'dig' , '')
+            let html = get(item, 'html', '')
+            let width=strlen(len(uni))
+            call <sid>ScreenOutput(printf("%*i", width, cnt),
+                \ printf(format[0], item.glyph),
+                \ printf(format[1].format[2], item.dec, item.dec, item.name),
+                \ (empty(dig)  ? [] : printf(" %s", dig)),
+                \ (empty(html) ? [] : printf(" %s", html)),
+                \ (empty(item.info) ? [] : printf(" %s", item.info)))
+            let s:output_width = &columns
+            let cnt+=1
+        endfor
+        echon "\n"
+        unlet! s:color_pattern
+        let input=input('Please choose: ')
+        if empty(input)
+            return
+        elseif input !~? '^\d\+' || input > len(uni)
+            echo "\ninvalid number selected, aborting..."
+            return ''
+        else
+            return uni[input-1].dec
+        endif
+    else
+        return uni[0].dec
+    endif
+endfu
 fu! unicode#Digraph(char) "{{{2
     let c=split(a:char, '\zs')
     if len(c) > 2 || len(c) < 2
@@ -45,6 +81,17 @@ fu! unicode#Digraph(char) "{{{2
 endfu
 fu! unicode#UnicodeName(val) "{{{2
     return <sid>GetUnicodeName(a:val)
+endfu
+
+fu! unicode#Regex(val) "{{{2
+    if empty(a:val)
+        return ''
+    endif
+    let hexl = strlen(printf("%X", a:val))
+    let val=a:val <= 0xFFFF ?
+        \ printf('\%%u%*x', hexl, a:val) :
+        \ printf('\%%U%*x', hexl, a:val)
+    return val
 endfu
 fu! unicode#Download(force) "{{{2
     if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
@@ -230,8 +277,7 @@ fu! unicode#GetUniChar(...) "{{{2
                 let name  = <sid>GetUnicodeName(dec)
                 let html  = <sid>GetHtmlEntity(dec, 1)
                 let hexl  = strlen(printf("%X", dec))
-                let pat   = dec <= 0xFFFF ? printf('/\%%u%*x', hexl, dec) :
-                            \ printf('/\%%U%*x', hexl, dec)
+                let pat   = '/'. unicode#Regex(dec)
                 let str   = dec <= 0xFFFF ? printf('"\u%04x"', dec) :
                             \ printf('"\U%*x"', hexl, dec)
                 if charlen > 1 && i < charlen
