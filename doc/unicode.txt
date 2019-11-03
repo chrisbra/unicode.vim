@@ -107,7 +107,7 @@ Additionally, if there exists a digraph for that character, it will also be
 shown in parentheses (in case of several digraphs for that character, all
 will be shown, separated by comma).
 
-The search pattern is always the last item, it starts with a "/"
+The search pattern is always the second last item, it starts with a "/"
 
 An example might look like this: >
 

@@ -1,7 +1,7 @@
 " unicodePlugin : A completion plugin for Unicode glyphs
 " Author: C.Brabandt <cb@256bit.org>
-" Version: 0.21
-" Copyright: (c) 2009-2014 by Christian Brabandt
+" Version: 0.22
+" Copyright: (c) 2009-2019 by Christian Brabandt
 "            The VIM LICENSE applies to unicode.vim, and unicode.txt
 "            (see |copyright|) except use "unicode" instead of "Vim".
 "            No warranty, express or implied.
@@ -178,6 +178,10 @@ fu! unicode#GetUniChar(...) "{{{2
         return
     endif
     let type=''
+    if a:1 == '/'
+        let type = 'r'
+        let typelist = []
+    endif
     if exists("a:2") && !empty(a:2) && a:2 !~? '^\(d\%[igraph]\|r\%[egex]\|n\%[ame]\|h\%[tml]\|v\%[alue]\)$'
         call <sid>WarningMsg("No item (digraph/html/name/regex/value) specified")
         return
@@ -250,7 +254,8 @@ fu! unicode#GetUniChar(...) "{{{2
                         " remove () around the digraphs
                         call add(typelist, substitute(dig, '[()]', '', 'g'))
                     elseif type==?'r'
-                        call add(typelist, pat[1:])
+                        " there is a trailing blank in pat
+                        call add(typelist, matchstr(pat[1:], '\S\+'))
                     elseif type==?'h'
                         call add(typelist, html)
                     else
@@ -259,10 +264,9 @@ fu! unicode#GetUniChar(...) "{{{2
                 endif
             endfor
         endif
-        if exists("a:1") && !empty(a:1)
+        if exists("a:1") && !exists("typelist")
             exe "let @".a:1. "=join(msg)"
-        endif
-        if exists("a:2") && !empty(a:2)
+        elseif exists("typelist")
             exe "let @".a:1. "=join(typelist)"
         endif
     finally
