@@ -224,7 +224,7 @@ fu! unicode#GetUniChar(...) abort "{{{2
         return
     endif
     let type=''
-    if a:1 == '/'
+    if exists("a:1") && a:1 == '/'
         let type = 'r'
         let typelist = []
     endif
