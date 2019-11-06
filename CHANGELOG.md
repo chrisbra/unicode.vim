@@ -6,6 +6,11 @@ This is the Changelog for the [unicode.vim] plugin
 
 - new command :UnicodeCache to create the cache file for UnicodeData.txt
   manually
+- new functions [unicode#Regex()] and [unicode#Search()], this allows for
+  better interactively search of unicode characters, try this:
+```
+    /<CTRL-R>=unicode#Regex(unicode#Search('euro'))<cr>
+```
 
 ## [0.21] - 2017-09-27
 
@@ -135,8 +140,7 @@ This is the Changelog for the [unicode.vim] plugin
   http://github.com/chrisbra/unicode.vim
 
 ## 0.04 - 2010-02-01
-- Use UnicodeData.txt to generate Data (Index.txt does not
-  contain all glyphs).
+- Use UnicodeData.txt to generate Data (Index.txt does not contain all glyphs).
 - Check for empty file UnicodeData.txt
 
 ## 0.03 - 2009-10-27
@@ -148,20 +152,22 @@ This is the Changelog for the [unicode.vim] plugin
 ## 0.01 - 2009-10-22
 -  First working version
 
-[unicode.vim]: https://github.com/chrisbra/unicode.vim
-[0.21]: https://github.com/chrisbra/unicode.vim/compare/v20...v21
-[0.20]: https://github.com/chrisbra/unicode.vim/compare/v19...v20
-[:DigraphNew]:      https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L181-L225
-[:Digraphs]:        https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L125-L153
-[:UnicodeDownload]: https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L175-L177
-[:UnicodeName]:     https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L94-L122
-[:UnicodeSearch]:   https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L154-L166
-[:UnicodeTable]:    https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L169-L171
-[PlugMakeDigraph]:  https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L342-L367
-[GLVS]:             http://vimhelp.appspot.com/pi_getscript.txt.html#:GLVS
-[QuitPre]:          http://vimhelp.appspot.com/autocmd.txt.html#QuitPre
-[i_Ctrl-X_CTRL-G]:  https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L313-L327
-[unicode#Digraph]:  https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L428-L431
-[unicode#FindUnicodeBy()]: https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L389-L407
-[digraph-completion]:      https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L313-L327
-[<Plug>(UnicodeGA)]:       https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L369-L375
+[unicode.vim]:              https://github.com/chrisbra/unicode.vim
+[0.21]:                     https://github.com/chrisbra/unicode.vim/compare/v20...v21
+[0.20]:                     https://github.com/chrisbra/unicode.vim/compare/v19...v20
+[:DigraphNew]:              https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L181-L225
+[:Digraphs]:                https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L125-L153
+[:UnicodeDownload]:         https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L175-L177
+[:UnicodeName]:             https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L94-L122
+[:UnicodeSearch]:           https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L154-L166
+[:UnicodeTable]:            https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L169-L171
+[PlugMakeDigraph]:          https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L342-L367
+[GLVS]:                     http://vimhelp.appspot.com/pi_getscript.txt.html#:GLVS
+[QuitPre]:                  http://vimhelp.appspot.com/autocmd.txt.html#QuitPre
+[i_Ctrl-X_CTRL-G]:          https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L313-L327
+[unicode#Digraph]:          https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L428-L431
+[unicode#FindUnicodeBy()]:  https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L389-L407
+[digraph-completion]:       https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L313-L327
+[<Plug>(UnicodeGA)]:        https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L369-L375
+[unicode#Regex()]:          https://github.com/chrisbra/unicode.vim/blob/0c94a3812315af21e3e556174c4c4463c32a9495/doc/unicode.txt#L454-L459
+[unicode#Search()]:         https://github.com/chrisbra/unicode.vim/blob/0c94a3812315af21e3e556174c4c4463c32a9495/doc/unicode.txt#L446-L449
