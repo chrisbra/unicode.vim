@@ -171,9 +171,13 @@ You can use the bang "!" attribute, it will prompt you, which item to insert
 at the current cursor position (only when your buffer is writable).
 							    *:UnicodeTable*
 >
-    :UnicodeTable
+    :UnicodeTable[!]
 
-Creates a new window with a table of all Unicode characters.
+Creates a new window with a table of all Unicode characters. For performance
+reasons, the table will be cached and stored locally in the install directory.
+That makes loading the table after the initial run much faster. If you want to
+re-generate the table from scratch (and discarding the cache file), use the
+"!" attribute.
 
 							    *:UnicodeDownload*
 >

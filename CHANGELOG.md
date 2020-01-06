@@ -12,6 +12,8 @@ This is the Changelog for the [unicode.vim] plugin
     /<CTRL-R>=unicode#Regex(unicode#Search('euro'))<cr>
 ```
 - Add HTML Entity completion using CTRL-X CTRL-B (:h CTRL-X_CTRL-B)
+- Cache the [:UnicodeTable] in a separate cache file. Makes loading
+  the table a lot faster.
 
 ## [0.21] - 2017-09-27
 

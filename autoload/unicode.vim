@@ -464,7 +464,15 @@ fu! unicode#GetDigraph(type, ...) abort "{{{2
     let &selection = sel_save
     call call("setreg", _a)
 endfu
-fu! unicode#PrintUnicodeTable() abort "{{{2
+fu! unicode#PrintUnicodeTable(force) abort "{{{2
+    let buffer_name = 'UnicodeTable.txt'
+    let uni_table_file = s:directory. '/'. buffer_name
+    if filereadable(uni_table_file) && !a:force
+        call <sid>FindWindow(buffer_name)
+        exe ':e' uni_table_file
+        call <sid>Unitable_Afterload()
+        return
+    endif
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
     endif
@@ -479,7 +487,7 @@ fu! unicode#PrintUnicodeTable() abort "{{{2
                     \ strtrans(nr2char(value)), codep, html, name.dig, value)]
     endfor
     " Find Window or create a new window
-    call <sid>FindWindow('UnicodeTable')
+    call <sid>FindWindow(buffer_name)
     " Set up some options 
     setl ma noswapfile buftype=nofile foldcolumn=0 nobuflisted bufhidden=wipe nowrap
     " Just in case
@@ -487,9 +495,8 @@ fu! unicode#PrintUnicodeTable() abort "{{{2
     call setline(1, output)
     2,$sort x /^.\{,8}U+/
     setl nomodified
-    ru syntax/unicode.vim
-    call <sid>AirlineStatusline()
-    call cursor(1,1)
+    call writefile(getline(1,'$'), uni_table_file)
+    call <sid>Unitable_Afterload()
 endfu
 fu! unicode#MkDigraphNew(arg) abort "{{{2
     " :DigraphNew {char1}{char2}  {pattern}
@@ -544,6 +551,11 @@ fu! unicode#MkDigraphNew(arg) abort "{{{2
         endfor
         echoerr "Unicode name not found: " . charname
     endif
+endfu
+fu! <sid>Unitable_Afterload() abort "{{{2
+    ru syntax/unicode.vim
+    call <sid>AirlineStatusline()
+    call cursor(1,1)
 endfu
 fu! <sid>FindWindow(name) abort "{{{2
     " Find Window or create a new window
