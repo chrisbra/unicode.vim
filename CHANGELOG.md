@@ -11,6 +11,7 @@ This is the Changelog for the [unicode.vim] plugin
 ```
     /<CTRL-R>=unicode#Regex(unicode#Search('euro'))<cr>
 ```
+- Add HTML Entity completion using CTRL-X CTRL-B (:h CTRL-X_CTRL-B)
 
 ## [0.21] - 2017-09-27
 

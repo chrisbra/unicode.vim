@@ -1,7 +1,7 @@
 " unicodePlugin : A completion plugin for Unicode glyphs
 " Author: C.Brabandt <cb@256bit.org>
 " Version: 0.22
-" Copyright: (c) 2009-2019 by Christian Brabandt
+" Copyright: (c) 2009-2020 by Christian Brabandt
 "            The VIM LICENSE applies to unicode.vim, and unicode.txt
 "            (see |copyright|) except use "unicode" instead of "Vim".
 "            No warranty, express or implied.
@@ -180,6 +180,23 @@ fu! unicode#CompleteUnicode() abort "{{{2
         echom printf('(Checking Unicode Names for "%s"... this might be slow)', base)
     endif
     let compl = <sid>AddCompleteEntries(complete_list)
+    call complete(start+1, compl)
+    return ""
+endfu
+fu! unicode#CompleteHTMLEntity() abort "{{{2
+    " Completion function for HTML entities
+    if !exists("s:UniDict")
+        let s:UniDict=<sid>UnicodeDict()
+    endif
+    let line = getline('.')
+    let start = col('.') - 1
+    while start > 0 && line[start - 1] !~ '\s'
+        let start -= 1
+    endwhile
+    let base = substitute(line[start : (col('.')-1)], '\s\+$', '', '')
+    "let html_entities = map(copy(s:html), 'join(v:val, ''\|'')')
+    let complete_list = filter(copy(s:html), 'match(v:val, base) > -1')
+    let compl = <sid>AddHTMLCompleteEntries(complete_list, base)
     call complete(start+1, compl)
     return ""
 endfu
@@ -586,6 +603,22 @@ fu! <sid>AddDigraphCompleteEntries(list) abort "{{{2
         endfor
     endfor
     return sort(list, '<sid>CompareByDecimalKey')
+endfu
+fu! <sid>AddHTMLCompleteEntries(list, base) abort "{{{2
+    " Set Matches for Insert Mode completion of HTML entries
+    let list = []
+    for value in sort(keys(a:list), '<sid>CompareListByDec')
+        let prev_fmt="Entity\tGlyph\tCodepoint\tName\n%s\t%s\t\tU+%04X\t\t%s"
+        let name   = <sid>GetUnicodeName(value)
+        let index = match(a:list[value], a:base)
+        let entity = a:list[value][index]
+        let glyph = nr2char(value+0)
+        let format = printf("'%s'\t%s U+%04X (%s)", glyph, entity, value, name)
+        " Dec key will be ignored by complete() function
+        call add(list, {'word':entity, 'abbr':format, 'dec': value+0,
+            \ 'info': printf(prev_fmt, entity, glyph, value, name)})
+    endfor
+    return list
 endfu
 fu! <sid>Print(fmt, ...) abort "{{{2
     if &verbose

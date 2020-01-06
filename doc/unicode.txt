@@ -338,6 +338,18 @@ CTRL-X CTRL-G           Search for the character in front of the cursor and
                         match.
        CTRL-P           Use previous match. This match replaces the previous
                         one.
+                                        *i_CTRL-X_CTRL-B* *html-entityh-completion*
+3.3 Completing HTML Entities
+---------------------------
+
+CTRL-X CTRL-B           Search for the characters in front of the cursor and
+                        try to complete this letter using HTML entities.
+                        If there is no letter in front of the cursor, a list with
+                        all available HTML entities is shown in a popup menu.
+       CTRL-N           Use next match. This match replaces the previous
+                        match.
+       CTRL-P           Use previous match. This match replaces the previous
+                        one.
 
 ==============================================================================
 4. Mappings						*unicode-mappings*
@@ -347,6 +359,7 @@ The unicode plugin provides those mappings:
 Key		Mode		Function
 <C-X><C-Z>	Insert		Complete Unicode Name before cursor |i_CTRL-X_CTRL-G|
 <C-X><C-G>	Insert		Complete Digraph before cursor |i_CTRL-X_CTRL-Z|
+<C-X><C-B>	Insert		Complete Entity before cursor |i_CTRL-X_CTRL-B|
 <F4>		Normal/Visual   Generate Digraph from chars |<Plug>(MakeDigraph)|
 <Leader>un	Normal		Toggle Completion of Unicode Names and Chars
 

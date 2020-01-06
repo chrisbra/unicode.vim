@@ -50,6 +50,7 @@ vnoremap <unique><script><silent> <Plug>(MakeDigraph)	    :<C-U>call unicode#Get
 nnoremap <unique><script><silent> <Plug>(UnicodeGA)	    :<C-U>UnicodeName<CR>
 inoremap <unique><script><silent> <Plug>(DigraphComplete)   <C-R>=unicode#CompleteDigraph()<CR>
 inoremap <unique><script><silent> <Plug>(UnicodeComplete)   <C-R>=unicode#CompleteUnicode()<CR>
+inoremap <unique><script><silent> <Plug>(HTMLEntityComplete)   <C-R>=unicode#CompleteHTMLEntity()<CR>
 nnoremap <unique><script><silent> <Plug>(UnicodeSwapCompleteName) :<C-U>call <sid>ToggleUnicodeCompletion()<CR>
 
 if !hasmapto('<Plug>(MakeDigraph)', 'n') && maparg('<f4>', 'n') ==# ''
@@ -66,6 +67,10 @@ endif
 
 if !hasmapto('<Plug>(UnicodeComplete)', 'i') && maparg('<c-x><c-z>', 'i') ==# ''
     imap <C-X><C-Z> <Plug>(UnicodeComplete)
+endif
+
+if !hasmapto('<Plug>(HTMLEntityComplete)', 'i') && maparg('<c-x><c-b>', 'i') ==# ''
+    imap <C-X><C-B> <Plug>(HTMLEntityComplete)
 endif
 
 if !hasmapto('<Plug>(UnicodeSwapCompleteName)', 'n') && maparg('<leader>un', 'n') ==# ''
