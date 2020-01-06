@@ -1,2 +1,2 @@
 " Install Filetype detection
-au BufRead,BufNewFile UnicodeTable set filetype=unicode
+au BufRead,BufNewFile UnicodeTable.txt set filetype=unicode
