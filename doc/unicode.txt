@@ -3,7 +3,7 @@
 Author:  Christian Brabandt <cb@256bit.org>
 Version: 0.21 Tue, 26 Sep 2017 14:21:42 +0200
                                                         *unicode-copyright*
-Copyright: (c) 2009 - 2014 by Christian Brabandt
+Copyright: (c) 2009 - 2020 by Christian Brabandt
            The VIM LICENSE applies to unicode.vim and unicode.txt
            (see |copyright|) except use unicode instead of "Vim".
            NO WARRANTY, EXPRESS OR IMPLIED.  USE AT-YOUR-OWN-RISK.

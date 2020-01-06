@@ -61,6 +61,6 @@ Here is a short overview of the functionality provided by the plugin:
 
 ### License & Copyright
 
-© 2009-2014 by Christian Brabandt. The Vim License applies. See `:h license`
+© 2009-2020 by Christian Brabandt. The Vim License applies. See `:h license`
 
 __NO WARRANTY, EXPRESS OR IMPLIED.  USE AT-YOUR-OWN-RISK__
