@@ -479,13 +479,7 @@ fu! unicode#PrintUnicodeTable() abort "{{{2
                     \ strtrans(nr2char(value)), codep, html, name.dig, value)]
     endfor
     " Find Window or create a new window
-    let winname = 'UnicodeTable'
-    let win = bufwinnr('^'.winname.'$')
-    if win != -1
-        exe 'noa ' .win. 'wincmd w'
-    else
-        exe  'noa sp' winname
-    endif
+    call <sid>FindWindow('UnicodeTable')
     " Set up some options 
     setl ma noswapfile buftype=nofile foldcolumn=0 nobuflisted bufhidden=wipe nowrap
     " Just in case
@@ -549,6 +543,16 @@ fu! unicode#MkDigraphNew(arg) abort "{{{2
             endif
         endfor
         echoerr "Unicode name not found: " . charname
+    endif
+endfu
+fu! <sid>FindWindow(name) abort "{{{2
+    " Find Window or create a new window
+    let winname = a:name
+    let win = bufwinnr('^'.winname.'$')
+    if win != -1
+        exe 'noa ' .win. 'wincmd w'
+    else
+        exe  'noa sp' winname
     endif
 endfu
 fu! <sid>AddCompleteEntries(dict) abort "{{{2
