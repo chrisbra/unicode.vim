@@ -184,10 +184,6 @@ fu! unicode#CompleteUnicode() abort "{{{2
     return ""
 endfu
 fu! unicode#CompleteHTMLEntity() abort "{{{2
-    " Completion function for HTML entities
-    if !exists("s:UniDict")
-        let s:UniDict=<sid>UnicodeDict()
-    endif
     let line = getline('.')
     let start = col('.') - 1
     while start > 0 && line[start - 1] !~ '\s'
