@@ -14,6 +14,7 @@ This is the Changelog for the [unicode.vim] plugin
 - Add HTML Entity completion using CTRL-X CTRL-B (:h CTRL-X_CTRL-B)
 - Cache the [:UnicodeTable] in a separate cache file. Makes loading
   the table a lot faster.
+- Have the unicode completion also search by HTML entity.
 
 ## [0.21] - 2017-09-27
 

@@ -153,29 +153,39 @@ endfu
 " internal functions {{{1
 fu! unicode#CompleteUnicode() abort "{{{2
     " Completion function for Unicode characters
-    let numeric=0
+    let type = {}
+    let complete_list={}
     if !exists("s:UniDict")
         let s:UniDict=<sid>UnicodeDict()
     endif
     let line = getline('.')
     let start = col('.') - 1
-    let prev_fmt="Char\tCodepoint  Digraph\tName\n%s\tU+%04X\t  %s\t\t%s"
-    while start > 0 && line[start - 1] =~ '\w\|+'
+    while start > 0 && line[start - 1] !~ '\s'
         let start -= 1
     endwhile
     if line[start] =~# 'U' && line[start+1] == '+' && col('.')-1 >=start+2
-        let numeric=1
+        let type.numeric=1
+    elseif line[start] =~# '&'
+        let type.entity=1
     endif
     let base = substitute(line[start : (col('.')-1)], '\s\+$', '', '')
     if empty(base)
         let complete_list = s:UniDict
         echom '(Checking all Unicode Names... this might be slow)'
     else
-        if numeric
+        if empty(type)
+            " name based completion
+            let complete_list = filter(copy(s:UniDict), 'v:val =~? base')
+        elseif get(type, 'numeric', 0)
+            " numeric completion
             let complete_list = filter(copy(s:UniDict),
                 \ 'printf("%04X", v:key) =~? "^0*".base[2:]')
-        else
-            let complete_list = filter(copy(s:UniDict), 'v:val =~? base')
+        elseif get(type, 'entity', 0)
+            " html entity list
+            let html_list = filter(copy(s:html), 'match(v:val, base) > -1')
+            for key in keys(html_list)
+                let complete_list[key] = s:UniDict[key]
+            endfor
         endif
         echom printf('(Checking Unicode Names for "%s"... this might be slow)', base)
     endif
@@ -566,23 +576,24 @@ endfu
 fu! <sid>AddCompleteEntries(dict) abort "{{{2
     " Set Matches for Insert Mode completion of Unicode Characters
     let compl=[]
-    let prev_fmt="Glyph\tCodepoint\tName\n%s\tU+%04X\t\t%s"
+    let prev_fmt="  Codept\tHTML\t\tName\n%s U+%04X\t%s\t%s"
     let starttime = localtime()
     for value in sort(keys(a:dict), '<sid>CompareListByDec')
-        if value==0
+        if value == 0
             continue " Skip NULLs, does not display correctly
         endif
         let name = a:dict[value]
-        let dg_char=<sid>GetDigraphChars(value)
-        let fstring = printf("U+%04X %s%s:'%s'",
-                \ value, name, dg_char, nr2char(value))
+        let html = <sid>GetHtmlEntity(value, 0)
+        let dg_char = <sid>GetDigraphChars(value)
+        let fstring = printf("U+%04X\t%s%s %s '%s'",
+                \ value, name, dg_char, html, nr2char(value))
         if get(g:, 'Unicode_CompleteName',0)
             let dict = {'word':printf("%s (U+%04X)", name, value), 'abbr':fstring}
         else
             let dict = {'word':nr2char(value), 'abbr':fstring}
         endif
-        if get(g:,'Unicode_ShowPreviewWindow',0)
-            call extend(dict, {'info': printf(prev_fmt, nr2char(value),value,name)})
+        if get(g:,'Unicode_ShowPreviewWindow',0) || &completeopt =~# 'popup'
+            call extend(dict, {'info': printf(prev_fmt, nr2char(value), value, html, name)})
         endif
         call add(compl, dict)
         " break too long running search
