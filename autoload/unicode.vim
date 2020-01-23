@@ -475,7 +475,7 @@ fu! unicode#PrintUnicodeTable(force) abort "{{{2
     let uni_table_file = s:directory. '/'. buffer_name
     if filereadable(uni_table_file) && !a:force
         call <sid>FindWindow(buffer_name)
-        exe ':e' uni_table_file
+        exe 'noa :e' uni_table_file
         call <sid>Unitable_Afterload()
         return
     endif
