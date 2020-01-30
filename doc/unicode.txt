@@ -269,7 +269,7 @@ For example, you would like to enter Æ, so you enter AE and press |<C-X><C-Z>|
 while in insert mode. Alternatively you can enter the Unicode-Codepoint: U+C6
 and press |<C-X><C-Z>| and the popup menu will show you all characters, that
 have a codepoint like C6 with leading zeros, eg. U+00C6 and U+0C66
-And finally you can enter &ae and press |<C-X><C-Z>| and have the plugin
+And finally you can enter &ae and press |<C-X><C-B>| and have the plugin
 search by the HTML entity name (&aelig;)
 
 A popup menu will appear, showing you the Unicode-Codepoint value, the
