@@ -53,33 +53,35 @@ inoremap <unique><script><silent> <Plug>(UnicodeComplete)   <C-R>=unicode#Comple
 inoremap <unique><script><silent> <Plug>(HTMLEntityComplete)   <C-R>=unicode#CompleteHTMLEntity()<CR>
 nnoremap <unique><script><silent> <Plug>(UnicodeSwapCompleteName) :<C-U>call <sid>ToggleUnicodeCompletion()<CR>
 
-if !hasmapto('<Plug>(MakeDigraph)', 'n') && maparg('<f4>', 'n') ==# ''
-    nmap <F4> <Plug>(MakeDigraph)
-endif
+if !(exists("g:Unicode_no_default_mappings") && g:Unicode_no_default_mappings)
+    if !hasmapto('<Plug>(MakeDigraph)', 'n') && maparg('<f4>', 'n') ==# ''
+        nmap <F4> <Plug>(MakeDigraph)
+    endif
 
-if !hasmapto('<Plug>(MakeDigraph)', 'v') && maparg('<f4>', 'v') ==# ''
-    vmap <F4> <Plug>(MakeDigraph)
-endif
+    if !hasmapto('<Plug>(MakeDigraph)', 'v') && maparg('<f4>', 'v') ==# ''
+        vmap <F4> <Plug>(MakeDigraph)
+    endif
 
-if !hasmapto('<Plug>(DigraphComplete)', 'i') && maparg('<c-x><c-g>', 'i') ==# ''
-    imap <C-X><C-G> <Plug>(DigraphComplete)
-endif
+    if !hasmapto('<Plug>(DigraphComplete)', 'i') && maparg('<c-x><c-g>', 'i') ==# ''
+        imap <C-X><C-G> <Plug>(DigraphComplete)
+    endif
 
-if !hasmapto('<Plug>(UnicodeComplete)', 'i') && maparg('<c-x><c-z>', 'i') ==# ''
-    imap <C-X><C-Z> <Plug>(UnicodeComplete)
-endif
+    if !hasmapto('<Plug>(UnicodeComplete)', 'i') && maparg('<c-x><c-z>', 'i') ==# ''
+        imap <C-X><C-Z> <Plug>(UnicodeComplete)
+    endif
 
-if !hasmapto('<Plug>(HTMLEntityComplete)', 'i') && maparg('<c-x><c-b>', 'i') ==# ''
-    imap <C-X><C-B> <Plug>(HTMLEntityComplete)
-endif
+    if !hasmapto('<Plug>(HTMLEntityComplete)', 'i') && maparg('<c-x><c-b>', 'i') ==# ''
+        imap <C-X><C-B> <Plug>(HTMLEntityComplete)
+    endif
 
-if !hasmapto('<Plug>(UnicodeSwapCompleteName)', 'n') && maparg('<leader>un', 'n') ==# ''
-    nmap <leader>un <Plug>(UnicodeSwapCompleteName)
-endif
+    if !hasmapto('<Plug>(UnicodeSwapCompleteName)', 'n') && maparg('<leader>un', 'n') ==# ''
+        nmap <leader>un <Plug>(UnicodeSwapCompleteName)
+    endif
 
-"if !hasmapto('<Plug>(UnicodeGA)')
-"    nmap ga <Plug>(UnicodeGA)
-"endif
+"    if !hasmapto('<Plug>(UnicodeGA)')
+"        nmap ga <Plug>(UnicodeGA)
+"    endif
+endif
 
 " =====================================================================
 " Restoration And Modelines: {{{1

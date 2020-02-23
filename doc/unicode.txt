@@ -372,6 +372,12 @@ Key		Mode		Function
 
 To remap those mappings to different keys see below.
 
+                                              *g:Unicode_no_default_mappings*
+To prevent the unicode plugin from creating the above mappings define
+`g:Unicode_no_default_mappings` with a true-ish value in your vimrc like so: >
+
+    let g:Unicode_no_default_mappings = v:true
+<
                                                         *<Plug>(MakeDigraph)*
 The plugin sets up a map to <F4>, for easier generation of digraphs. This
 allows you to enter the digraph base characters and let the plugin convert a
