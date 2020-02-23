@@ -28,6 +28,7 @@ endif
 let s:data_file = s:data_directory . '/UnicodeData.txt'
 let s:data_cache_file = s:cache_directory . '/UnicodeData.vim'
 let s:table_cache_file = s:cache_directory . '/UnicodeTable.txt'
+let s:use_cache = get(g:, 'Unicode_use_cache', v:true)
 
 " HTML entitities {{{2
 let s:html = unicode#html#get_html_entities()
@@ -124,7 +125,7 @@ fu! unicode#Download(force) abort "{{{2
         endif
         " remove cache file
         " (will be re-created later)
-        if filereadable(s:data_cache_file)
+        if s:use_cache && filereadable(s:data_cache_file)
             call delete(s:data_cache_file)
         endif
         if exists(":Nread")
@@ -154,6 +155,9 @@ fu! unicode#Download(force) abort "{{{2
     return 1
 endfu
 fu! unicode#MkCache() abort "{{{2
+    if !s:use_cache
+        return
+    endif
     " Create the cache for existing Unicode Data file
     if !filereadable(s:data_cache_file)
         call <sid>UnicodeDict()
@@ -491,7 +495,7 @@ fu! unicode#GetDigraph(type, ...) abort "{{{2
 endfu
 fu! unicode#PrintUnicodeTable(force) abort "{{{2
     let buffer_name = 'UnicodeTable.txt'
-    if filereadable(s:table_cache_file) && !a:force
+    if s:use_cache && filereadable(s:table_cache_file) && !a:force
         call <sid>FindWindow(buffer_name)
         exe 'noa :e' s:table_cache_file
         call <sid>Unitable_Afterload()
@@ -519,8 +523,10 @@ fu! unicode#PrintUnicodeTable(force) abort "{{{2
     call setline(1, output)
     2,$sort x /^.\{,8}U+/
     setl nomodified
-    if <sid>MkDir(s:cache_directory)
-        call writefile(getline(1,'$'), s:table_cache_file)
+    if s:use_cache
+        if <sid>MkDir(s:cache_directory)
+            call writefile(getline(1,'$'), s:table_cache_file)
+        endif
     endif
     call <sid>Unitable_Afterload()
 endfu
@@ -813,7 +819,8 @@ fu! <sid>UnicodeDict() abort "{{{2
     let dict={}
     " make sure unicodedata.txt is found
     if <sid>CheckDir()
-        if filereadable(s:data_cache_file) &&
+        if s:use_cache &&
+            \ filereadable(s:data_cache_file) &&
             \ getftime(s:data_cache_file) >= getftime(s:data_file) &&
             \ getfsize(s:data_cache_file) > 100 " Unicode Cache Dict should be a lot larger
             exe "source" s:data_cache_file
@@ -950,6 +957,9 @@ fu! <sid>GetHtmlEntity(hex, all) abort "{{{2
     return html
 endfu
 fu! <sid>UnicodeWriteCache(data, ind) abort "{{{2
+    if !s:use_cache
+        return
+    endif
     if !<sid>MkDir(s:cache_directory)
         return
     endif

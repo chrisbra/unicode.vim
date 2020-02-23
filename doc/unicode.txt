@@ -82,9 +82,17 @@ The cache and data directory can also specified using the variables
 If the cache or data directory does not exist, it is created on the first use
 (together with any necessary intermediate directories).
 
+                                                      *g:Unicode_use_cache*
 After the plugin has been first used, it automatically creates some cache
 files (see |:UnicodeCache| and |:UnicodeTable|), which can be safely removed,
-they will be recreated the next time this plugin is used.
+they will be recreated the next time this plugin is used. To prevent the
+plugin from creating any cache files or the cache directory, define the
+variable `g:Unicode_use_cache` with a false-ish value, e.g. >
+
+    let g:Unicode_use_cache = v:false
+<
+Note that setting this varibale does not delete any previously generated cache
+files, those have to be removed by hand.
 
                                                      *unicode-plugin-error*
 If the plugin gives an error or does not complete anything, first check, that
