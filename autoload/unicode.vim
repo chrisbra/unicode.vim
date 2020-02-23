@@ -102,7 +102,11 @@ fu! unicode#Download(force) abort "{{{2
         call s:WarningMsg("Let's see, if we can download it.")
         call s:WarningMsg("If this doesn't work, you should download ")
         call s:WarningMsg(s:unicode_URL . " and save it as " . s:UniFile)
-        sleep 5
+        let choice = confirm("Download " . s:unicode_URL . " now?", "&Yes\n&No", 1, "Question")
+        if choice ==# 0 || choice ==# 2
+            call s:WarningMsg("Not downloading file. You can retry by executing :UnicodeDownload")
+            return 0
+        endif
         " remove cache file
         " (will be re-created later)
         if filereadable(s:directory. '/UnicodeData.vim')
