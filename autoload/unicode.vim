@@ -11,8 +11,24 @@
 " initialize Variables {{{1
 let s:unicode_URL  = get(g:, 'Unicode_URL',
         \ 'http://www.unicode.org/Public/UNIDATA/UnicodeData.txt')
-let s:directory    = expand("<sfile>:p:h")."/unicode"
-let s:UniFile      = s:directory . '/UnicodeData.txt'
+if has("nvim")
+    " default: ~/.local/share/nvim/site/unicode/
+    let s:data_directory =
+        \ get(g:, 'Unicode_data_directory', stdpath('data') . '/site/unicode')
+    " default: ~/.cache/nvim/unicode/UnicodeData.vim
+    let s:cache_directory =
+        \ get(g:, 'Unicode_cache_directory', stdpath('cache') . '/unicode')
+else
+    let s:autoload_directory = expand("<sfile>:p:h")."/unicode"
+    let s:data_directory =
+        \ get(g:, 'Unicode_data_directory', s:autoload_directory)
+    let s:cache_directory =
+        \ get(g:, 'Unicode_cache_directory', s:autoload_directory)
+endif
+let s:data_file = s:data_directory . '/UnicodeData.txt'
+let s:data_cache_file = s:cache_directory . '/UnicodeData.vim'
+let s:table_cache_file = s:cache_directory . '/UnicodeTable.txt'
+let s:use_cache = get(g:, 'Unicode_use_cache', v:true)
 
 " HTML entitities {{{2
 let s:html = unicode#html#get_html_entities()
@@ -93,32 +109,37 @@ fu! unicode#Regex(val) abort "{{{2
     return val
 endfu
 fu! unicode#Download(force) abort "{{{2
-    if (!filereadable(s:UniFile) || (getfsize(s:UniFile) == 0)) || a:force
+    if (!filereadable(s:data_file) || (getfsize(s:data_file) == 0)) || a:force
         if !a:force
-            call s:WarningMsg("File " . s:UniFile . " does not exist or is zero.")
+            call s:WarningMsg("File " . s:data_file . " does not exist or is zero.")
         else
-            call s:WarningMsg("Updating ". s:UniFile)
+            call s:WarningMsg("Updating ". s:data_file)
         endif
         call s:WarningMsg("Let's see, if we can download it.")
         call s:WarningMsg("If this doesn't work, you should download ")
-        call s:WarningMsg(s:unicode_URL . " and save it as " . s:UniFile)
-        sleep 5
+        call s:WarningMsg(s:unicode_URL . " and save it as " . s:data_file)
+        let choice = confirm("Download " . s:unicode_URL . " now?", "&Yes\n&No", 1, "Question")
+        if choice ==# 0 || choice ==# 2
+            call s:WarningMsg("Not downloading file. You can retry by executing :UnicodeDownload")
+            return 0
+        endif
         " remove cache file
         " (will be re-created later)
-        if filereadable(s:directory. '/UnicodeData.vim')
-            call delete(s:directory. '/UnicodeData.vim')
+        if s:use_cache && filereadable(s:data_cache_file)
+            call delete(s:data_cache_file)
         endif
         if exists(":Nread")
+            if !<sid>MkDir(s:data_directory)
+                return 0
+            endif
             sp +enew
             " Use the default download method. You can specify a different
             " one, using :let g:netrw_http_cmd="wget"
-            if isdirectory(s:directory)
-                exe ":lcd " . s:directory
-            endif
+            exe ":lcd " . s:data_directory
             exe "0Nread " . s:unicode_URL
             $d _
-            exe ":noa :keepalt :sil w! " . s:UniFile
-            if getfsize(s:UniFile)==0
+            exe ":noa :keepalt :sil w! " . s:data_file
+            if getfsize(s:data_file)==0
                 call s:WarningMsg("Error fetching File from ". s:unicode_URL)
                 return 0
             endif
@@ -126,7 +147,7 @@ fu! unicode#Download(force) abort "{{{2
         else
             call s:WarningMsg("NetRw not loaded; cannot download file")
             call s:WarningMsg("Please download " . s:unicode_URL)
-            call s:WarningMsg("and save it as " . s:UniFile)
+            call s:WarningMsg("and save it as " . s:data_file)
             call s:WarningMsg("Quitting")
             return 0
         endif
@@ -134,17 +155,19 @@ fu! unicode#Download(force) abort "{{{2
     return 1
 endfu
 fu! unicode#MkCache() abort "{{{2
+    if !s:use_cache
+        return
+    endif
     " Create the cache for existing Unicode Data file
-    let cache_file = s:directory. '/UnicodeData.vim'
-    if !filereadable(cache_file)
+    if !filereadable(s:data_cache_file)
         call <sid>UnicodeDict()
     else
         call <sid>WarningMsg("Cache already exists")
         return
     endif
-    if !filereadable(cache_file) ||
-        \ getftime(cache_file) < getftime(s:UniFile) ||
-        \ getfsize(cache_file) < 100 " Unicode Cache Dict should be a lot larger
+    if !filereadable(s:data_cache_file) ||
+        \ getftime(s:data_cache_file) < getftime(s:data_file) ||
+        \ getfsize(s:data_cache_file) < 100 " Unicode Cache Dict should be a lot larger
         call <sid>WarningMsg("Something went wrong when trying to create the cache file")
     else
         call <sid>WarningMsg("Cache successfully created")
@@ -270,7 +293,7 @@ fu! unicode#GetUniChar(...) abort "{{{2
             if empty(s:UniDict)
                 call add(msg,
                     \ printf("Can't determine char under cursor,".
-                    \ "%s not found", s:UniFile))
+                    \ "%s not found", s:data_file))
                 return
             endif
         endif
@@ -472,10 +495,9 @@ fu! unicode#GetDigraph(type, ...) abort "{{{2
 endfu
 fu! unicode#PrintUnicodeTable(force) abort "{{{2
     let buffer_name = 'UnicodeTable.txt'
-    let uni_table_file = s:directory. '/'. buffer_name
-    if filereadable(uni_table_file) && !a:force
+    if s:use_cache && filereadable(s:table_cache_file) && !a:force
         call <sid>FindWindow(buffer_name)
-        exe 'noa :e' uni_table_file
+        exe 'noa :e' s:table_cache_file
         call <sid>Unitable_Afterload()
         return
     endif
@@ -501,7 +523,11 @@ fu! unicode#PrintUnicodeTable(force) abort "{{{2
     call setline(1, output)
     2,$sort x /^.\{,8}U+/
     setl nomodified
-    call writefile(getline(1,'$'), uni_table_file)
+    if s:use_cache
+        if <sid>MkDir(s:cache_directory)
+            call writefile(getline(1,'$'), s:table_cache_file)
+        endif
+    endif
     call <sid>Unitable_Afterload()
 endfu
 fu! unicode#MkDigraphNew(arg) abort "{{{2
@@ -793,15 +819,15 @@ fu! <sid>UnicodeDict() abort "{{{2
     let dict={}
     " make sure unicodedata.txt is found
     if <sid>CheckDir()
-        let uni_cache_file = s:directory. '/UnicodeData.vim'
-        if filereadable(uni_cache_file) &&
-            \ getftime(uni_cache_file) >= getftime(s:UniFile) &&
-            \ getfsize(uni_cache_file) > 100 " Unicode Cache Dict should be a lot larger
-            exe "source" uni_cache_file
+        if s:use_cache &&
+            \ filereadable(s:data_cache_file) &&
+            \ getftime(s:data_cache_file) >= getftime(s:data_file) &&
+            \ getfsize(s:data_cache_file) > 100 " Unicode Cache Dict should be a lot larger
+            exe "source" s:data_cache_file
             let dict=g:unicode#unicode#data
             unlet! g:unicode#unicode#data
         else
-            let list=readfile(s:UniFile)
+            let list=readfile(s:data_file)
             let ind = []
             for glyph in list
                 let val          = split(glyph, ";")
@@ -823,15 +849,21 @@ fu! <sid>UnicodeDict() abort "{{{2
     return dict
 endfu
 fu! <sid>CheckDir() abort "{{{2
+    if !<sid>MkDir(s:data_directory)
+        return 0
+    endif
+    return unicode#Download(0)
+endfu
+fu! <sid>MkDir(dir) abort "{{{2
     try
-        if (!isdirectory(s:directory))
-            call mkdir(s:directory)
+        if (!isdirectory(a:dir))
+            call mkdir(a:dir, 'p')
         endif
     catch
-        call s:WarningMsg("Error creating Directory: " . s:directory)
+        call s:WarningMsg("Error creating Directory: " . a:dir)
         return 0
     endtry
-    return unicode#Download(0)
+    return 1
 endfu
 fu! <sid>GetDigraphDict() abort "{{{2
     " returns a dict of digraphs 
@@ -925,6 +957,12 @@ fu! <sid>GetHtmlEntity(hex, all) abort "{{{2
     return html
 endfu
 fu! <sid>UnicodeWriteCache(data, ind) abort "{{{2
+    if !s:use_cache
+        return
+    endif
+    if !<sid>MkDir(s:cache_directory)
+        return
+    endif
     " Take unicode dictionary and write it in VimL form
     " so it will be faster to load
     let list = ['" internal cache file for unicode.vim plugin',
@@ -933,7 +971,7 @@ fu! <sid>UnicodeWriteCache(data, ind) abort "{{{2
         \ 'let unicode#unicode#data = {}']
     let format = "let unicode#unicode#data[0x%04X] = '%s'"
     let list += map(copy(a:ind), 'printf(format, v:val, a:data[v:val])')
-    call writefile(list, s:directory. '/UnicodeData.vim')
+    call writefile(list, s:data_cache_file)
     unlet! list
 endfu
 fu! <sid>GetUnicodeName(dec) abort "{{{2

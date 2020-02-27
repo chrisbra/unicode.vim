@@ -53,26 +53,52 @@ The unicode.vim Plugin uses the data available from the Unicode
 Consortium's website (http://www.unicode.org) to let you enter Unicode
 characters using a completion function.
 
-By default, the plugin creates a directory unicode below the path autoload
-where this plugin is located. Within this directory it will store  the file
-UnicodeData.txt from http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
-(alternatively you can download it from
-ftp://ftp.unicode.org/Public/UNIDATA/UnicodeData.txt and place it manually
-below autoload/unicode/ from the plugins main directory.)
-which it will try to download using |netrw| . If this is unsuccessful, or
-you do not have |netrw| enabled, download the file manually and save it in the
-unicode directory below the autoload directory in which unicode.vim is
-located.
+By default the plugin stores the file UnicodeData.txt from
+http://www.unicode.org/Public/UNIDATA/UnicodeData.txt (alternatively you can
+download it from ftp://ftp.unicode.org/Public/UNIDATA/UnicodeData.txt)
+in the data directory. The plugin tries to download the file using |netrw|.
+If this is unsuccessful, or you do not have |netrw| enabled, download the file
+manually and save it in the data directory.
+
+                         *unicode-data-directory* *unicode-cache-directory*
+If you run Neovim, then the data and cache directory are XDG Base Directory
+Specification compliant. In this case the data and cache directories are
+`stdpath("data") . "/site/unicode"` and `stdpath("cache") . "/unicode"`,
+respectively (see |stdpath()|).
+
+If not running Neovim, then the data directory is the same as the cache
+directory, which is the "unicode" directory below the autoload directory in
+which unicode.vim is located. So if you have installed unicode.vim into
+"/home/user/.vim", then the data and cache directory should be
+"/home/user/.vim/autoload/unicode".
+
+                     *g:Unicode_data_directory* *g:Unicode_cache_directory*
+The cache and data directory can also specified using the variables
+`g:Unicode_data_directory` and `g:Unicode_cache_directory` like so: >
+
+    let g:Unicode_data_directory = /home/user/data/
+    let g:Unicode_cache_directory = /tmp/
+<
+If the cache or data directory does not exist, it is created on the first use
+(together with any necessary intermediate directories).
+
+                                                      *g:Unicode_use_cache*
+After the plugin has been first used, it automatically creates some cache
+files (see |:UnicodeCache| and |:UnicodeTable|), which can be safely removed,
+they will be recreated the next time this plugin is used. To prevent the
+plugin from creating any cache files or the cache directory, define the
+variable `g:Unicode_use_cache` with a false-ish value, e.g. >
+
+    let g:Unicode_use_cache = v:false
+<
+Note that setting this varibale does not delete any previously generated cache
+files, those have to be removed by hand.
+
                                                      *unicode-plugin-error*
 If the plugin gives an error or does not complete anything, first check, that
 UnicodeData.txt from the Unicode Consortium has been successfully downloaded.
-It should be located below the autoload/unicode.vim script in a directory
-called unicode. So if you have installed unicode.vim into
-/home/user/.vim, UnicodeData.txt should be located at:
-/home/user/.vim/autoload/unicode/UnicodeData.txt (after the plugin has been
-first used, it automatically creates a cache file |:UnicodeCache| of that data
-in the same directory called UnicodeData.vim, which can be safely removed, it
-will be recreated the next time this plugin is used) and should look like this:
+It should be located in the data directory (see |unicode-data-directory|) and
+should look like this:
 
 0020;SPACE;Zs;0;WS;;;;;N;;;;;
 0021;EXCLAMATION MARK;Po;0;ON;;;;;N;;;;;
@@ -174,8 +200,9 @@ at the current cursor position (only when your buffer is writable).
     :UnicodeTable[!]
 
 Creates a new window with a table of all Unicode characters. For performance
-reasons, the table will be cached and stored locally in the install directory.
-That makes loading the table after the initial run much faster. If you want to
+reasons, the table will be cached and stored locally in the cache directory
+(see |unicode-cache-directory|) under the name "UnicodeTable.txt". That makes
+loading the table after the initial run much faster. If you want to
 re-generate the table from scratch (and discarding the cache file), use the
 "!" attribute.
 
@@ -184,6 +211,8 @@ re-generate the table from scratch (and discarding the cache file), use the
     :UnicodeDownload
 
 Downloads the Unicode data. Can also be used to update the local data file.
+The downloaded file is stored as "UnicodeData.txt" in the data directory (see
+|unicode-data-directory|).
 
 							    *:DigraphNew*
 >
@@ -237,10 +266,12 @@ U+01F6 LATIN CAPITAL LETTER HWAIR!
 >
     :UnicodeCache
 
-Manually re-creates the cache file from the UnicodeData.txt file. Should
+Manually re-creates the cache file from the "UnicodeData.txt" file. Should
 normally not be needed to be executed manually, as the plugin does this for
 you. Might be necessary if you want to distribute the plugin on a read-only
-filesystem to set up everything before first using it.
+filesystem to set up everything before first using it. The cache file is named
+"UnicodeData.vim" and stored in the cache directory (see
+|unicode-cache-directory|).
 
 ==============================================================================
 3. Completions
@@ -372,6 +403,12 @@ Key		Mode		Function
 
 To remap those mappings to different keys see below.
 
+                                              *g:Unicode_no_default_mappings*
+To prevent the unicode plugin from creating the above mappings define
+`g:Unicode_no_default_mappings` with a true-ish value in your vimrc like so: >
+
+    let g:Unicode_no_default_mappings = v:true
+<
                                                         *<Plug>(MakeDigraph)*
 The plugin sets up a map to <F4>, for easier generation of digraphs. This
 allows you to enter the digraph base characters and let the plugin convert a
