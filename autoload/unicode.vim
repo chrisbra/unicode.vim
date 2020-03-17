@@ -30,6 +30,9 @@ let s:data_cache_file = s:cache_directory . '/UnicodeData.vim'
 let s:table_cache_file = s:cache_directory . '/UnicodeTable.txt'
 let s:use_cache = get(g:, 'Unicode_use_cache', v:true)
 
+" sets the color for the glyph of a unicode character
+let s:fuzzy_color = get(g:, 'Unicode_fuzzy_color', 4)
+
 " HTML entitities {{{2
 let s:html = unicode#html#get_html_entities()
 " Additional Information {{{2
@@ -172,6 +175,15 @@ fu! unicode#MkCache() abort "{{{2
     else
         call <sid>WarningMsg("Cache successfully created")
     endif
+endfu
+fu! unicode#Fuzzy() abort "{{{2
+    if !exists('*fzf#run') | return s:WarningMsg('fzf is not installed') | endif
+    if !exists('s:fuzzy_source') | call s:set_fuzzy_source() | endif
+    call fzf#run(fzf#wrap({
+        \ 'source': s:fuzzy_source,
+        \ 'options': '--ansi --nth=2.. --tiebreak=index +m',
+        \ 'sink': function('s:inject_unicode_character'
+        \ )}))
 endfu
 " internal functions {{{1
 fu! unicode#CompleteUnicode() abort "{{{2
@@ -1055,5 +1067,23 @@ fu! <sid>AirlineStatusline() abort "{{{2
         AirlineRefresh
     endif
 endfunction
+fu! <sid>translate(lists) abort "{{{2
+    for list in a:lists
+        let list[0] = eval('"\U' . printf('%x', list[0]) . '"')
+    endfor
+    return a:lists
+endfu
+fu! <sid>inject_unicode_character(line) abort "{{{2
+    let char = matchstr(a:line, '^.')
+    call feedkeys((col('.') >= col('$') - 1 ? 'a' : 'i') . char, 'in')
+endfu
+fu! <sid>set_fuzzy_source() abort "{{{2
+    if !filereadable(s:data_cache_file) | exe 'UnicodeCache' | endif
+    if !filereadable(s:data_cache_file) | return s:WarningMsg('Failed to create the cache file') | endif
+    exe 'source ' . s:data_cache_file
+    let s:fuzzy_source = g:unicode#unicode#data
+    let s:fuzzy_source = s:translate(items(s:fuzzy_source))
+    call map(s:fuzzy_source, '"\x1b[38;5;" . s:fuzzy_color . "m" . v:val[0] . "\x1b[0m\t" . v:val[1]')
+endfu
 " Modeline "{{{1
 " vim: ts=4 sts=4 fdm=marker com+=l\:\" fdl=0 et

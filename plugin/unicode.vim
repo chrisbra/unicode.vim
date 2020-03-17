@@ -51,6 +51,7 @@ nnoremap <unique><script><silent> <Plug>(UnicodeGA)	    :<C-U>UnicodeName<CR>
 inoremap <unique><script><silent> <Plug>(DigraphComplete)   <C-R>=unicode#CompleteDigraph()<CR>
 inoremap <unique><script><silent> <Plug>(UnicodeComplete)   <C-R>=unicode#CompleteUnicode()<CR>
 inoremap <unique><script><silent> <Plug>(HTMLEntityComplete)   <C-R>=unicode#CompleteHTMLEntity()<CR>
+inoremap <unique><script><silent> <Plug>(UnicodeFuzzy) <C-\><C-O>:call unicode#Fuzzy()<CR>
 nnoremap <unique><script><silent> <Plug>(UnicodeSwapCompleteName) :<C-U>call <sid>ToggleUnicodeCompletion()<CR>
 
 if !(exists("g:Unicode_no_default_mappings") && g:Unicode_no_default_mappings)
@@ -72,6 +73,10 @@ if !(exists("g:Unicode_no_default_mappings") && g:Unicode_no_default_mappings)
 
     if !hasmapto('<Plug>(HTMLEntityComplete)', 'i') && maparg('<c-x><c-b>', 'i') ==# ''
         imap <C-X><C-B> <Plug>(HTMLEntityComplete)
+    endif
+
+    if !hasmapto('<Plug>(UnicodeFuzzy)', 'i') && maparg('<c-g><c-f>', 'i') ==# ''
+        imap <C-G><C-F> <Plug>(UnicodeFuzzy)
     endif
 
     if !hasmapto('<Plug>(UnicodeSwapCompleteName)', 'n') && maparg('<leader>un', 'n') ==# ''
