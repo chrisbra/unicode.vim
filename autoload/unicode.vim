@@ -1081,8 +1081,7 @@ fu! <sid>set_fuzzy_source() abort "{{{2
     if !filereadable(s:data_cache_file) | exe 'UnicodeCache' | endif
     if !filereadable(s:data_cache_file) | return s:WarningMsg('Failed to create the cache file') | endif
     exe 'source ' . s:data_cache_file
-    let s:fuzzy_source = g:unicode#unicode#data
-    let s:fuzzy_source = s:translate(items(s:fuzzy_source))
+    let s:fuzzy_source = s:translate(items(deepcopy(g:unicode#unicode#data)))
     call map(s:fuzzy_source, '"\x1b[38;5;" . s:fuzzy_color . "m" . v:val[0] . "\x1b[0m\t" . v:val[1]')
 endfu
 " Modeline "{{{1

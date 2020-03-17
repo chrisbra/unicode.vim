@@ -361,7 +361,7 @@ generation of the € sign and umlauts, you would add to your |.vimrc| : >
 	\ char2nr("ß") ]
 <
 
-If you want to change the color of the glyph displayed in the fzf interface,
+If you want to change the color of the glyph displayed in the fzf window,
 set the variable >
 
     let g:Unicode_fuzzy_color = 123
@@ -402,7 +402,7 @@ CTRL-X CTRL-B           Search for the characters in front of the cursor and
 --------------------------------------------------
 
 CTRL-G CTRL-F           Invoke fzf to fuzzy search through all unicode names.
-                        Insert the chosen match.
+                        The chosen match is inserted.
 
 ==============================================================================
 4. Mappings						*unicode-mappings*
