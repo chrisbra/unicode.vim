@@ -361,6 +361,14 @@ generation of the € sign and umlauts, you would add to your |.vimrc| : >
 	\ char2nr("ß") ]
 <
 
+If you want to change the color of the glyph displayed in the fzf window,
+set the variable >
+
+    let g:Unicode_fuzzy_color = 123
+<
+in your |.vimrc|.  Choose the decimal index of the desired color in your
+terminal palette.
+
                                         *i_CTRL-X_CTRL-G* *digraph-completion*
 3.2 Completing Digraphs
 -----------------------
@@ -389,6 +397,13 @@ CTRL-X CTRL-B           Search for the characters in front of the cursor and
        CTRL-P           Use previous match. This match replaces the previous
                         one.
 
+                                   *i_CTRL-G_CTRL-F* *unicode-fuzzy-insertion*
+3.4 Inserting Unicode Characters After Fuzzy Search
+--------------------------------------------------
+
+CTRL-G CTRL-F           Invoke fzf to fuzzy search through all unicode names.
+                        The chosen match is inserted.
+
 ==============================================================================
 4. Mappings						*unicode-mappings*
 
@@ -398,6 +413,7 @@ Key		Mode		Function
 <C-X><C-Z>	Insert		Complete Unicode Name before cursor |i_CTRL-X_CTRL-G|
 <C-X><C-G>	Insert		Complete Digraph before cursor |i_CTRL-X_CTRL-Z|
 <C-X><C-B>	Insert		Complete Entity before cursor |i_CTRL-X_CTRL-B|
+<C-G><C-F>	Insert		Fuzzy Search Unicode Name |i_CTRL-G_CTRL-F|
 <F4>		Normal/Visual   Generate Digraph from chars |<Plug>(MakeDigraph)|
 <Leader>un	Normal		Toggle Completion of Unicode Names and Chars
 
@@ -448,6 +464,11 @@ This will invoke the |:UnicodeName| command whenever the ga command is used.
 Instead of completing to the actual glyphs, the plugin can also complete
 unicode names. Use the <Plug>(UnicodeSwapCompleteName) to toggle between both
 completion types. By default, this is mapped to <Leader>un
+
+					               *<Plug>(UnicodeFuzzy)*
+Insert a unicode character after performing a fuzzy search in all unicode names.
+By default, this is mapped to <C-G><C-F>
+Requires fzf: https://github.com/junegunn/fzf
 ==============================================================================
 5. Public functions					*unicode-functions*
 
