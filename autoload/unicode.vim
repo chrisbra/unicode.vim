@@ -497,7 +497,7 @@ fu! unicode#PrintUnicodeTable(force) abort "{{{2
     let buffer_name = 'UnicodeTable.txt'
     if s:use_cache && filereadable(s:table_cache_file) && !a:force
         call <sid>FindWindow(buffer_name)
-        exe 'noa :e' s:table_cache_file
+        exe 'noa nos :e' s:table_cache_file
         call <sid>Unitable_Afterload()
         return
     endif
