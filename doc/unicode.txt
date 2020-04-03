@@ -402,7 +402,7 @@ CTRL-X CTRL-B           Search for the characters in front of the cursor and
 --------------------------------------------------
 
 CTRL-G CTRL-F           Invoke fzf to fuzzy search through all unicode names.
-                        The chosen match is inserted.
+                        The chosen matches are inserted.
 
 ==============================================================================
 4. Mappings						*unicode-mappings*
@@ -466,8 +466,11 @@ unicode names. Use the <Plug>(UnicodeSwapCompleteName) to toggle between both
 completion types. By default, this is mapped to <Leader>un
 
 					               *<Plug>(UnicodeFuzzy)*
-Insert a unicode character after performing a fuzzy search in all unicode names.
-By default, this is mapped to <C-G><C-F>
+Insert some unicode characters after performing a fuzzy search in all unicode
+names.  To insert a single match from the fzf search results select the match
+and press <ENTER>.  To insert multiple matches press <TAB> on each chosen
+match then press <ENTER> to complete the insertion.
+By default, this is mapped to <C-G><C-F> in insert mode only.
 Requires fzf: https://github.com/junegunn/fzf
 ==============================================================================
 5. Public functions					*unicode-functions*

@@ -181,8 +181,8 @@ fu! unicode#Fuzzy() abort "{{{2
     if !exists('s:fuzzy_source') | call s:set_fuzzy_source() | endif
     call fzf#run(fzf#wrap({
         \ 'source': s:fuzzy_source,
-        \ 'options': '--ansi --nth=2.. --tiebreak=index +m',
-        \ 'sink': function('s:inject_unicode_character'
+        \ 'options': '--ansi --nth=2.. --tiebreak=index -m',
+        \ 'sink*': function('s:inject_unicode_characters'
         \ )}))
 endfu
 " internal functions {{{1
@@ -1073,9 +1073,19 @@ fu! <sid>translate(lists) abort "{{{2
     endfor
     return a:lists
 endfu
-fu! <sid>inject_unicode_character(line) abort "{{{2
-    let char = matchstr(a:line, '^.')
-    call feedkeys((col('.') >= col('$') - 1 ? 'a' : 'i') . char, 'in')
+fu! <sid>inject_unicode_characters(lines) abort "{{{2
+    let chars = ''
+    try
+        for line in a:lines
+            try
+                let chars .= matchstr(line, '^.')
+            catch /^Vim:Interrupt$/
+                break
+            endtry
+        endfor
+    finally
+        call feedkeys(chars, 'in')
+    endtry
 endfu
 fu! <sid>set_fuzzy_source() abort "{{{2
     if !filereadable(s:data_cache_file) | exe 'UnicodeCache' | endif
