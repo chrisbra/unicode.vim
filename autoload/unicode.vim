@@ -179,11 +179,16 @@ endfu
 fu! unicode#Fuzzy() abort "{{{2
     if !exists('*fzf#run') | return s:WarningMsg('fzf is not installed') | endif
     if !exists('s:fuzzy_source') | call s:set_fuzzy_source() | endif
+    let s:fzf_using_vim_window = 0
+    let s:fzf_cursor_col = col('.')
+    augroup FzfUsingVimWindow | au!
+        au FileType fzf let s:fzf_using_vim_window = 1
+    augroup END
     call fzf#run(fzf#wrap({
         \ 'source': s:fuzzy_source,
-        \ 'options': '--ansi --nth=2.. --tiebreak=index -m',
-        \ 'sink*': function('s:inject_unicode_characters'
-        \ )}))
+        \ 'options': '--ansi --nth=2.. --tiebreak=length,index -m',
+        \ 'sink*': function('s:inject_unicode_characters'),
+        \ }))
 endfu
 " internal functions {{{1
 fu! unicode#CompleteUnicode() abort "{{{2
@@ -1084,7 +1089,13 @@ fu! <sid>inject_unicode_characters(lines) abort "{{{2
             endtry
         endfor
     finally
-        call feedkeys(chars, 'in')
+        if s:fzf_using_vim_window
+            call feedkeys((s:fzf_cursor_col < col('$') ? 'i' : 'A') . chars, 'n')
+        else
+            call feedkeys(chars, 'n')
+        endif
+        au! FzfUsingVimWindow
+        augroup! FzfUsingVimWindow
     endtry
 endfu
 fu! <sid>set_fuzzy_source() abort "{{{2
