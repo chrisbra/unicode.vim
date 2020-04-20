@@ -611,9 +611,9 @@ fu! <sid>FindWindow(name) abort "{{{2
     let winname = a:name
     let win = bufwinnr('^'.winname.'$')
     if win != -1
-        exe 'noa ' .win. 'wincmd w'
+        exe 'noa nos ' .win. 'wincmd w'
     else
-        exe  'noa sp' winname
+        exe  'noa nos sp' winname
     endif
 endfu
 fu! <sid>AddCompleteEntries(dict) abort "{{{2
