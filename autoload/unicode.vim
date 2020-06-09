@@ -314,10 +314,13 @@ fu! unicode#GetUniChar(...) abort "{{{2
                 return
             endif
         endif
-        " set locale to english
-        let lang=v:lang
-        if lang isnot# 'C'
-            sil lang mess C
+        " set locale to english, if possible
+        " For versions without gettext, assume it will be English :/
+        if has("gettext")
+            let lang=v:lang
+            if lang isnot# 'C'
+                sil lang mess C
+            endif
         endif
         " Get char at Cursor, need to use redir, cause we also want
         " to capture combining chars
