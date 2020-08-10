@@ -50,11 +50,11 @@ easily. It serves 3 main purposes:
        characters into their corresponding digraph value.
 
 The unicode.vim Plugin uses the data available from the Unicode
-Consortium's website (http://www.unicode.org) to let you enter Unicode
+Consortium's website (https://www.unicode.org) to let you enter Unicode
 characters using a completion function.
 
 By default the plugin stores the file UnicodeData.txt from
-http://www.unicode.org/Public/UNIDATA/UnicodeData.txt (alternatively you can
+https://www.unicode.org/Public/UNIDATA/UnicodeData.txt (alternatively you can
 download it from ftp://ftp.unicode.org/Public/UNIDATA/UnicodeData.txt)
 in the data directory. The plugin tries to download the file using |netrw|.
 If this is unsuccessful, or you do not have |netrw| enabled, download the file
@@ -323,7 +323,7 @@ stopped so you can only complete the so far matched unicode chars.
 If you would like to specify a different URL from which to download
 UnicodeData.txt, enter the URL as: >
 
-    :let g:Unicode_URL='http:....'
+    :let g:Unicode_URL='https:....'
 
 To force downloading the file from that new URL, enter >
 

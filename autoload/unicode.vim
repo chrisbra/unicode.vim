@@ -10,7 +10,7 @@
 " ---------------------------------------------------------------------
 " initialize Variables {{{1
 let s:unicode_URL  = get(g:, 'Unicode_URL',
-        \ 'http://www.unicode.org/Public/UNIDATA/UnicodeData.txt')
+        \ 'https://www.unicode.org/Public/UNIDATA/UnicodeData.txt')
 if has("nvim")
     " default: ~/.local/share/nvim/site/unicode/
     let s:data_directory =
@@ -531,7 +531,7 @@ fu! unicode#PrintUnicodeTable(force) abort "{{{2
         let html    = <sid>GetHtmlEntity(value, 0)
         let codep   = printf('U+%04X', value)
         let name   .= (name[-1:]==?' ' ? '' : ' ') " add trailing whitespace
-        let output  += [printf("%-7s%-8s%-18s%-57shttp://unicode-table.com/en/%04X/",
+        let output  += [printf("%-7s%-8s%-18s%-57shttps://unicode-table.com/en/%04X/",
                     \ strtrans(nr2char(value)), codep, html, name.dig, value)]
     endfor
     " Find Window or create a new window
