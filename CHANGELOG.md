@@ -141,7 +141,7 @@ This is the Changelog for the [unicode.vim] plugin
 
 ## [0.05] - 2010-04-19
 - Apr 19, 2010:  Created a public repository for this plugin at
-  http://github.com/chrisbra/unicode.vim
+  https://github.com/chrisbra/unicode.vim
 
 ## [0.04] - 2010-02-01
 - Use UnicodeData.txt to generate Data (Index.txt does not contain all glyphs).
@@ -185,8 +185,8 @@ This is the Changelog for the [unicode.vim] plugin
 [:UnicodeSearch]:           https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L154-L166
 [:UnicodeTable]:            https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L169-L171
 [PlugMakeDigraph]:          https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L342-L367
-[GLVS]:                     http://vimhelp.appspot.com/pi_getscript.txt.html#:GLVS
-[QuitPre]:                  http://vimhelp.appspot.com/autocmd.txt.html#QuitPre
+[GLVS]:                     https://vimhelp.appspot.com/pi_getscript.txt.html#:GLVS
+[QuitPre]:                  https://vimhelp.appspot.com/autocmd.txt.html#QuitPre
 [i_Ctrl-X_CTRL-G]:          https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L313-L327
 [unicode#Digraph]:          https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L428-L431
 [unicode#FindUnicodeBy()]:  https://github.com/chrisbra/unicode.vim/blob/b86ed79b7f84805c757f662e05b0e64814fdf105/doc/unicode.txt#L389-L407

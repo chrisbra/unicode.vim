@@ -14,7 +14,7 @@ syn match UnicodeHeader /\%(^\%1l.*\)\|\%(^\%>2l\S\+\)/   " highlight Heading an
 syn match UnicodeDigraph /\%>1l(\zs\(\S\+\s*\)\+\ze)/     " highlight html and digraph
 syn match UnicodeHtmlEntity /&\w*;\|&#x\x\+;/             " highlight html
 syn match UnicodeCodepoint /U+\x\+/                       " highlight U+FFFE
-syn match UnicodeLink   /http:.*$/                        " highlight html link
+syn match UnicodeLink   /https:.*$/                       " highlight html link
 
 hi def link UnicodeHeader     Title
 hi def link UnicodeDigraph    Statement

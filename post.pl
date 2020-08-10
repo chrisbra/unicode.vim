@@ -40,7 +40,7 @@ for (@files) {
 }
 
 my $mech=WWW::Mechanize->new(autocheck => 1);
-$mech->get("http://www.vim.org/login.php");
+$mech->get("https://www.vim.org/login.php");
 $mech->submit_form(
     form_name => "login",
     with_fields => {
@@ -48,7 +48,7 @@ $mech->submit_form(
         password => $userpasswordpair[1],
     },
 );
-$mech->get("http://www.vim.org/scripts/script.php?script_id=$sid");
+$mech->get("https://www.vim.org/scripts/script.php?script_id=$sid");
 $mech->follow_link(text => 'upload new version');
 $mech->form_name("script");
 $mech->field(script_file => $file);

@@ -28,7 +28,7 @@ See also the following screencast, that shows several features available:
 ### Installation
 Use the plugin manager of your choice. Or download the [stable][] version of the plugin, edit it with Vim (`vim unicode-XXX.vmb`) and simply source it (`:so %`). Restart and take a look at the help (`:h unicode-plugin`)
 
-[stable]: http://www.vim.org/scripts/script.php?script_id=2822
+[stable]: https://www.vim.org/scripts/script.php?script_id=2822
 
 ### Usage
 Once installed, take a look at the help at `:h unicode-plugin`
