@@ -214,8 +214,10 @@ fu! unicode#CompleteUnicode() abort "{{{2
         echom '(Checking all Unicode Names... this might be slow)'
     else
         if empty(type)
-            " name based completion
-            let complete_list = filter(copy(s:UniDict), 'v:val =~? base')
+            " name based completion, prefer a match at the start of line
+            let complete_list1 = filter(copy(s:UniDict), 'v:val =~? "^".base')
+            let complete_list2 = filter(copy(s:UniDict), 'v:val =~? ''\<''.base')
+            let complete_list3 = filter(copy(s:UniDict), 'v:val =~? ''\k\@<=''.base')
         elseif get(type, 'numeric', 0)
             " numeric completion
             let complete_list = filter(copy(s:UniDict),
@@ -229,7 +231,14 @@ fu! unicode#CompleteUnicode() abort "{{{2
         endif
         echom printf('(Checking Unicode Names for "%s"... this might be slow)', base)
     endif
-    let compl = <sid>AddCompleteEntries(complete_list)
+    if exists("complete_list1")
+        let compl = <sid>AddCompleteEntries(complete_list1) + 
+                    \ <sid>AddCompleteEntries(complete_list2) + 
+                    \ <sid>AddCompleteEntries(complete_list3)
+        let compl = uniq(compl)
+    else
+        let compl = <sid>AddCompleteEntries(complete_list)
+    endif
     call complete(start+1, compl)
     return ""
 endfu
@@ -624,7 +633,18 @@ fu! <sid>AddCompleteEntries(dict) abort "{{{2
     let compl=[]
     let prev_fmt="  Codept\tHTML\t\tName\n%s U+%04X\t%s\t%s"
     let starttime = localtime()
-    for value in sort(keys(a:dict), '<sid>CompareListByDec')
+    if 0 && empty(a:type) && !empty(a:base)
+        " sort by best match
+        " This does not work, would be more efficient,
+        " than to do 3 matches against the unicode dicitonary
+        let extra = {}
+        let extra.base=a:base
+        let extra.dict=a:dict
+        let list=sort(keys(a:dict), '<sid>CompareListByMatch', extra)
+    else
+        let list=sort(keys(a:dict), '<sid>CompareListByDec')
+    endif
+    for value in list
         if value == 0
             continue " Skip NULLs, does not display correctly
         endif
@@ -920,6 +940,33 @@ endfu
 fu! <sid>CompareByDecimalKey(d1, d2) abort "{{{2
     " Sort function, Sorts dics d1 and d2 by 'dec' key
     return <sid>CompareByValue(a:d1['dec']+0, a:d2['dec']+0)
+endfu
+fu! <sid>CompareListByMatch(l1, l2) dict abort "{{{2
+    " Not used, because it does not work what I'd like to have it done ....
+    let pat=self.base
+    let val1 = self.dict[a:l1]
+    let val2 = self.dict[a:l2]
+    if val1 =~? '^'.pat
+        if val2 =~? '^'.pat
+            return 0
+        else
+            return 1
+        endif
+    elseif val1 =~? '\<'. pat
+        if val2 =~? '^'. pat
+            return -1
+        elseif val2 =~? '\<'.pat
+            return 0
+        else
+            return 1
+        endif
+    elseif val2 =~? '^'.pat
+        return -1
+    elseif val2 =~? '\<'. pat
+        return -1
+    else
+        return <sid>CompareListByDec(a:l1, a:l2)
+    endif
 endfu
 fu! <sid>CompareListByDec(l1, l2) abort "{{{2
     " Sort function, Sorts l1 and ls by its numeric values
