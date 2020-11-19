@@ -142,10 +142,25 @@ fu! unicode#Download(force) abort "{{{2
             exe "0Nread " . s:unicode_URL
             $d _
             exe ":noa :keepalt :sil w! " . s:data_file
+            " Try to verfiy the downloaded file
+            " 1) Check size
             if getfsize(s:data_file)==0
                 call s:WarningMsg("Error fetching File from ". s:unicode_URL)
                 return 0
             endif
+            " 2) Call UnicodeDict()
+            try
+                let cache_var = s:use_cache
+                let s:use_cache = 0
+                call <sid>UnicodeDict()
+            catch
+                " Should only happen if the download was corrupted
+                call s:WarningMsg("Error loading UnicodeData file from ". s:unicode_URL)
+                call s:WarningMsg("Please verify the structure of the file: ". s:data_file)
+                return 0
+            finally
+                let s:use_cache = cache_var
+            endtry
             bw
         else
             call s:WarningMsg("NetRw not loaded; cannot download file")
