@@ -6,6 +6,8 @@ scriptencoding utf8
 if version < 600
     syn clear
 elseif exists("b:current_syntax")
+    let &cpo = s:cpo_save
+    unlet s:cpo_save
     finish
 endif
 
