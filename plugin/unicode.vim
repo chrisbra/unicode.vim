@@ -37,7 +37,7 @@ com! -nargs=? -bang Digraphs	    call unicode#PrintDigraphs(<q-args>, <q-bang>)
 " deprecated
 com! -nargs=1       SearchUnicode   call unicode#PrintUnicode(<q-args>, '')
 com! -nargs=1 -bang UnicodeSearch   call unicode#PrintUnicode(<q-args>, <q-bang>=='!')
-com! -bang		      UnicodeTable    call unicode#PrintUnicodeTable(<q-bang>=='!')
+com! -bang -bar     UnicodeTable    call unicode#PrintUnicodeTable(<q-bang>=='!')
 com! -nargs=1       DigraphNew	    call unicode#MkDigraphNew(<f-args>)
 com!                UnicodeCache    call unicode#MkCache()
 " deprecated
