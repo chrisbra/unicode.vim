@@ -131,7 +131,7 @@ fu! unicode#Download(force) abort "{{{2
         if s:use_cache && filereadable(s:data_cache_file)
             call delete(s:data_cache_file)
         endif
-        if exists(":Nread")
+        if exists(":Nread") || executable('curl')
             if !<sid>MkDir(s:data_directory)
                 return 0
             endif
@@ -139,9 +139,13 @@ fu! unicode#Download(force) abort "{{{2
             " Use the default download method. You can specify a different
             " one, using :let g:netrw_http_cmd="wget"
             exe ":lcd " . s:data_directory
-            exe "0Nread " . s:unicode_URL
-            $d _
-            exe ":noa :keepalt :sil w! " . s:data_file
+            if exists(':Nread')
+                exe "0Nread " . s:unicode_URL
+                $d _
+                exe ":noa :keepalt :sil w! " . s:data_file
+            else
+                exe "!curl -LO " . s:unicode_URL
+            endif
             " Try to verfiy the downloaded file
             " 1) Check size
             if getfsize(s:data_file)==0
