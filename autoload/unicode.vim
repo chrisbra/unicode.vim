@@ -121,7 +121,12 @@ fu! unicode#Download(force) abort "{{{2
         call s:WarningMsg("Let's see, if we can download it.")
         call s:WarningMsg("If this doesn't work, you should download ")
         call s:WarningMsg(s:unicode_URL . " and save it as " . s:data_file)
-        let choice = confirm("Download " . s:unicode_URL . " now?", "&Yes\n&No", 1, "Question")
+        let args = ["Download " . s:unicode_URL . " now?", "&Yes\n&No", 1, "Question"]
+        if exists(':unsilent') == 2
+            unsilent let choice = call('confirm', args)
+        else
+            let choice = call('confirm', args)
+        endif
         if choice ==# 0 || choice ==# 2
             call s:WarningMsg("Not downloading file. You can retry by executing :UnicodeDownload")
             return 0
