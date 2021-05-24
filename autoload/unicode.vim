@@ -1024,6 +1024,7 @@ fu! <sid>ScreenOutput(...) abort "{{{2
         endif
         let i+=1
     endfor
+    echohl NONE
 endfu
 fu! <sid>WarningMsg(msg) abort "{{{2
     echohl WarningMsg
