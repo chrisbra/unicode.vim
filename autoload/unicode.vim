@@ -41,7 +41,7 @@ let s:info = {}
 let s:info[0xfeff] = "(Byte Order Mark: BOM)" "}}}2
 " public functions {{{1
 fu! unicode#FindDigraphBy(match) abort "{{{2
-    return <sid>DigraphsInternal(a:match)
+    return <sid>DigraphsInternal(a:match, 1)
 endfu
 fu! unicode#FindUnicodeBy(match) abort "{{{2
     return <sid>FindUnicodeByInternal(a:match)
@@ -433,8 +433,7 @@ endfun
 fu! unicode#PrintDigraphs(match, bang) abort "{{{2
     " outputs only first digraph that exists for char
     " makes a difference for e.g. Euro which has (=e Eu)
-    let match    = '\V'.escape(a:match, '\\')
-    let digraphs = <sid>DigraphsInternal(a:match)
+    let digraphs = <sid>DigraphsInternal(a:match, 0)
     let s:output_width=1
 
     for item in digraphs
@@ -738,11 +737,11 @@ fu! <sid>Print(fmt, ...) abort "{{{2
         echomsg call('printf', [a:fmt] + a:000)
     endif
 endfu
-fu! <sid>DigraphsInternal(match) abort "{{{2
+fu! <sid>DigraphsInternal(match, regex) abort "{{{2
     " Returns a list of digraphs matching a:match
     let outlist = []
     let digit = a:match + 0
-    let match = '\V'.escape(a:match, '\\')
+    let match = a:regex ? a:match : '\V'.escape(a:match, '\\')
     let name = ''
     let unidict = {}
     let cnt = 0
