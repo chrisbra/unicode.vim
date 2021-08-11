@@ -741,7 +741,7 @@ fu! <sid>DigraphsInternal(match, regex) abort "{{{2
     " Returns a list of digraphs matching a:match
     let outlist = []
     let digit = a:match + 0
-    let match = a:regex ? a:match : '\V'.escape(a:match, '\\')
+    let match = a:regex ? a:match : '\V'.escape(a:match, '\')
     let name = ''
     let unidict = {}
     let cnt = 0
