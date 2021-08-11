@@ -742,6 +742,7 @@ fu! <sid>DigraphsInternal(match) abort "{{{2
     " Returns a list of digraphs matching a:match
     let outlist = []
     let digit = a:match + 0
+    let match = '\V'.escape(a:match, '\\')
     let name = ''
     let unidict = {}
     let cnt = 0
@@ -768,7 +769,7 @@ fu! <sid>DigraphsInternal(match) abort "{{{2
         " could be a list of 1 or 2 matchings chars,
         " e.g.
         " {'8364': ['=e € 8364','Eu € 8364']}
-        if match(dig, a:match) == -1  && digit == 0 && empty(unidict)
+        if match(dig, match) == -1  && digit == 0 && empty(unidict)
             continue
         endif
         " digraph: xy Z \d\+
