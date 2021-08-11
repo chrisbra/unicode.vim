@@ -153,7 +153,7 @@ html, name, regex or value) only that part of the output will be stored in the
 register.
 
 								*:Digraphs*
-    :Digraphs
+    `:Digraphs`
 
 Outputs the digraph list in an easier way to read with coloring of the
 digraphs. If a character has several digraphs, all will be shown, separated by
@@ -165,23 +165,36 @@ bang attribute (Note, this output also contains the name in parentheses). >
     :Digraphs!
 
 And if you want to display all digraphs matching a certain value, you can add
-an argument to the command: >
+an argument to the command.
+
+When the argument is a single character, it is matched as-is, and it is case
+sensitive: >
 
     :Digraphs! A
 
 displays all digraphs, that match 'A' (e.g. all that can be created with the
-letter A or whose digraph matches the letter 'A'.)
-Note: This is a silly example, that can take some time. You should always be
-able to abort that by pressing |CTRL-C|. To output progress information, call
-the command with the |:verbose| command modifier.
+letter A or whose digraph matches the letter 'A').
 
-If you know the name, you can also search for the unicode name: >
+When the argument consists of multiple characters, it is treated as a regular
+expression, and it matches also the unicode name. Examples: >
+
+    :Digraphs ^\Ca
+
+will display all Digraphs that start with lowercase 'a'. >
 
     :Digraphs copy
 
 will display all Digraphs, where their unicode name contains the word "copy"
-(e.g. copyright symbol). Case is ignored. Note, you need at least to enter 2
-characters.
+(e.g. copyright symbol). Or: >
+
+    :Digraphs greek
+
+will display all Digraphs with greek letters, that have the word "greek" in
+their name.
+
+Note: you should always be able to abort that by pressing |CTRL-C|. To output
+progress information, call the command with the |:verbose| command modifier.
+
 							    *:UnicodeSearch*
 >
     :UnicodeSearch [name|nr]
@@ -501,8 +514,11 @@ unicode#FindDigraphBy({match})			   *unicode#FindDigraphBy()*
 	{match} can be a regular expression or a decimal or hex value (in
 	which case the unicode characters will be searched for their
 	decimal/hex values). Use the prefix "0x" to force searching for that
-	particular hex value. If {match} is an expression, it will be matched
-	against the character name (and case will be ignored).
+	particular hex value. If {match} is an expression, it follows the same
+	rules effective for the |:Digraphs| command: it will be matched
+	against the character name (and case will be ignored), unless it is
+	a single character, in that case it will match 'dig' or 'glyph' (and
+	case will not be ignored).
 
 unicode#FindUnicodeBy({match}])			*unicode#FindUnicodeBy()*
 	Searches the unicode data for {match} and returns a list of dicts,
