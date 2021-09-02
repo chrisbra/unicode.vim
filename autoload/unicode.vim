@@ -433,7 +433,6 @@ endfun
 fu! unicode#PrintDigraphs(match, bang) abort "{{{2
     " outputs only first digraph that exists for char
     " makes a difference for e.g. Euro which has (=e Eu)
-    let match    = '\V'.escape(a:match, '\\')
     let digraphs = <sid>DigraphsInternal(a:match)
     let s:output_width=1
 
@@ -742,17 +741,20 @@ fu! <sid>DigraphsInternal(match) abort "{{{2
     " Returns a list of digraphs matching a:match
     let outlist = []
     let digit = a:match + 0
-    let match = '\V'.escape(a:match, '\\')
+    let match = a:match
     let name = ''
     let unidict = {}
     let cnt = 0
     let did_verbose = 0
-    if (len(a:match) > 1 && digit == 0)
+    if len(a:match) == 1
+        " special case for single character: treat regex as very nomagic
+        let match = '\V\C'.escape(a:match, '\')
+    elseif (len(a:match) > 1 && digit == 0)
         " try to match digest name from unicode name
         if !exists("s:UniDict")
             let s:UniDict = <sid>UnicodeDict()
         endif
-        let name    = a:match
+        let name    = match
         let unidict = filter(copy(s:UniDict), 'v:val =~? name')
     endif
     let res = <sid>GetDigraphDict()
