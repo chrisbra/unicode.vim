@@ -69,7 +69,7 @@ fu! unicode#Search(match) abort "{{{2
         endfor
         echon "\n"
         unlet! s:color_pattern
-        let input=input('Please choose: ')
+        let input=trim(input('Please choose: '))
         if empty(input)
             return
         elseif input !~? '^\d\+' || input > len(uni)
@@ -470,7 +470,7 @@ fu! unicode#PrintUnicode(match, bang) abort "{{{2
     endfor
     unlet! s:color_pattern
     if !&l:ro && &l:ma && a:bang
-        let input=input('Enter number of char to insert: ')
+        let input=trim(input('Enter number of char to insert: '))
         if empty(input)
             return
         elseif input !~? '^\d\+' || input > len(uni)
