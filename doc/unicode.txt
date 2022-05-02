@@ -206,8 +206,11 @@ being ignored.) If possible, digraphs chars are displayed in (), separated by
 commas and html entities are displayed as well. Note, depending on your
 search term, this might be a little bit slow.
 
-You can use the bang "!" attribute, it will prompt you, which item to insert
-at the current cursor position (only when your buffer is writable).
+If you use the bang "!" attribute, it will prompt you for one or more numbers
+of characters to insert. The numbers can be delimited by anything that is not
+a digit. Valid corresponding characters are inserted into the buffer at the
+current cursor position (only when your buffer is writable).
+
 							    *:UnicodeTable*
 >
     :UnicodeTable[!]
