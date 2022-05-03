@@ -458,8 +458,8 @@ fu! unicode#PrintUnicode(match, bang) abort "{{{2
     for item in uni
         let dig  = get(item, 'dig' , '')
         let html = get(item, 'html', '')
-            let width=strlen(len(uni))
-            call <sid>ScreenOutput( (a:bang ? printf("%*i", width, cnt) : ''),
+        let width=strlen(len(uni))
+        call <sid>ScreenOutput( (a:bang ? printf("%*i", width, cnt) : ''),
                 \ printf(format[0], item.glyph),
                 \ printf(format[1].format[2], item.dec, item.dec, item.name),
                 \ (empty(dig)  ? [] : printf(" %s", dig)),
@@ -470,13 +470,21 @@ fu! unicode#PrintUnicode(match, bang) abort "{{{2
     endfor
     unlet! s:color_pattern
     if !&l:ro && &l:ma && a:bang
-        let input=trim(input('Enter number of char to insert: '))
-        if empty(input)
-            return
-        elseif input !~? '^\d\+' || input > len(uni)
-            echo "\ninvalid number selected, aborting..."
-        else
-            exe "norm! a". (uni[input-1].glyph). "\<esc>"
+        let input=trim(input('Enter one or more numbers of character(s) to insert: '))
+        let result = ''
+        let rejected = []
+        for num in split(input, '\m\D\+')
+            if num <= 0 || num > len(uni)
+                call add(rejected,num)
+            else
+                let result .= uni[num-1].glyph
+            endif
+        endfor
+        if !empty(rejected)
+            echo "\ninvalid numbers skipped: " . join(rejected,", ")
+        endif
+        if !empty(result)
+            exe "norm! a". result. "\<esc>"
         endif
     endif
 endfu
