@@ -907,6 +907,10 @@ fu! <sid>UnicodeDict() abort "{{{2
             for glyph in list
                 let val          = split(glyph, ";")
                 let Name         = val[1]
+                " Field 3 is General Category Field as defined in https://www.unicode.org/reports/tr44
+                if val[2] !=? ''
+                    let Name     .=  ' ('. val[2]. ')'
+                endif
                 let OldName      = val[10] " Unicode_1_Name field (10)
                 if Name[0] ==? '<' && OldName !=? ''
                     let Name = split(OldName, '(')[0]
