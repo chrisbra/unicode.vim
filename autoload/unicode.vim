@@ -137,8 +137,13 @@ fu! unicode#Download(force, ...) abort "{{{2
         endif
         " remove cache file
         " (will be re-created later)
-        if s:use_cache && filereadable(s:data_cache_file)
-            call delete(s:data_cache_file)
+        if s:use_cache
+            if filereadable(s:data_cache_file)
+                call delete(s:data_cache_file)
+            endif
+            if filereadable(s:table_cache_file)
+                call delete(s:data_cache_file)
+            endif
         endif
         if exists(":Nread") || executable('curl')
             if !<sid>MkDir(s:data_directory)
