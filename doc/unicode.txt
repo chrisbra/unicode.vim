@@ -224,11 +224,12 @@ re-generate the table from scratch (and discarding the cache file), use the
 
 							    *:UnicodeDownload*
 >
-    :UnicodeDownload
+    :UnicodeDownload[!]
 
 Downloads the Unicode data. Can also be used to update the local data file.
 The downloaded file is stored as "UnicodeData.txt" in the data directory (see
 |unicode-data-directory|).
+When the optional "!" is given, won't ask for confirmation.
 
 							    *:DigraphNew*
 >
@@ -343,9 +344,9 @@ UnicodeData.txt, enter the URL as: >
 
 To force downloading the file from that new URL, enter >
 
-    :UnicodeDownload
+    :UnicodeDownload!
 
-You can also use this command to update your local unicode data file.
+You can also use the |:UnicodeDownload| command to update your local unicode data file.
 
 If you only want to complete the Unicode Names instead of the glyphs,
 you can either set the global variable >

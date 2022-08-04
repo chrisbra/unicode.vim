@@ -111,7 +111,9 @@ fu! unicode#Regex(val) abort "{{{2
         \ printf('\%%U%*x', hexl, a:val)
     return val
 endfu
-fu! unicode#Download(force) abort "{{{2
+fu! unicode#Download(force, ...) abort "{{{2
+    let silent = a:0 && a:1 == 1
+
     if (!filereadable(s:data_file) || (getfsize(s:data_file) == 0)) || a:force
         if !a:force
             call s:WarningMsg("File " . s:data_file . " does not exist or is zero.")
@@ -122,7 +124,9 @@ fu! unicode#Download(force) abort "{{{2
         call s:WarningMsg("If this doesn't work, you should download ")
         call s:WarningMsg(s:unicode_URL . " and save it as " . s:data_file)
         let args = ["Download " . s:unicode_URL . " now?", "&Yes\n&No", 1, "Question"]
-        if exists(':unsilent') == 2
+        if silent
+            let choice = 1
+        elseif exists(':unsilent') == 2
             unsilent let choice = call('confirm', args)
         else
             let choice = call('confirm', args)
@@ -149,6 +153,7 @@ fu! unicode#Download(force) abort "{{{2
                 $d _
                 exe ":noa :keepalt :sil w! " . s:data_file
             else
+                " best guess :/
                 exe "!curl -LO " . s:unicode_URL
             endif
             " Try to verfiy the downloaded file

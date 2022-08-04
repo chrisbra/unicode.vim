@@ -41,8 +41,8 @@ com! -bang -bar     UnicodeTable    call unicode#PrintUnicodeTable(<q-bang>=='!'
 com! -nargs=1       DigraphNew	    call unicode#MkDigraphNew(<f-args>)
 com!                UnicodeCache    call unicode#MkCache()
 " deprecated
-com!		    DownloadUnicode call unicode#Download(1)
-com!		    UnicodeDownload call unicode#Download(1)
+com! DownloadUnicode call unicode#Download(1)
+com! -bang  UnicodeDownload call unicode#Download(1, <q-bang>=='!')
 
 " Setup Mappings
 nnoremap <unique><script><silent> <Plug>(MakeDigraph)	    :set opfunc=unicode#GetDigraph<CR>g@
