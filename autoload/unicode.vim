@@ -1122,7 +1122,7 @@ fu! <sid>GetUnicodeName(dec) abort "{{{2
     elseif a:dec == 0xFFFF
         return "<No Character>"
     elseif a:dec >= 0x17000 && a:dec <= 0x187EC
-        return "Tangut Ideograph",
+        return "Tangut Ideograph"
     elseif a:dec >= 0x1FFFE && a:dec <= 0x1FFFF
         return "<No Character>"
     elseif a:dec >= 0x20000 && a:dec <= 0x2A6D6
