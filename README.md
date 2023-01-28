@@ -1,7 +1,7 @@
 # Unicode plugin [![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/cb%40256bit.org)
-> A Vim plugin for handling unicode and digraphs characters
+> A Vim plugin for handling Unicode and digraphs characters
 
-This plugin aims to make the handling of unicode and digraphs chars in Vim easier. It serves 3 purposes:
+This plugin aims to make the handling of Unicode and digraphs chars in Vim easier. It serves 3 purposes:
 
 1. Complete Characters
 2. Identify Characters
@@ -14,7 +14,7 @@ Also a new custom completion for digraph chars is available. Press `Ctrl-X Ctrl-
 #### Identify Characters
 The `:UnicodeName` command can be used to identify the character under the cursor. This works similar to the builtin `ga` command (in fact, the help also states a possibility to map this command to the `ga` builtin command), but it also displays the digraph character (if it exists) and the HTML entity.
 
-The `:UnicodeSearch` command can be used to search in the unicode character table to search for a certain unicode character with a given name or value. Use the "!" attribute to query for result and have it inserted at the current cursor position.
+The `:UnicodeSearch` command can be used to search in the Unicode character table to search for a certain Unicode character with a given name or value. Use the "!" attribute to query for result and have it inserted at the current cursor position.
 
 The `:UnicodeTable` can be used to generate an Unicode table, including HTML entity names and Digraph chars. The UnicodeTable will be nicely syntax highlighted.
 
@@ -36,23 +36,25 @@ Once installed, take a look at the help at `:h unicode-plugin`
 Here is a short overview of the functionality provided by the plugin:
 #### Ex commands:
     :Digraphs        - Search for specific digraph char
-    :UnicodeSearch   - Search for specific unicode char
-    :UnicodeSearch!  - Search for specific unicode char (and add at current cursor position)
+    :UnicodeSearch   - Search for specific Unicode char
+    :UnicodeSearch!  - Search for specific Unicode char (and add at current cursor position)
     :UnicodeName     - Identify character under cursor (like ga command)
     :UnicodeTable    - Print Unicode Table in new window
     :DownloadUnicode - Download (or update) Unicode data
     :UnicodeCache    - Create cache file
-    
-#### Normal mode commands:
-    <C-X><C-G>  - Complete Digraph char
-    <C-X><C-Z>  - Complete Unicode char
-    <F4>        - Combine characters into digraphs
-    
+
+#### Insert mode commands:
+    <C-X><C-G>  - Complete Digraph char (*X<C-x><C-g> inserts ×)
+    <C-X><C-Z>  - Complete Unicode char (U+00d7<C-x><C-z> inserts ×)
+
+#### Normal/Visual mode commands:
+    <F4>        - Convert selected digraphs into their corresponding characters
+
 #### Scripting Functions:
-    unicode#FindUnicodeBy() - Find unicode characters
+    unicode#FindUnicodeBy() - Find Unicode characters
     unicode#FindDigraphBy() - Find Digraph char
     unicode#Digraph()       - Returns digraph char
-    unicode#UnicodeName()   - Identifies unicode character (by value)
+    unicode#UnicodeName()   - Identifies Unicode character (by value)
 
 #### Similar Work
 [vim-characterize](https://github.com/tpope/vim-characterize) Only supports identifying characters, no completion, no public functions, until recently did not detect combining chars correctly.
