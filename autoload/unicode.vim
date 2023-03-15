@@ -35,6 +35,9 @@ let s:fuzzy_color = get(g:, 'Unicode_fuzzy_color', 4)
 
 " HTML entitities {{{2
 let s:html = unicode#html#get_html_entities()
+" Nerd Fonts {{{2
+let s:nerds= unicode#nerdchars#get_nerd_chars()
+
 " Additional Information {{{2
 " some additional information for certain characters
 let s:info = {}
@@ -384,6 +387,7 @@ fu! unicode#GetUniChar(...) abort "{{{2
                 let dig   = <sid>GetDigraphChars(dec)
                 let name  = <sid>GetUnicodeName(dec)
                 let html  = <sid>GetHtmlEntity(dec, 1)
+                let nerd  = get(s:nerds, dec, [])
                 let hexl  = strlen(printf("%X", dec))
                 let pat   = '/'. unicode#Regex(dec)
                 let str   = dec <= 0xFFFF ? printf('"\u%04x"', dec) :
@@ -396,11 +400,12 @@ fu! unicode#GetUniChar(...) abort "{{{2
                 let name  .= (empty(name) ? '' : ' ')
                 let dig   .= (empty(dig)  ? '' : ' ')
                 let html  .= (empty(html) ? '' : ' ')
+                let nerd  .= (empty(nerd) ? '' : ' ')
                 let info  .= (empty(info) ? '' : ' ')
                 let pat   .= (empty(pat)  ? '' : ' ')
                 let str   .= (empty(str)  ? '' : ' ')
-                call add(msg, printf("'%s' U+%04X Dec:%d %s%s%s%s%s%s", glyph,
-                        \ dec, dec, name, dig, html, info, pat, str))
+                call add(msg, printf("'%s' U+%04X Dec:%d %s%s%s%s%s%s%s", glyph,
+                        \ dec, dec, name, dig, html, info, pat, str, nerd))
                 if !empty(type)
                     if type==?'v'
                         call add(typelist, dec)
