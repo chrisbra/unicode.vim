@@ -387,7 +387,7 @@ fu! unicode#GetUniChar(...) abort "{{{2
                 let dig   = <sid>GetDigraphChars(dec)
                 let name  = <sid>GetUnicodeName(dec)
                 let html  = <sid>GetHtmlEntity(dec, 1)
-                let nerd  = get(s:nerds, dec, [])
+                let nerd  = get(s:nerds, dec, '')
                 let hexl  = strlen(printf("%X", dec))
                 let pat   = '/'. unicode#Regex(dec)
                 let str   = dec <= 0xFFFF ? printf('"\u%04x"', dec) :
