@@ -131,7 +131,7 @@ the official Unicode name and the search pattern to search for that character.
 
 Additionally, if there exists a digraph for that character, it will also be
 shown in parentheses (in case of several digraphs for that character, all
-will be shown, separated by comma).
+will be shown, separated by space).
 
 The search pattern is always the second last item, it starts with a "/"
 
