@@ -5,6 +5,7 @@ FTDETECT = $(wildcard ftdetect/*.vim)
 DOC      = $(wildcard doc/*.txt)
 UNIDATA  = $(wildcard autoload/unicode/Uni*.vim)
 HTML     = $(wildcard autoload/unicode/html*.vim)
+NERD     = $(wildcard autoload/unicode/nerd*.vim)
 PLUGIN   = $(shell basename "$$PWD")
 VERSION  = $(shell sed -n '/Version:/{s/^.*\(\S\.\S\+\)$$/\1/;p}' $(SCRIPT))
 
@@ -37,7 +38,7 @@ undo:
 
 $(PLUGIN).vmb: dummy
 	rm -f $(PLUGIN)-$(VERSION).vmb
-	vim -N -c 'ru! vimballPlugin.vim' -c ':call append("0", [ "$(SCRIPT)", "$(AUTOL)", "$(DOC)", "$(HTML)", "$(UNIDATA)", "$(SYNTAX)", "$(FTDETECT)"])' -c '$$d' -c ":%MkVimball $(PLUGIN)-$(VERSION)  ." -c':q!'
+	vim -N -c 'ru! vimballPlugin.vim' -c ':call append("0", [ "$(SCRIPT)", "$(AUTOL)", "$(DOC)", "$(HTML)", "$(NERD)", "$(UNIDATA)", "$(SYNTAX)", "$(FTDETECT)"])' -c '$$d' -c ":%MkVimball $(PLUGIN)-$(VERSION)  ." -c':q!'
 	ln -f $(PLUGIN)-$(VERSION).vmb $(PLUGIN).vmb
      
 release: version all
