@@ -147,16 +147,12 @@ name followed by the regular expression atom, to search for this character
 followed by the VimScript |expr-string| that can be used to enter that
 quaracter (as you see, it is actually quite similar to the search pattern).
 
-Note: the name may include the Unicode General Category Field in parentheses
-(Field 3 of the UnicodeData file) before the optional digraphs (in
-parentheses).
-
                                                          *unicode_nerdfonts*
 And finally, if the character is available as Nerd Font Character (using the
 https://github.com/ryanoasis/nerd-fonts repository), this will be printed
 as last item and may look like this: >
 
-  '♥' U+2665 Dec:9829 BLACK HEART SUIT (So) &hearts; &heartsuit; /\%u2665 "\u2665" Nerdchar: '♥' oct-heart 
+  '♥' U+2665 Dec:9829 BLACK HEART SUIT &hearts; &heartsuit; /\%u2665 "\u2665" Nerdchar: '♥' oct-heart 
 <
 
 If you specify a register name [reg], the message will also be saved into that
