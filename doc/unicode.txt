@@ -344,6 +344,10 @@ Note: If completing takes longer than 2 seconds (e.g. because many unicode
 names match), you will be notified and completing further items will be
 stopped so you can only complete the so far matched unicode chars.
 
+If this key mapping causes your Vim to be suspended because of the
+regular <C-Z> job control on Unix, consider to remap this function
+|<Plug>(UnicodeComplete)|.
+
                                                     *unicode-plugin-config*
 If you would like to specify a different URL from which to download
 UnicodeData.txt, enter the URL as: >
@@ -435,8 +439,8 @@ CTRL-G CTRL-F           Invoke fzf to fuzzy search through all unicode names.
 The unicode plugin provides those mappings:
 
 Key		Mode		Function
-<C-X><C-Z>	Insert		Complete Unicode Name before cursor |i_CTRL-X_CTRL-G|
-<C-X><C-G>	Insert		Complete Digraph before cursor |i_CTRL-X_CTRL-Z|
+<C-X><C-Z>	Insert		Complete Unicode Name before cursor |i_CTRL-X_CTRL-Z|
+<C-X><C-G>	Insert		Complete Digraph before cursor |i_CTRL-X_CTRL-G|
 <C-X><C-B>	Insert		Complete Entity before cursor |i_CTRL-X_CTRL-B|
 <C-G><C-F>	Insert		Fuzzy Search Unicode Name |i_CTRL-G_CTRL-F|
 <F4>		Normal/Visual   Generate Digraph from chars |<Plug>(MakeDigraph)|
@@ -457,7 +461,7 @@ certain range to its corresponding digraphs. Consider this line: >
 
     a:e:o:u:1Sß/\
 <
-Now put the cursor on the first char, press <f4> and hit '$'. The result will
+Now put the cursor on the first char, press <F4> and hit '$'. The result will
 look like this: >
 
     äëöü¹ß×
@@ -497,6 +501,17 @@ and press <ENTER>.  To insert multiple matches press <TAB> on each chosen
 match then press <ENTER> to complete the insertion.
 By default, this is mapped to <C-G><C-F> in insert mode only.
 Requires fzf: https://github.com/junegunn/fzf
+
+					               *<Plug>(DigraphComplete)*
+Insert mode completion for the |digraph-completion|, mapped by default to
+<C-X><C-G>.
+
+					               *<Plug>(UnicodeComplete)*
+Insert mode completion for the |unicode-completion|, mapped by default to
+<C-X><C-Z>. Can be remapped to <F5> like this: >
+
+        imap <F5> <Plug>(UnicodeComplete)
+<
 ==============================================================================
 5. Public functions					*unicode-functions*
 
